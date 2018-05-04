@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import { initCornModel, addCornDense, addCornSparse, infectInitialCorn, getCornStats } from './corn-model';
+import { initCornModel, addCornDense, addCornSparse, addWormsSparse, infectInitialCorn, getCornStats } from './corn-model';
 import * as Populations from './populations';
 const { Events, Models: { Environment } } = Populations;
 
@@ -29,7 +29,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
       infectInitialCorn(this.state.initialInfection);
-    });  
+    });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
       const { count, infected } = getCornStats();
@@ -57,6 +57,10 @@ class App extends React.Component<IAppProps, IAppState> {
         <br/>
         <button id="add-corn-sparse" onClick={addCornSparse}>
           Plant Corn Sparsely
+        </button>
+        <br />
+        <button id="add-worms-sparse" onClick={addWormsSparse}>
+          Add Worms Sparsely
         </button>
         <br/>
         <label>
