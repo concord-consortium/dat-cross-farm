@@ -1,6 +1,6 @@
 import * as Populations from './populations';
-import { IAgent, IEnvironment, IInteractive, ISpecies } from './populations-types';
-const { Models: { Agents: { BasicPlant }, Environment, Rule, Species },
+import { IAgent, IEnvironment, IInteractive, ISpecies, ITrait } from './populations-types';
+const { Models: { Agents: { BasicPlant }, Environment, Rule, Species, Trait },
         UI: { Interactive } } = Populations;
 
 declare const gImages: {[key: string]: string};
@@ -16,6 +16,14 @@ const env: IEnvironment = new Environment({
 
 const maturity = 250;
 
+const cornInfectedTrait: ITrait = new Trait({
+                                        name: 'infected',
+                                        possibleValues: [ true, false ],
+                                        default: false,
+                                        float: false,
+                                        mutatable: false
+                                      });
+
 const corn: ISpecies = new Species({
   speciesName: "Corn",
   agentClass: BasicPlant,
@@ -24,7 +32,7 @@ const corn: ISpecies = new Species({
     SPROUT_AGE: 10,
     MATURITY_AGE: maturity
   },
-  traits: [],
+  traits: [cornInfectedTrait],
   imageRules: [
     {
       name: 'corn',
