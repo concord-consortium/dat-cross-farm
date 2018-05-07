@@ -1,10 +1,41 @@
 import * as Populations from '../populations';
-import { IAgent, ISpecies } from '../populations-types';
+import { IAgent, ISpecies, ITrait } from '../populations-types';
 const { Models: { Agents: { BasicAnimal }, Species, Trait } } = Populations;
 
 declare const gImages: { [key: string]: string };
 
 const maturity = 250;
+
+const wormTraits: ITrait[] =
+  [
+    new Trait({
+      name: 'speed',
+      "default": 2
+    }), new Trait({
+      name: 'prey', "default": [{ name: 'corn' }]
+    }), new Trait({
+      name: 'vision distance',
+      "default": 10
+    }), new Trait({
+      name: 'eating distance',
+      "default": 5
+    }), new Trait({
+      name: 'mating distance',
+      "default": 2
+    }), new Trait({
+      name: 'max offspring',
+      "default": 3
+    }), new Trait({
+      name: 'resource consumption rate',
+      "default": 10
+    }), new Trait({
+      name: 'metabolism',
+      "default": 0.5
+    }), new Trait({
+      name: 'wings',
+      "default": 0
+    })
+  ]
 
 export const worm: ISpecies = new Species({
   speciesName: "Worm",
@@ -13,39 +44,7 @@ export const worm: ISpecies = new Species({
     CHANCE_OF_MUTATION: 0,
     MATURITY_AGE: maturity
   },
-  traits: [
-    new Trait({
-    name: 'speed',
-    "default": 2
-  }), new Trait({
-    name: 'prey',
-    "default": [
-      {
-        name: 'corn'
-      }
-    ]
-  }), new Trait({
-    name: 'vision distance',
-    "default": 10
-  }), new Trait({
-    name: 'eating distance',
-    "default": 5
-  }), new Trait({
-    name: 'mating distance',
-    "default": 2
-  }), new Trait({
-    name: 'max offspring',
-    "default": 3
-  }), new Trait({
-    name: 'resource consumption rate',
-    "default": 10
-  }), new Trait({
-    name: 'metabolism',
-    "default": 0.5
-  }), new Trait({
-    name: 'wings',
-    "default": 0
-  })],
+  traits: wormTraits,
   imageRules: [
     {
       name: 'worm',
