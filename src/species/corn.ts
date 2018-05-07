@@ -1,10 +1,18 @@
 import * as Populations from '../populations';
-import { IAgent, ISpecies } from '../populations-types';
-const { Models: { Agents: { BasicPlant }, Species} } = Populations;
+import { IAgent, ISpecies, ITrait } from '../populations-types';
+const { Models: { Agents: { BasicPlant }, Species, Trait } } = Populations;
 
 declare const gImages: { [key: string]: string };
 
 const maturity = 250;
+
+const cornInfectedTrait: ITrait = new Trait({
+  name: 'infected',
+  possibleValues: [ true, false ],
+  default: false,
+  float: false,
+  mutatable: false
+});
 
 export const corn: ISpecies = new Species({
   speciesName: "Corn",
@@ -14,7 +22,7 @@ export const corn: ISpecies = new Species({
     SPROUT_AGE: 10,
     MATURITY_AGE: maturity
   },
-  traits: [],
+  traits: [cornInfectedTrait],
   imageRules: [
     {
       name: 'corn',

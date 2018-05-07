@@ -125,12 +125,12 @@ export class IEnvironment {
 export class ITrait {
     constructor(traitDesc: {
         name: string,
-        possibleValues: any,
-        min: number,
-        max: number,
+        possibleValues?: any,
+        min?: number,
+        max?: number,
         default: any,
-        float: boolean,
-        mutatable: boolean
+        float?: boolean,
+        mutatable?: boolean
     });
 
     getDefaultValue(): any;
