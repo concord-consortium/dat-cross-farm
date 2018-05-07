@@ -1,0 +1,158 @@
+import * as Populations from '../populations';
+import { IAgent, ISpecies } from '../populations-types';
+const { Models: { Agents: { BasicPlant }, Species} } = Populations;
+
+declare const gImages: { [key: string]: string };
+
+const maturity = 250;
+
+export const corn: ISpecies = new Species({
+  speciesName: "Corn",
+  agentClass: BasicPlant,
+  defs: {
+    CHANCE_OF_MUTATION: 0,
+    SPROUT_AGE: 10,
+    MATURITY_AGE: maturity
+  },
+  traits: [],
+  imageRules: [
+    {
+      name: 'corn',
+      rules: [
+        {
+          image: {
+            path: gImages.corn0,
+            scale: 0.4,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return agent.get('age') < 10
+          }
+        },
+        {
+          image: {
+            path: gImages.corn1,
+            scale: 1,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25)
+          }
+        },
+        {
+          image: {
+            path: gImages.corn2,
+            scale: 0.8,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5)
+          }
+        },
+        {
+          image: {
+            path: gImages.corn3,
+            scale: 0.65,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return (
+              agent.get('age') >= (maturity * 0.5) &&
+              agent.get('age') < (maturity * 0.75) &&
+              !agent.get('infected')
+            );
+          }
+        },
+        {
+          image: {
+            path: gImages.corn3Sick,
+            scale: 0.65,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return (
+              agent.get('age') >= (maturity * 0.5) &&
+              agent.get('age') < (maturity * 0.75) &&
+              agent.get('infected')
+            );
+          }
+        },
+        {
+          image: {
+            path: gImages.corn4,
+            scale: 0.5,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return (
+              agent.get('age') >= (maturity * 0.75) &&
+              agent.get('age') < maturity &&
+              !agent.get('infected')
+            );
+          }
+        },
+        {
+          image: {
+            path: gImages.corn4Sick,
+            scale: 0.5,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return (
+              agent.get('age') >= (maturity * 0.75) &&
+              agent.get('age') < maturity &&
+              agent.get('infected')
+            );
+          }
+        },
+        {
+          image: {
+            path: gImages.corn5,
+            scale: 0.5,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return agent.get('age') > maturity && !agent.get('infected')
+          }
+        },
+        {
+          image: {
+            path: gImages.corn5Sick,
+            scale: 0.5,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return agent.get('age') > maturity && agent.get('infected')
+          }
+        }
+      ]
+    }
+  ]
+});
