@@ -70,7 +70,7 @@ function addWorms(rows: number, columns: number, rowStart: number, colStart: num
   }
 }
 export const addWormsSparse = () => {
-  addWorms(1, 1, 1, 1, 60);
+  addWorms(4, 4, 40, 40, 40);
 }
 
 const agentIsCorn = (envAgent: IAgent) => {

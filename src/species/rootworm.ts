@@ -10,15 +10,15 @@ const wormTraits: ITrait[] =
   [
     new Trait({
       name: 'speed',
-      "default": 1
+      "default": 4
     }), new Trait({
-      name: 'prey', "default": [{ name: 'corn' }]
+      name: 'prey', "default": [{ name: 'Corn' }]
     }), new Trait({
       name: 'vision distance',
-      "default": 10
+      "default": 40
     }), new Trait({
       name: 'eating distance',
-      "default": 1
+      "default": 10
     }), new Trait({
       name: 'mating distance',
       "default": 2
@@ -30,31 +30,65 @@ const wormTraits: ITrait[] =
       "default": 10
     }), new Trait({
       name: 'metabolism',
-      "default": 5
+      "default": 2
     }), new Trait({
       name: 'wings',
       "default": 0
     })
   ]
 
-class Worm extends BasicAnimal{
+class WormAnimal extends BasicAnimal {
 
-  protected wander() {
-    // override Wander method to give us a chance to stop worm from moving
-    // console.log(this);
+  protected eat() {
+    const nearest = super._nearestPrey();
+    // Until we have other plants, assume nearest prey is corn
+    if (nearest) {
+      const eatingDist = super.get('eating distance');
+      if (nearest.distanceSq < Math.pow(eatingDist, 2)) {
+        // eat corn if still healthy
+        const cornHealth = nearest.agent.get('health');
+        if (cornHealth > 10) {
+          this._eatPrey(nearest.agent);
+        } else {
+          super.wander(super.get('speed') * 0.75);
+        }
+      }
+      else {
+        super.chase(nearest);
+      }
+    }
+    else {
+      super.wander(super.get('speed') * 0.75);
+    }
+  }
+
+  private _eatPrey(agent: any) {
+    const consumptionRate = super.get('resource consumption rate');
+    const currEnergy = super.get('energy')
+    super.set('energy', currEnergy + consumptionRate)
+
+    const cornHealth = agent.get('health');
+    const newHealth = cornHealth - consumptionRate;
+    if (newHealth > 10) {
+      agent.set('health', cornHealth - consumptionRate);
+    }
+    else {
+      agent.die()
+    }
+  }
+
+  protected move(speed: any) {
     if (super.get('current behavior') !== 'eating') {
-      super.wander();
+      super.move(speed);
     } else {
-      // console.log("no eating");
-      return;
+      super.move(speed * 0.1);
     }
   }
 }
 
-
 export const worm: ISpecies = new Species({
   speciesName: "Worm",
-  agentClass: Worm,
+  agentClass: WormAnimal,
   defs: {
     CHANCE_OF_MUTATION: 0,
     MATURITY_AGE: maturity
@@ -69,7 +103,7 @@ export const worm: ISpecies = new Species({
             path: gImages.worm0,
             scale: 0.4,
             anchor: {
-              x: 0.5,
+              x: 0.4,
               y: 1
             }
           },
@@ -80,7 +114,7 @@ export const worm: ISpecies = new Species({
         {
           image: {
             path: gImages.worm0,
-            scale: 0.6,
+            scale: 0.5,
             anchor: {
               x: 0.5,
               y: 1
@@ -93,7 +127,7 @@ export const worm: ISpecies = new Species({
         {
           image: {
             path: gImages.worm1,
-            scale: 0.2,
+            scale: 0.3,
             anchor: {
               x: 0.5,
               y: 1
@@ -106,7 +140,7 @@ export const worm: ISpecies = new Species({
         {
           image: {
             path: gImages.worm1,
-            scale: 0.3,
+            scale: 0.4,
             anchor: {
               x: 0.5,
               y: 1
@@ -122,7 +156,7 @@ export const worm: ISpecies = new Species({
         {
           image: {
             path: gImages.worm1,
-            scale: 0.4,
+            scale: 0.5,
             anchor: {
               x: 0.5,
               y: 1

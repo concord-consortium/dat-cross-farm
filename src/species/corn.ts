@@ -14,6 +14,16 @@ const cornInfectedTrait: ITrait = new Trait({
   mutatable: false
 });
 
+const cornHealthTrait: ITrait = new Trait({
+  name: 'health',
+  min: 0,
+  max: 100,
+  default: 100,
+  float: false,
+  mutatable: false
+});
+
+
 export const corn: ISpecies = new Species({
   speciesName: "Corn",
   agentClass: BasicPlant,
@@ -22,7 +32,7 @@ export const corn: ISpecies = new Species({
     SPROUT_AGE: 10,
     MATURITY_AGE: maturity
   },
-  traits: [cornInfectedTrait],
+  traits: [cornInfectedTrait, cornHealthTrait],
   imageRules: [
     {
       name: 'corn',
