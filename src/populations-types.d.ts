@@ -141,6 +141,14 @@ export class ITrait {
 
 export class ISpecies {
     speciesName: string;
+    individualName: string;
+    agentClass: any;
+    traits: ITrait[];
+    viewLayer: any;
+    imageProperties: any;
+    defs: { [index: string]: any };
+    reproductiveStrategy: any;
+    mutationChance: number;
 
     constructor(speciesDesc: {
         speciesName: string,
@@ -149,7 +157,7 @@ export class ISpecies {
         traits: ITrait[],
         viewLayer: any,
         imageProperties: any,
-        defs: any,
+        defs: { [index: string]: any },
         reproductiveStrategy: any,
         mutationChance: number
     });
