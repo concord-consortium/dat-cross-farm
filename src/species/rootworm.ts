@@ -15,27 +15,33 @@ const wormTraits: ITrait[] =
       name: 'prey', "default": [{ name: 'Corn' }]
     }), new Trait({
       name: 'vision distance',
-      "default": 40
+      "default": 50
     }), new Trait({
       name: 'eating distance',
-      "default": 10
+      "default": 2
     }), new Trait({
       name: 'mating distance',
-      "default": 2
+      "default": 1
     }), new Trait({
       name: 'max offspring',
       "default": 3
     }), new Trait({
       name: 'resource consumption rate',
-      "default": 10
+      "default": 30
     }), new Trait({
       name: 'metabolism',
-      "default": 2
+      default: 0.1
     }), new Trait({
       name: 'wings',
-      "default": 0
+      default: 0
+    }), new Trait({
+      name: 'energy',
+      default: 100
+    }), new Trait({
+      name: 'wandering threshold',
+      default: 5
     })
-  ]
+  ];
 
 class WormAnimal extends BasicAnimal {
 
@@ -64,8 +70,8 @@ class WormAnimal extends BasicAnimal {
 
   private _eatPrey(agent: any) {
     const consumptionRate = super.get('resource consumption rate');
-    const currEnergy = super.get('energy')
-    super.set('energy', currEnergy + consumptionRate)
+    const currEnergy = super.get('energy');
+    super.set('energy', currEnergy + consumptionRate);
 
     const cornHealth = agent.get('health');
     const newHealth = cornHealth - consumptionRate;
@@ -73,15 +79,20 @@ class WormAnimal extends BasicAnimal {
       agent.set('health', cornHealth - consumptionRate);
     }
     else {
-      agent.die()
+      agent.die();
     }
   }
 
   protected move(speed: any) {
+    const currEnergy = super.get('energy');
+    // console.log(currEnergy, this);
+    if (currEnergy === 0) {
+      super.die();
+    }
     if (super.get('current behavior') !== 'eating') {
       super.move(speed);
     } else {
-      super.move(speed * 0.1);
+      super.move(speed * 0.01);
     }
   }
 }
@@ -108,7 +119,7 @@ export const worm: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') < 10
+            return agent.get('age') < 10;
           }
         },
         {
@@ -121,26 +132,26 @@ export const worm: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25)
+            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25);
           }
         },
         {
           image: {
             path: gImages.worm1,
-            scale: 0.3,
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5)
+            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5);
           }
         },
         {
           image: {
             path: gImages.worm1,
-            scale: 0.4,
+            scale: 0.25,
             anchor: {
               x: 0.5,
               y: 1
@@ -156,7 +167,7 @@ export const worm: ISpecies = new Species({
         {
           image: {
             path: gImages.worm1,
-            scale: 0.5,
+            scale: 0.25,
             anchor: {
               x: 0.5,
               y: 1

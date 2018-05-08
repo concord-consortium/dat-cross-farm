@@ -23,6 +23,7 @@ const cornHealthTrait: ITrait = new Trait({
   mutatable: false
 });
 
+const healthyTolerance = 90;
 
 export const corn: ISpecies = new Species({
   speciesName: "Corn",
@@ -47,7 +48,7 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') < 10
+            return agent.get('age') < 10;
           }
         },
         {
@@ -60,7 +61,7 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25)
+            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25);
           }
         },
         {
@@ -73,7 +74,7 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5)
+            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5);
           }
         },
         {
@@ -89,7 +90,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.5) &&
               agent.get('age') < (maturity * 0.75) &&
-              !agent.get('infected')
+              agent.get('health') > healthyTolerance
             );
           }
         },
@@ -106,7 +107,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.5) &&
               agent.get('age') < (maturity * 0.75) &&
-              agent.get('infected')
+              agent.get('health') <= healthyTolerance
             );
           }
         },
@@ -123,7 +124,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.75) &&
               agent.get('age') < maturity &&
-              !agent.get('infected')
+              agent.get('health') > healthyTolerance
             );
           }
         },
@@ -140,7 +141,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.75) &&
               agent.get('age') < maturity &&
-              agent.get('infected')
+              agent.get('health') <= healthyTolerance
             );
           }
         },
@@ -154,7 +155,7 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') > maturity && !agent.get('infected')
+            return agent.get('age') > maturity && agent.get('health') === 100;
           }
         },
         {
@@ -167,7 +168,7 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') > maturity && agent.get('infected')
+            return agent.get('age') > maturity && agent.get('health') < 100;
           }
         }
       ]

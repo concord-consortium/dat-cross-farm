@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import { initCornModel, addCornDense, addCornSparse, addWormsSparse, infectInitialCorn, getCornStats } from './corn-model';
+import { initCornModel, addCornDense, addCornSparse, addWormsSparse, getCornStats } from './corn-model';
 import * as Populations from './populations';
 const { Events, Models: { Environment } } = Populations;
 
@@ -22,27 +22,15 @@ class App extends React.Component<IAppProps, IAppState> {
     infectionRate: 20,
     totalCorn: 0,
     infectedCorn: 0
-  }
+  };
 
   public componentDidMount() {
     initCornModel(this.props.simulationElt, { infectionRate: this.state.infectionRate });
-
-    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      infectInitialCorn(this.state.initialInfection);
-    });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
       const { count, infected } = getCornStats();
       this.setState({ totalCorn: count, infectedCorn: infected });
     });
-  }
-
-  private handleInitialInfectionChange = (evt: any) => {
-    this.setState({ initialInfection: evt.target.value });
-  }
-
-  private handleInfectionRateChange = (evt: any) => {
-    this.setState({ infectionRate: evt.target.value });
   }
 
   public render() {
@@ -62,18 +50,6 @@ class App extends React.Component<IAppProps, IAppState> {
         <button id="add-worms-sparse" onClick={addWormsSparse}>
           Add Worms Sparsely
         </button>
-        <br/>
-        <label>
-          Number infected at start:
-          <input size={3} id="initial-infection" value={this.state.initialInfection}
-                  onChange={this.handleInitialInfectionChange} />
-        </label>
-        <br/>
-        <label>
-          Probability of infection spreading:
-          <input size={3} id="infection-rate" value={this.state.infectionRate}
-                  onChange={this.handleInfectionRateChange} />%
-        </label>
         <br/>
         <div style={{margin: 5, padding: 5, border: '1px solid'}}>
           Number infected: <span id="infected">{this.state.infectedCorn}</span><br/>

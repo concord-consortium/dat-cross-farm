@@ -16,8 +16,6 @@ const env: IEnvironment = new Environment({
   wrapNorthSouth: false
 });
 
-const maturity = 250;
-
 const interactive: IInteractive = new Interactive({
   environment: env,
   speedSlider: true,
@@ -51,11 +49,11 @@ function addCorn(rows: number, columns: number, rowStart: number, colStart: numb
 
 export const addCornDense = () => {
   addCorn(10, 10, 45, 90, 38);
-}
+};
 
 export const addCornSparse = () => {
   addCorn(6, 6, 50, 110, 60);
-}
+};
 
 function addWorms(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
   for (let row = 0; row < rows; row++) {
@@ -71,23 +69,11 @@ function addWorms(rows: number, columns: number, rowStart: number, colStart: num
 }
 export const addWormsSparse = () => {
   addWorms(4, 4, 40, 40, 40);
-}
+};
 
 const agentIsCorn = (envAgent: IAgent) => {
   return envAgent.species.speciesName === "Corn";
-}
-
-export function infectInitialCorn(quantity: number) {
-  // not all agents are corn
-  const cornAgents = env.agents.filter(agentIsCorn);
-
-  const indices = Array.from(Array(cornAgents.length).keys());
-  const shuffled = indices.map((a) => [Math.random(),a]).sort((a,b) => a[0]-b[0]).map((a) => a[1])
-  const max = Math.min(quantity, cornAgents.length);
-  for (let i = 0; i < max; i++) {
-    cornAgents[shuffled[i]].set('infected', true);
-  }
-}
+};
 
 export function getCornStats() {
   let count = 0,
@@ -95,9 +81,9 @@ export function getCornStats() {
   env.agents.forEach((a) => {
     if (agentIsCorn(a)) {
       ++ count;
-      if (a.get('infected')) {
+      if (a.get('health') < 100) {
         ++ infected;
-      };
+      }
     }
   });
   return { count, infected };
@@ -108,6 +94,7 @@ export interface IModelParams {
 }
 
 export function initCornModel(simulationElt: HTMLElement, params: IModelParams) {
+
   simulationElt.appendChild(interactive.getEnvironmentPane());
 
   env.addRule(new Rule({
@@ -116,20 +103,4 @@ export function initCornModel(simulationElt: HTMLElement, params: IModelParams) 
     }
   }));
 
-  env.addRule(new Rule({
-    test:(agent: IAgent) => {
-      return agentIsCorn(agent) && agent.get('infected') && agent.get('age') < (maturity * 2);
-    },
-    action: (agent: IAgent) => {
-      const pLifetime = params.infectionRate / 100;
-      const pStep = 1 - Math.pow((1-pLifetime), 1/(maturity * 2));
-      const loc = agent.getLocation();
-      const nearbyAgents = env.getAgentsCloseTo(loc.x, loc.y, 80);
-      nearbyAgents.forEach((a: IAgent) => {
-        if (agentIsCorn(a) && Math.random() < pStep) {
-          a.set('infected', true);
-        }
-      });
-    }
-  }));
 }
