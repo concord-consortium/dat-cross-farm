@@ -10,7 +10,7 @@ const wormTraits: ITrait[] =
   [
     new Trait({
       name: 'speed',
-      "default": 2
+      "default": 1
     }), new Trait({
       name: 'prey', "default": [{ name: 'corn' }]
     }), new Trait({
@@ -18,7 +18,7 @@ const wormTraits: ITrait[] =
       "default": 10
     }), new Trait({
       name: 'eating distance',
-      "default": 5
+      "default": 1
     }), new Trait({
       name: 'mating distance',
       "default": 2
@@ -30,16 +30,31 @@ const wormTraits: ITrait[] =
       "default": 10
     }), new Trait({
       name: 'metabolism',
-      "default": 0.5
+      "default": 5
     }), new Trait({
       name: 'wings',
       "default": 0
     })
   ]
 
+class Worm extends BasicAnimal{
+
+  protected wander() {
+    // override Wander method to give us a chance to stop worm from moving
+    // console.log(this);
+    if (super.get('current behavior') !== 'eating') {
+      super.wander();
+    } else {
+      // console.log("no eating");
+      return;
+    }
+  }
+}
+
+
 export const worm: ISpecies = new Species({
   speciesName: "Worm",
-  agentClass: BasicAnimal,
+  agentClass: Worm,
   defs: {
     CHANCE_OF_MUTATION: 0,
     MATURITY_AGE: maturity
