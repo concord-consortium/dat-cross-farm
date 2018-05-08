@@ -5,7 +5,7 @@ import * as Populations from './populations';
 const { Events, Models: { Environment } } = Populations;
 
 interface IAppProps {
-  simulationElt: HTMLElement;
+  simulationElt: HTMLElement | null;  // null is used for unit tests
 }
 
 interface IAppState {
