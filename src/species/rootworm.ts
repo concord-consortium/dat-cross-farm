@@ -8,24 +8,33 @@ const wormTraits: ITrait[] =
   [
     new Trait({
       name: 'speed',
-      "default": 4
+      default: 10
+    }), new Trait({
+      name: 'default speed',
+      default: 10
+    }), new Trait({
+      name: 'larva max speed',
+      default: 0.1
+    }), new Trait({
+      name: 'default speed',
+      default: 10
     }), new Trait({
       name: 'prey', "default": [{ name: 'Corn' }]
     }), new Trait({
       name: 'vision distance',
-      "default": 50
+      default: 50
     }), new Trait({
       name: 'eating distance',
-      "default": 2
+      default: 5
     }), new Trait({
       name: 'mating distance',
-      "default": 1
+      default: 1
     }), new Trait({
       name: 'max offspring',
-      "default": 3
+      default: 3
     }), new Trait({
       name: 'resource consumption rate',
-      "default": 30
+      default: 30
     }), new Trait({
       name: 'metabolism',
       default: 0.1
@@ -38,27 +47,28 @@ const wormTraits: ITrait[] =
     }), new Trait({
       name: 'wandering threshold',
       default: 5
+    }), new Trait({
+      name: 'hunger bonus',
+      default: 15
     })
   ];
 
 class WormAnimal extends BasicAnimal {
 
+  protected step() {
+    super.step();
+  }
   protected eat() {
     const nearest = super._nearestPrey();
     // Until we have other plants, assume nearest prey is corn
     if (nearest) {
       const eatingDist = super.get('eating distance');
       if (nearest.distanceSq < Math.pow(eatingDist, 2)) {
-        // eat corn if still healthy
-        const cornHealth = nearest.agent.get('health');
-        if (cornHealth > 10) {
-          this._eatPrey(nearest.agent);
-        } else {
-          super.wander(super.get('speed') * 0.75);
-        }
+        // eat corn
+        this._eatCorn(nearest.agent);
       }
       else {
-        super.chase(nearest);
+        this.chase(nearest);
       }
     }
     else {
@@ -66,21 +76,23 @@ class WormAnimal extends BasicAnimal {
     }
   }
 
-  private _eatPrey(agent: any) {
+  private _eatCorn(cornAgent: IAgent) {
     const consumptionRate = super.get('resource consumption rate');
     const currEnergy = super.get('energy');
     super.set('energy', currEnergy + consumptionRate);
 
-    const cornHealth = agent.get('health');
+    const cornHealth = cornAgent.get('health');
     const newHealth = cornHealth - consumptionRate;
     if (newHealth > 10) {
-      agent.set('health', cornHealth - consumptionRate);
+      cornAgent.set('health', cornHealth - consumptionRate);
     }
     else {
-      agent.die();
+      cornAgent.die();
     }
   }
-
+  protected chase(nearestAgent: any) {
+    super.chase(nearestAgent);
+  }
   protected move(speed: any) {
     const currEnergy = super.get('energy');
     // console.log(currEnergy, this);
@@ -88,6 +100,10 @@ class WormAnimal extends BasicAnimal {
       super.die();
     }
     if (super.get('current behavior') !== 'eating') {
+      if (super.get('age') < maturity) {
+        // larva can't move fast
+        speed = speed > super.get('larva max speed') ? super.get('larva max speed') : speed;
+      }
       super.move(speed);
     } else {
       super.move(speed * 0.01);
