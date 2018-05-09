@@ -23,6 +23,10 @@ const cornHealthTrait: ITrait = new Trait({
 
 const healthyTolerance = 90;
 
+const cornIsHealthy = (agent: IAgent) => {
+  return agent.get('health') >= healthyTolerance;
+};
+
 export const corn: ISpecies = new Species({
   speciesName: "Corn",
   agentClass: BasicPlant,
@@ -89,7 +93,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.4) &&
               agent.get('age') < (maturity * 0.6) &&
-              agent.get('health') > healthyTolerance
+              cornIsHealthy(agent)
             );
           }
         },
@@ -106,7 +110,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.4) &&
               agent.get('age') < (maturity * 0.6) &&
-              agent.get('health') <= healthyTolerance
+              !cornIsHealthy(agent)
             );
           }
         },
@@ -123,7 +127,7 @@ export const corn: ISpecies = new Species({
             return (
               agent.get('age') >= (maturity * 0.6) &&
               agent.get('age') < (maturity * 0.8) &&
-              agent.get('health') > healthyTolerance
+              cornIsHealthy(agent)
             );
           }
         },
@@ -139,8 +143,8 @@ export const corn: ISpecies = new Species({
           useIf(agent: IAgent) {
             return (
               agent.get('age') >= (maturity * 0.6) &&
-              agent.get('age') < (maturity * 0.8)&&
-              agent.get('health') <= healthyTolerance
+              agent.get('age') < (maturity * 0.8) &&
+              !cornIsHealthy(agent)
             );
           }
         },
@@ -154,9 +158,10 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 0.8) &&
+            return ( agent.get('age') >= (maturity * 0.8) &&
               agent.get('age') < (maturity) &&
-              agent.get('health') === 100;
+              cornIsHealthy(agent)
+            );
           }
         },
         {
@@ -169,8 +174,9 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 0.8) &&
-              agent.get('age') < (maturity) && agent.get('health') < 100;
+            return (agent.get('age') >= (maturity * 0.8) &&
+              !cornIsHealthy(agent)
+            );
           }
         },
         {
@@ -183,9 +189,10 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity) &&
-            agent.get('age') < (maturity * 1.2)
-             && agent.get('health') === 100;
+            return (agent.get('age') >= (maturity) &&
+              agent.get('age') < (maturity * 1.2)
+              && cornIsHealthy(agent)
+            );
           }
         },
         {
@@ -198,9 +205,10 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 1.2) &&
-            agent.get('age') < (maturity * 2)
-             && agent.get('health') === 100;
+            return (agent.get('age') >= (maturity * 1.2) &&
+              agent.get('age') < (maturity * 2)
+              && cornIsHealthy(agent)
+            );
           }
         },
         {
@@ -213,8 +221,9 @@ export const corn: ISpecies = new Species({
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 2)
-             && agent.get('health') === 100;
+            return (agent.get('age') >= (maturity * 2)
+              && cornIsHealthy(agent)
+            );
           }
         },
       ]

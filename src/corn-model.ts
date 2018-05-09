@@ -91,9 +91,11 @@ export interface IModelParams {
   infectionRate: number;
 }
 
-export function initCornModel(simulationElt: HTMLElement, params: IModelParams) {
-
-  simulationElt.appendChild(interactive.getEnvironmentPane());
+export function initCornModel(simulationElt: HTMLElement | null, params: IModelParams) {
+  // no simulationElt is useful for unit testing
+  if (simulationElt) {
+    simulationElt.appendChild(interactive.getEnvironmentPane());
+  }
 
   env.addRule(new Rule({
     action(agent: IAgent) {
