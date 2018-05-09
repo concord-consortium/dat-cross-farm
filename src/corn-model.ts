@@ -8,7 +8,7 @@ declare const gImages: {[key: string]: string};
 const env: IEnvironment = new Environment({
   columns:  45,
   rows:     45,
-  imgPath: gImages.dirt,
+  imgPath: require('./images/dirt.jpg'),
   barriers: [],
   wrapEastWest: false,
   wrapNorthSouth: false
