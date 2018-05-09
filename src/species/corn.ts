@@ -2,7 +2,7 @@ import * as Populations from '../populations';
 import { IAgent, ISpecies, ITrait } from '../populations-types';
 const { Models: { Agents: { BasicPlant }, Species, Trait } } = Populations;
 
-const maturity = 250;
+const maturity = 300;
 
 const cornInfectedTrait: ITrait = new Trait({
   name: 'infected',

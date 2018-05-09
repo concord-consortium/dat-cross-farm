@@ -9,27 +9,43 @@ interface IAppProps {
 }
 
 interface IAppState {
+  initialCorn: number;
+  initialWorms: number;
   initialInfection: number;
   infectionRate: number;
   totalCorn: number;
+  totalWorm: number;
   infectedCorn: number;
+  harvestCorn: number;
+  simulationDay: number;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
+    initialCorn: 0,
+    initialWorms: 0,
     initialInfection: 10,
     infectionRate: 20,
     totalCorn: 0,
-    infectedCorn: 0
+    totalWorm: 0,
+    infectedCorn: 0,
+    harvestCorn: 0,
+    simulationDay: 0
   };
 
   public componentDidMount() {
     initCornModel(this.props.simulationElt, { infectionRate: this.state.infectionRate });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      const { count, infected } = getCornStats();
-      this.setState({ totalCorn: count, infectedCorn: infected });
+      const { countCorn, countWorm, infected, simulationDay } = getCornStats();
+      const actualDay = Math.trunc(simulationDay / 3);
+      this.setState({ totalCorn: countCorn, totalWorm: countWorm, infectedCorn: infected, simulationDay: actualDay });
+    });
+
+    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
+      const { countCorn, countWorm, infected } = getCornStats();
+      this.setState({ initialCorn: countCorn, initialWorms: countWorm, infectedCorn: infected });
     });
   }
 
@@ -48,10 +64,14 @@ class App extends React.Component<IAppProps, IAppState> {
         </button>
         <br />
         <button id="add-worms-sparse" onClick={addWormsSparse}>
-          Add Worms Sparsely
+          Add Worms
         </button>
         <br/>
-        <div style={{margin: 5, padding: 5, border: '1px solid'}}>
+        <div style={{ margin: 5, padding: 5, border: '1px solid' }}>
+          Day: <span id="infected">{this.state.simulationDay}</span><br />
+          Corn planted: <span id="infected">{this.state.initialCorn}</span><br />
+          Corn remaining:<span id="infected">{this.state.totalCorn}</span><br />
+          Worms: <span id="infected">{this.state.totalWorm}</span><br />
           Number infected: <span id="infected">{this.state.infectedCorn}</span><br/>
           Percent infected: <span id="percent-infected">{infectedCornPct}</span>%<br/>
         </div>

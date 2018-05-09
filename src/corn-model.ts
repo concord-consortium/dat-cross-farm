@@ -66,7 +66,7 @@ function addWorms(rows: number, columns: number, rowStart: number, colStart: num
   }
 }
 export const addWormsSparse = () => {
-  addWorms(4, 4, 40, 40, 40);
+  addWorms(8, 8, 40, 80, 20);
 };
 
 const agentIsCorn = (envAgent: IAgent) => {
@@ -74,17 +74,21 @@ const agentIsCorn = (envAgent: IAgent) => {
 };
 
 export function getCornStats() {
-  let count = 0,
-      infected = 0;
+  let countCorn = 0,
+    countWorm = 0,
+    infected = 0;
+  const simulationDay = env.date;
   env.agents.forEach((a) => {
     if (agentIsCorn(a)) {
-      ++ count;
+      ++ countCorn;
       if (a.get('health') < 100) {
         ++ infected;
       }
+    } else {
+      ++countWorm;
     }
   });
-  return { count, infected };
+  return { countCorn, countWorm, infected, simulationDay };
 }
 
 export interface IModelParams {
@@ -103,4 +107,13 @@ export function initCornModel(simulationElt: HTMLElement | null, params: IModelP
     }
   }));
 
+  // limit growing season length - at the end of a year, the remaining corn is harvested
+  env.addRule(new Rule({
+    test() {
+      return env.date >= 600;
+    },
+    action() {
+      env.stop();
+    }
+  }));
 }

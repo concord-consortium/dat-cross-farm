@@ -22,7 +22,7 @@ const wormTraits: ITrait[] =
       name: 'prey', "default": [{ name: 'Corn' }]
     }), new Trait({
       name: 'vision distance',
-      default: 50
+      default: 100
     }), new Trait({
       name: 'eating distance',
       default: 5
@@ -37,13 +37,13 @@ const wormTraits: ITrait[] =
       default: 30
     }), new Trait({
       name: 'metabolism',
-      default: 0.1
+      default: 0.2
     }), new Trait({
       name: 'wings',
       default: 0
     }), new Trait({
       name: 'energy',
-      default: 100
+      default: 1000
     }), new Trait({
       name: 'wandering threshold',
       default: 5
@@ -103,6 +103,9 @@ class WormAnimal extends BasicAnimal {
       if (super.get('age') < maturity) {
         // larva can't move fast
         speed = speed > super.get('larva max speed') ? super.get('larva max speed') : speed;
+      } else {
+        // adults that fly will use up energy more quickly
+        super.set('energy', currEnergy - (speed * 0.5));
       }
       super.move(speed);
     } else {
