@@ -5,12 +5,10 @@ import { worm } from './species/rootworm';
 const { Models: { Environment, Rule },
         UI: { Interactive } } = Populations;
 
-declare const gImages: {[key: string]: string};
-
 const env: IEnvironment = new Environment({
   columns:  45,
   rows:     45,
-  imgPath: gImages.dirt,
+  imgPath: require('./images/dirt.jpg'),
   barriers: [],
   wrapEastWest: false,
   wrapNorthSouth: false
@@ -23,12 +21,12 @@ const interactive: IInteractive = new Interactive({
     {
       species: corn,
       limit: 20,
-      imagePath: gImages.corn5
+      imagePath: require('./images/corn-5.png')
     },
     {
       species: worm,
       limit: 20,
-      imagePath: gImages.worm2
+      imagePath: require('./images/rootworm-mature.png')
     }
   ]
 });

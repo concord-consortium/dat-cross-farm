@@ -2,8 +2,6 @@ import * as Populations from '../populations';
 import { IAgent, ISpecies, ITrait } from '../populations-types';
 const { Models: { Agents: { BasicPlant }, Species, Trait } } = Populations;
 
-declare const gImages: { [key: string]: string };
-
 const maturity = 250;
 
 const cornInfectedTrait: ITrait = new Trait({
@@ -40,7 +38,7 @@ export const corn: ISpecies = new Species({
       rules: [
         {
           image: {
-            path: gImages.corn0,
+            path: require('../images/corn-0.png'),
             scale: 0.4,
             anchor: {
               x: 0.5,
@@ -53,7 +51,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn1,
+            path: require('../images/corn-1.png'),
             scale: 1,
             anchor: {
               x: 0.5,
@@ -66,7 +64,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn2,
+            path: require('../images/corn-2.png'),
             scale: 0.8,
             anchor: {
               x: 0.5,
@@ -79,7 +77,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn3,
+            path: require('../images/corn-3.png'),
             scale: 0.65,
             anchor: {
               x: 0.5,
@@ -96,7 +94,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn3Sick,
+            path: require('../images/corn-3-sick.png'),
             scale: 0.65,
             anchor: {
               x: 0.5,
@@ -113,7 +111,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn4,
+            path: require('../images/corn-4.png'),
             scale: 0.5,
             anchor: {
               x: 0.5,
@@ -130,7 +128,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn4Sick,
+            path: require('../images/corn-4-sick.png'),
             scale: 0.5,
             anchor: {
               x: 0.5,
@@ -147,7 +145,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn5,
+            path: require('../images/corn-5.png'),
             scale: 0.5,
             anchor: {
               x: 0.5,
@@ -160,7 +158,7 @@ export const corn: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.corn5Sick,
+            path: require('../images/corn-5-sick.png'),
             scale: 0.5,
             anchor: {
               x: 0.5,

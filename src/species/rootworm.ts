@@ -2,8 +2,6 @@ import * as Populations from '../populations';
 import { IAgent, ISpecies, ITrait } from '../populations-types';
 const { Models: { Agents: { BasicAnimal }, Species, Trait } } = Populations;
 
-declare const gImages: { [key: string]: string };
-
 const maturity = 250;
 
 const wormTraits: ITrait[] =
@@ -111,7 +109,7 @@ export const worm: ISpecies = new Species({
       rules: [
         {
           image: {
-            path: gImages.worm0,
+            path: require('../images/rootworm-larva1.png'),
             scale: 0.4,
             anchor: {
               x: 0.4,
@@ -124,7 +122,7 @@ export const worm: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.worm0,
+            path: require('../images/rootworm-larva1.png'),
             scale: 0.5,
             anchor: {
               x: 0.5,
@@ -137,7 +135,7 @@ export const worm: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.worm1,
+            path: require('../images/rootworm-larva2.png'),
             scale: 0.2,
             anchor: {
               x: 0.5,
@@ -150,7 +148,7 @@ export const worm: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.worm1,
+            path: require('../images/rootworm-larva2.png'),
             scale: 0.25,
             anchor: {
               x: 0.5,
@@ -166,7 +164,7 @@ export const worm: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.worm1,
+            path: require('../images/rootworm-larva2.png'),
             scale: 0.25,
             anchor: {
               x: 0.5,
@@ -182,7 +180,7 @@ export const worm: ISpecies = new Species({
         },
         {
           image: {
-            path: gImages.worm2,
+            path: require('../images/rootworm-mature.png'),
             scale: 0.05,
             anchor: {
               x: 0.5,
