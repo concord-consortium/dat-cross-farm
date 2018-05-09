@@ -39,7 +39,7 @@ export const corn: ISpecies = new Species({
         {
           image: {
             path: require('../images/corn-0.png'),
-            scale: 0.4,
+            scale: 0.3,
             anchor: {
               x: 0.5,
               y: 1
@@ -52,33 +52,34 @@ export const corn: ISpecies = new Species({
         {
           image: {
             path: require('../images/corn-1.png'),
-            scale: 1,
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25);
+            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.2);
           }
         },
         {
           image: {
             path: require('../images/corn-2.png'),
-            scale: 0.8,
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5);
+            return agent.get('age') >= (maturity * 0.2) &&
+              agent.get('age') < (maturity * 0.4);
           }
         },
         {
           image: {
             path: require('../images/corn-3.png'),
-            scale: 0.65,
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 1
@@ -86,8 +87,8 @@ export const corn: ISpecies = new Species({
           },
           useIf(agent: IAgent) {
             return (
-              agent.get('age') >= (maturity * 0.5) &&
-              agent.get('age') < (maturity * 0.75) &&
+              agent.get('age') >= (maturity * 0.4) &&
+              agent.get('age') < (maturity * 0.6) &&
               agent.get('health') > healthyTolerance
             );
           }
@@ -95,7 +96,7 @@ export const corn: ISpecies = new Species({
         {
           image: {
             path: require('../images/corn-3-sick.png'),
-            scale: 0.65,
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 1
@@ -103,8 +104,42 @@ export const corn: ISpecies = new Species({
           },
           useIf(agent: IAgent) {
             return (
-              agent.get('age') >= (maturity * 0.5) &&
-              agent.get('age') < (maturity * 0.75) &&
+              agent.get('age') >= (maturity * 0.4) &&
+              agent.get('age') < (maturity * 0.6) &&
+              agent.get('health') <= healthyTolerance
+            );
+          }
+        },
+        {
+          image: {
+            path: require('../images/corn-3.png'),
+            scale: 0.2,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return (
+              agent.get('age') >= (maturity * 0.6) &&
+              agent.get('age') < (maturity * 0.8) &&
+              agent.get('health') > healthyTolerance
+            );
+          }
+        },
+        {
+          image: {
+            path: require('../images/corn-3-sick.png'),
+            scale: 0.2,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return (
+              agent.get('age') >= (maturity * 0.6) &&
+              agent.get('age') < (maturity * 0.8)&&
               agent.get('health') <= healthyTolerance
             );
           }
@@ -112,63 +147,76 @@ export const corn: ISpecies = new Species({
         {
           image: {
             path: require('../images/corn-4.png'),
-            scale: 0.5,
+            scale: 0.25,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return (
-              agent.get('age') >= (maturity * 0.75) &&
-              agent.get('age') < maturity &&
-              agent.get('health') > healthyTolerance
-            );
+            return agent.get('age') >= (maturity * 0.8) &&
+              agent.get('age') < (maturity) &&
+              agent.get('health') === 100;
           }
         },
         {
           image: {
-            path: require('../images/corn-4-sick.png'),
-            scale: 0.5,
+            path: require('../images/corn-2-sick.png'),
+            scale: 0.3,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return (
-              agent.get('age') >= (maturity * 0.75) &&
-              agent.get('age') < maturity &&
-              agent.get('health') <= healthyTolerance
-            );
+            return agent.get('age') >= (maturity * 0.8) &&
+              agent.get('age') < (maturity) && agent.get('health') < 100;
           }
         },
         {
           image: {
             path: require('../images/corn-5.png'),
-            scale: 0.5,
+            scale: 0.25,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') > maturity && agent.get('health') === 100;
+            return agent.get('age') >= (maturity) &&
+            agent.get('age') < (maturity * 1.2)
+             && agent.get('health') === 100;
           }
         },
         {
           image: {
-            path: require('../images/corn-5-sick.png'),
-            scale: 0.5,
+            path: require('../images/corn-5.png'),
+            scale: 0.3,
             anchor: {
               x: 0.5,
               y: 1
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') > maturity && agent.get('health') < 100;
+            return agent.get('age') >= (maturity * 1.2) &&
+            agent.get('age') < (maturity * 2)
+             && agent.get('health') === 100;
           }
-        }
+        },
+        {
+          image: {
+            path: require('../images/corn-6.png'),
+            scale: 0.3,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: IAgent) {
+            return agent.get('age') >= (maturity * 2)
+             && agent.get('health') === 100;
+          }
+        },
       ]
     }
   ]
