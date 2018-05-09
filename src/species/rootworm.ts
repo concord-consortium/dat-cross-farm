@@ -64,10 +64,11 @@ class WormAnimal extends BasicAnimal {
     if (nearest) {
       const eatingDist = super.get('eating distance');
       if (nearest.distanceSq < Math.pow(eatingDist, 2)) {
-        // eat corn
+        // we're close enough, eat corn
         this._eatCorn(nearest.agent);
       }
       else {
+        // move to corn
         this.chase(nearest);
       }
     }
@@ -94,8 +95,9 @@ class WormAnimal extends BasicAnimal {
     super.chase(nearestAgent);
   }
   protected move(speed: any) {
+    // energy currently used as a health-meter for bugs
     const currEnergy = super.get('energy');
-    // console.log(currEnergy, this);
+
     if (currEnergy === 0) {
       super.die();
     }
@@ -109,6 +111,7 @@ class WormAnimal extends BasicAnimal {
       }
       super.move(speed);
     } else {
+      // we're eating, move slowly
       super.move(speed * 0.01);
     }
   }
