@@ -160,7 +160,10 @@ export const worm: ISpecies = new Species({
   },
   traits: wormTraits,
   imageProperties:
-    { rotate: true },
+    {
+      rotate: true,
+      initialRotationDirection: -Math.PI
+    },
   imageRules: [
     {
       name: 'worm',
@@ -171,7 +174,7 @@ export const worm: ISpecies = new Species({
             scale: 0.4,
             anchor: {
               x: 0.5,
-              y: 0.9
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
@@ -184,7 +187,7 @@ export const worm: ISpecies = new Species({
             scale: 0.5,
             anchor: {
               x: 0.5,
-              y: 0.9
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
@@ -197,7 +200,7 @@ export const worm: ISpecies = new Species({
             scale: 0.2,
             anchor: {
               x: 0.5,
-              y: 0.8
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
@@ -210,7 +213,7 @@ export const worm: ISpecies = new Species({
             scale: 0.25,
             anchor: {
               x: 0.5,
-              y: 0.8
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
@@ -222,8 +225,8 @@ export const worm: ISpecies = new Species({
             path: require('../images/rootworm-mature.png'),
             scale: 0.05,
             anchor: {
-              x: 0.5,
-              y: 0.6
+              x: 0.4,
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
