@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import { initCornModel, addCornDense, addCornSparse, infectInitialCorn, getCornStats } from './corn-model';
+import { initCornModel, addCornDense, addCornSparse, addWormsSparse, getCornStats } from './corn-model';
 import * as Populations from './populations';
 const { Events, Models: { Environment } } = Populations;
 
@@ -9,40 +9,44 @@ interface IAppProps {
 }
 
 interface IAppState {
+  initialCorn: number;
+  initialWorms: number;
   initialInfection: number;
   infectionRate: number;
   totalCorn: number;
+  totalWorm: number;
   infectedCorn: number;
+  harvestCorn: number;
+  simulationDay: number;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
+    initialCorn: 0,
+    initialWorms: 0,
     initialInfection: 10,
     infectionRate: 20,
     totalCorn: 0,
-    infectedCorn: 0
-  }
+    totalWorm: 0,
+    infectedCorn: 0,
+    harvestCorn: 0,
+    simulationDay: 0
+  };
 
   public componentDidMount() {
     initCornModel(this.props.simulationElt, { infectionRate: this.state.infectionRate });
 
-    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      infectInitialCorn(this.state.initialInfection);
-    });  
-
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      const { count, infected } = getCornStats();
-      this.setState({ totalCorn: count, infectedCorn: infected });
+      const { countCorn, countWorm, infected, simulationDay } = getCornStats();
+      const actualDay = Math.trunc(simulationDay / 3);
+      this.setState({ totalCorn: countCorn, totalWorm: countWorm, infectedCorn: infected, simulationDay: actualDay });
     });
-  }
 
-  private handleInitialInfectionChange = (evt: any) => {
-    this.setState({ initialInfection: evt.target.value });
-  }
-
-  private handleInfectionRateChange = (evt: any) => {
-    this.setState({ infectionRate: evt.target.value });
+    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
+      const { countCorn, countWorm, infected } = getCornStats();
+      this.setState({ initialCorn: countCorn, initialWorms: countWorm, infectedCorn: infected });
+    });
   }
 
   public render() {
@@ -58,20 +62,16 @@ class App extends React.Component<IAppProps, IAppState> {
         <button id="add-corn-sparse" onClick={addCornSparse}>
           Plant Corn Sparsely
         </button>
+        <br />
+        <button id="add-worms-sparse" onClick={addWormsSparse}>
+          Add Worms
+        </button>
         <br/>
-        <label>
-          Number infected at start:
-          <input size={3} id="initial-infection" value={this.state.initialInfection}
-                  onChange={this.handleInitialInfectionChange} />
-        </label>
-        <br/>
-        <label>
-          Probability of infection spreading:
-          <input size={3} id="infection-rate" value={this.state.infectionRate}
-                  onChange={this.handleInfectionRateChange} />%
-        </label>
-        <br/>
-        <div style={{margin: 5, padding: 5, border: '1px solid'}}>
+        <div style={{ margin: 5, padding: 5, border: '1px solid' }}>
+          Day: <span id="infected">{this.state.simulationDay}</span><br />
+          Corn planted: <span id="infected">{this.state.initialCorn}</span><br />
+          Corn remaining:<span id="infected">{this.state.totalCorn}</span><br />
+          Worms: <span id="infected">{this.state.totalWorm}</span><br />
           Number infected: <span id="infected">{this.state.infectedCorn}</span><br/>
           Percent infected: <span id="percent-infected">{infectedCornPct}</span>%<br/>
         </div>
