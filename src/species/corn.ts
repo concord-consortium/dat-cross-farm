@@ -1,10 +1,8 @@
-import * as Populations from '../populations';
-import { IAgent, ISpecies, ITrait } from '../populations-types';
-const { Models: { Agents: { BasicPlant }, Species, Trait } } = Populations;
+import { Agent, BasicPlant, Species, Trait } from '../populations';
 
 const maturity = 300;
 
-const cornInfectedTrait: ITrait = new Trait({
+const cornInfectedTrait = new Trait({
   name: 'infected',
   possibleValues: [ true, false ],
   default: false,
@@ -12,7 +10,7 @@ const cornInfectedTrait: ITrait = new Trait({
   mutatable: false
 });
 
-const cornHealthTrait: ITrait = new Trait({
+const cornHealthTrait = new Trait({
   name: 'health',
   min: 0,
   max: 100,
@@ -23,11 +21,11 @@ const cornHealthTrait: ITrait = new Trait({
 
 const healthyTolerance = 90;
 
-const cornIsHealthy = (agent: IAgent) => {
+const cornIsHealthy = (agent: Agent) => {
   return agent.get('health') >= healthyTolerance;
 };
 
-export const corn: ISpecies = new Species({
+export const corn = new Species({
   speciesName: "Corn",
   agentClass: BasicPlant,
   defs: {
@@ -49,7 +47,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return agent.get('age') < 10;
           }
         },
@@ -62,7 +60,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.2);
           }
         },
@@ -75,7 +73,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return agent.get('age') >= (maturity * 0.2) &&
               agent.get('age') < (maturity * 0.4);
           }
@@ -89,7 +87,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (
               agent.get('age') >= (maturity * 0.4) &&
               agent.get('age') < (maturity * 0.6) &&
@@ -106,7 +104,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (
               agent.get('age') >= (maturity * 0.4) &&
               agent.get('age') < (maturity * 0.6) &&
@@ -123,7 +121,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (
               agent.get('age') >= (maturity * 0.6) &&
               agent.get('age') < (maturity * 0.8) &&
@@ -140,7 +138,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (
               agent.get('age') >= (maturity * 0.6) &&
               agent.get('age') < (maturity * 0.8) &&
@@ -157,7 +155,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return ( agent.get('age') >= (maturity * 0.8) &&
               agent.get('age') < (maturity) &&
               cornIsHealthy(agent)
@@ -173,7 +171,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (agent.get('age') >= (maturity * 0.8) &&
               !cornIsHealthy(agent)
             );
@@ -188,7 +186,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (agent.get('age') >= (maturity) &&
               agent.get('age') < (maturity * 1.2)
               && cornIsHealthy(agent)
@@ -204,7 +202,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (agent.get('age') >= (maturity * 1.2) &&
               agent.get('age') < (maturity * 2)
               && cornIsHealthy(agent)
@@ -220,7 +218,7 @@ export const corn: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return (agent.get('age') >= (maturity * 2)
               && cornIsHealthy(agent)
             );
