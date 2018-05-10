@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './App.css';
-import { initCornModel, addCornDense, addCornSparse, addWormsSparse, getCornStats } from './corn-model';
+import { initCornModel, addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
+          addWormsSparse, getCornStats } from './corn-model';
 import * as Populations from './populations';
 const { Events, Models: { Environment } } = Populations;
 
@@ -11,8 +12,6 @@ interface IAppProps {
 interface IAppState {
   initialCorn: number;
   initialWorms: number;
-  initialInfection: number;
-  infectionRate: number;
   totalCorn: number;
   totalWorm: number;
   infectedCorn: number;
@@ -25,8 +24,6 @@ class App extends React.Component<IAppProps, IAppState> {
   public state: IAppState = {
     initialCorn: 0,
     initialWorms: 0,
-    initialInfection: 10,
-    infectionRate: 20,
     totalCorn: 0,
     totalWorm: 0,
     infectedCorn: 0,
@@ -35,7 +32,7 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   public componentDidMount() {
-    initCornModel(this.props.simulationElt, { infectionRate: this.state.infectionRate });
+    initCornModel(this.props.simulationElt, {});
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
       const { countCorn, countWorm, infected, simulationDay } = getCornStats();
@@ -50,15 +47,11 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const infectedCornPct = this.state.totalCorn > 0
-                              ? Math.round(100 * this.state.infectedCorn / this.state.totalCorn)
-                              : 0;
     return (
       <div className="ui">
         <button id="add-corn-dense" onClick={addCornDense}>
           Plant Corn Densely
         </button>
-        <br/>
         <button id="add-corn-sparse" onClick={addCornSparse}>
           Plant Corn Sparsely
         </button>
@@ -67,13 +60,18 @@ class App extends React.Component<IAppProps, IAppState> {
           Add Worms
         </button>
         <br/>
+        <button id="add-trap-dense" onClick={addTrapCropDense}>
+          Plant Trap Crop Densely
+        </button>
+        <button id="add-trap-sparse" onClick={addTrapCropSparse}>
+          Plant Trap Crop Sparsely
+        </button>
+        <br/>
         <div style={{ margin: 5, padding: 5, border: '1px solid' }}>
           Day: <span id="infected">{this.state.simulationDay}</span><br />
           Corn planted: <span id="infected">{this.state.initialCorn}</span><br />
           Corn remaining:<span id="infected">{this.state.totalCorn}</span><br />
           Worms: <span id="infected">{this.state.totalWorm}</span><br />
-          Number infected: <span id="infected">{this.state.infectedCorn}</span><br/>
-          Percent infected: <span id="percent-infected">{infectedCornPct}</span>%<br/>
         </div>
       </div>
     );
