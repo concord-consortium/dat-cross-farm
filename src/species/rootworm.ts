@@ -43,7 +43,7 @@ const wormTraits: ITrait[] =
   [
     new Trait({
       name: 'default speed',
-      default: 12
+      default: 20
     }), new Trait({
       name: 'larva max speed',
       default: 0.5
@@ -51,7 +51,7 @@ const wormTraits: ITrait[] =
       name: 'prey', "default": [{ name: 'Corn' }]
     }), new Trait({
       name: 'vision distance',
-      default: 100
+      default: 30
     }), new Trait({
       name: 'eating distance',
       default: 5
@@ -88,6 +88,14 @@ class WormAnimal extends BasicAnimal {
   }
   protected step() {
     super.step();
+    if (super.get('age') === 0) {
+      super.set('speed', super.get('larva max speed'));
+    }
+    if (super.get('age') === maturity) {
+      super.set('speed', super.get('default speed'));
+      super.set('vision distance', 100);
+
+    }
   }
   protected eat() {
     const nearest = super._nearestPrey();
