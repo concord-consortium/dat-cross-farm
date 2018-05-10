@@ -92,16 +92,6 @@ export const addTrapCropSparse = () => {
   addTrapCrop(7, 7, 30, 50, 60);
 };
 
-export function infectInitialCorn(quantity: number) {
-  // assume all agents are corn for now
-  const indices = Array.from(Array(env.agents.length).keys());
-  const shuffled = indices.map((a) => [Math.random(),a]).sort((a,b) => a[0]-b[0]).map((a) => a[1]);
-  const max = Math.min(quantity, env.agents.length);
-  for (let i = 0; i < max; i++) {
-    env.agents[shuffled[i]].set('infected', true);
-  }
-}
-
 const agentIsCorn = (envAgent: IAgent) => {
   return envAgent.species.speciesName === "Corn";
 };

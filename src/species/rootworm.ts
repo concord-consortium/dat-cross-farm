@@ -3,26 +3,55 @@ import { IAgent, ISpecies, ITrait } from '../populations-types';
 const { Models: { Agents: { BasicAnimal }, Species, Trait } } = Populations;
 
 const maturity = 250;
+const lifestage = {
+  egg: 0,
+  larva: 1,
+  grub: 2,
+  adult: 3,
+  mature: 4
+};
+const lifestageThresholds = {
+  larva: 10,
+  grub: maturity * 0.25,
+  adult: maturity * 0.5,
+  mature: maturity,
+};
+
+const getLifestage = (agent: IAgent): number => {
+  const age = agent.get('age');
+  let stage = lifestage.egg;
+
+  if (age < lifestageThresholds.larva) {
+    stage = lifestage.egg;
+  }
+  if (age >= lifestageThresholds.larva && age < lifestageThresholds.grub) {
+    stage = lifestage.larva;
+  }
+  if (age >= lifestageThresholds.grub && age < lifestageThresholds.adult) {
+    stage = lifestage.grub;
+  }
+  if (age >= lifestageThresholds.adult && age < lifestageThresholds.mature) {
+    stage = lifestage.adult;
+  }
+  if (age >= lifestageThresholds.mature) {
+    stage = lifestage.mature;
+  }
+  return stage;
+};
 
 const wormTraits: ITrait[] =
   [
     new Trait({
-      name: 'speed',
-      default: 10
-    }), new Trait({
       name: 'default speed',
-      default: 10
+      default: 20
     }), new Trait({
       name: 'larva max speed',
-      default: 0.1
-    }), new Trait({
-      name: 'default speed',
-      default: 10
+      default: 0.5
     }), new Trait({
       name: 'prey', "default": [{ name: 'Corn' }]
     }), new Trait({
       name: 'vision distance',
-      default: 100
+      default: 30
     }), new Trait({
       name: 'eating distance',
       default: 5
@@ -34,7 +63,7 @@ const wormTraits: ITrait[] =
       default: 3
     }), new Trait({
       name: 'resource consumption rate',
-      default: 30
+      default: 5
     }), new Trait({
       name: 'metabolism',
       default: 0.2
@@ -43,10 +72,10 @@ const wormTraits: ITrait[] =
       default: 0
     }), new Trait({
       name: 'energy',
-      default: 1000
+      default: 100
     }), new Trait({
       name: 'wandering threshold',
-      default: 5
+      default: 0
     }), new Trait({
       name: 'hunger bonus',
       default: 15
@@ -54,9 +83,19 @@ const wormTraits: ITrait[] =
   ];
 
 class WormAnimal extends BasicAnimal {
-
+  constructor(args: any) {
+    super(args);
+  }
   protected step() {
     super.step();
+    if (super.get('age') === 0) {
+      super.set('speed', super.get('larva max speed'));
+    }
+    if (super.get('age') === maturity) {
+      super.set('speed', super.get('default speed'));
+      super.set('vision distance', 100);
+
+    }
   }
   protected eat() {
     const nearest = super._nearestPrey();
@@ -73,7 +112,7 @@ class WormAnimal extends BasicAnimal {
       }
     }
     else {
-      super.wander(super.get('speed') * 0.75);
+      super.wander(super.get('default speed'));
     }
   }
 
@@ -91,10 +130,13 @@ class WormAnimal extends BasicAnimal {
       cornAgent.die();
     }
   }
+  protected wander(speed: number) {
+    super.wander(speed);
+  }
   protected chase(nearestAgent: any) {
     super.chase(nearestAgent);
   }
-  protected move(speed: any) {
+  protected move(speed: number) {
     // energy currently used as a health-meter for bugs
     const currEnergy = super.get('energy');
 
@@ -125,6 +167,11 @@ export const worm: ISpecies = new Species({
     MATURITY_AGE: maturity
   },
   traits: wormTraits,
+  imageProperties:
+    {
+      rotate: true,
+      initialRotationDirection: -Math.PI
+    },
   imageRules: [
     {
       name: 'worm',
@@ -134,12 +181,12 @@ export const worm: ISpecies = new Species({
             path: require('../images/rootworm-larva1.png'),
             scale: 0.4,
             anchor: {
-              x: 0.4,
-              y: 1
+              x: 0.5,
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') < 10;
+            return getLifestage(agent) === lifestage.egg;
           }
         },
         {
@@ -148,11 +195,11 @@ export const worm: ISpecies = new Species({
             scale: 0.5,
             anchor: {
               x: 0.5,
-              y: 1
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.25);
+            return getLifestage(agent) === lifestage.larva;
           }
         },
         {
@@ -161,11 +208,11 @@ export const worm: ISpecies = new Species({
             scale: 0.2,
             anchor: {
               x: 0.5,
-              y: 1
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
-            return agent.get('age') >= (maturity * 0.25) && agent.get('age') < (maturity * 0.5);
+            return getLifestage(agent) === lifestage.grub;
           }
         },
         {
@@ -174,30 +221,11 @@ export const worm: ISpecies = new Species({
             scale: 0.25,
             anchor: {
               x: 0.5,
-              y: 1
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
-            return (
-              agent.get('age') >= (maturity * 0.5) &&
-              agent.get('age') < (maturity * 0.75)
-            );
-          }
-        },
-        {
-          image: {
-            path: require('../images/rootworm-larva2.png'),
-            scale: 0.25,
-            anchor: {
-              x: 0.5,
-              y: 1
-            }
-          },
-          useIf(agent: IAgent) {
-            return (
-              agent.get('age') >= (maturity * 0.75) &&
-              agent.get('age') < (maturity * 0.9)
-            );
+            return getLifestage(agent) === lifestage.adult;
           }
         },
         {
@@ -205,14 +233,12 @@ export const worm: ISpecies = new Species({
             path: require('../images/rootworm-mature.png'),
             scale: 0.05,
             anchor: {
-              x: 0.5,
-              y: 1
+              x: 0.4,
+              y: 0.5
             }
           },
           useIf(agent: IAgent) {
-            return (
-              agent.get('age') >= (maturity * 0.9)
-            );
+            return getLifestage(agent) === lifestage.mature;
           }
         }
       ]
