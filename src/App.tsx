@@ -55,6 +55,12 @@ class App extends React.Component<IAppProps, IAppState> {
       this.setState({ initialCorn: countCorn, initialTrap: countTrap, initialWorms: countWorm, 
                       dayFirstCornEaten: null, infectedCorn: infected });
     });
+
+    Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
+      this.setState({ initialCorn: 0, initialTrap: 0, initialWorms: 0,
+                      totalCorn: 0, totalTrap: 0, totalWorm: 0,
+                      dayFirstCornEaten: null, infectedCorn: 0, simulationDay: 0 });
+    });
   }
 
   public render() {
