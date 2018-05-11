@@ -10,8 +10,11 @@ interface IAppProps {
 
 interface IAppState {
   initialCorn: number;
+  initialTrap: number;
   initialWorms: number;
+  dayFirstCornEaten: number | null;
   totalCorn: number;
+  totalTrap: number;
   totalWorm: number;
   infectedCorn: number;
   harvestCorn: number;
@@ -22,8 +25,11 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
     initialCorn: 0,
+    initialTrap: 0,
     initialWorms: 0,
+    dayFirstCornEaten: null,
     totalCorn: 0,
+    totalTrap: 0,
     totalWorm: 0,
     infectedCorn: 0,
     harvestCorn: 0,
@@ -34,14 +40,26 @@ class App extends React.Component<IAppProps, IAppState> {
     initCornModel(this.props.simulationElt, {});
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      const { countCorn, countWorm, infected, simulationDay } = getCornStats();
+      let { dayFirstCornEaten } = this.state;
+      const { countCorn, countTrap, countWorm, infected, simulationDay } = getCornStats();
       const actualDay = Math.trunc(simulationDay / 3);
-      this.setState({ totalCorn: countCorn, totalWorm: countWorm, infectedCorn: infected, simulationDay: actualDay });
+      if ((this.state.dayFirstCornEaten == null) && (countCorn < this.state.initialCorn)) {
+        dayFirstCornEaten = actualDay;
+      }
+      this.setState({ totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm, 
+                      dayFirstCornEaten, infectedCorn: infected, simulationDay: actualDay });
     });
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      const { countCorn, countWorm, infected } = getCornStats();
-      this.setState({ initialCorn: countCorn, initialWorms: countWorm, infectedCorn: infected });
+      const { countCorn, countTrap, countWorm, infected } = getCornStats();
+      this.setState({ initialCorn: countCorn, initialTrap: countTrap, initialWorms: countWorm, 
+                      dayFirstCornEaten: null, infectedCorn: infected });
+    });
+
+    Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
+      this.setState({ initialCorn: 0, initialTrap: 0, initialWorms: 0,
+                      totalCorn: 0, totalTrap: 0, totalWorm: 0,
+                      dayFirstCornEaten: null, infectedCorn: 0, simulationDay: 0 });
     });
   }
 
@@ -55,10 +73,6 @@ class App extends React.Component<IAppProps, IAppState> {
           Plant Corn Sparsely
         </button>
         <br />
-        <button id="add-worms-sparse" onClick={addWormsSparse}>
-          Add Worms
-        </button>
-        <br/>
         <button id="add-trap-dense" onClick={addTrapCropDense}>
           Plant Trap Crop Densely
         </button>
@@ -66,11 +80,18 @@ class App extends React.Component<IAppProps, IAppState> {
           Plant Trap Crop Sparsely
         </button>
         <br/>
+        <button id="add-worms-sparse" onClick={addWormsSparse}>
+          Add Worms
+        </button>
+        <br/>
         <div style={{ margin: 5, padding: 5, border: '1px solid' }}>
-          Day: <span id="infected">{this.state.simulationDay}</span><br />
-          Corn planted: <span id="infected">{this.state.initialCorn}</span><br />
-          Corn remaining:<span id="infected">{this.state.totalCorn}</span><br />
-          Worms: <span id="infected">{this.state.totalWorm}</span><br />
+          Day: <span>{this.state.simulationDay}</span><br />
+          Corn planted: <span>{this.state.initialCorn}</span><br />
+          Corn remaining: <span>{this.state.totalCorn}</span><br />
+          First corn eaten: <span>{this.state.dayFirstCornEaten}</span><br />
+          Trap planted: <span>{this.state.initialTrap}</span><br />
+          Trap remaining: <span>{this.state.totalTrap}</span><br />
+          Worms: <span>{this.state.totalWorm}</span><br />
         </div>
       </div>
     );
