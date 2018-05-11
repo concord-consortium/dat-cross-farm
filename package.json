@@ -13,6 +13,7 @@
     "lint:fix": "tslint --project . --fix",
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
+    "pretest": "npm run lint",
     "test": "react-scripts-ts test --env=jsdom",
     "test:ci": "CI=true npm test",
     "eject": "react-scripts-ts eject"
