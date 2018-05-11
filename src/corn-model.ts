@@ -1,12 +1,9 @@
-import * as Populations from './populations';
-import { IAgent, IEnvironment, IInteractive } from './populations-types';
 import { corn } from './species/corn';
 import { worm } from './species/rootworm';
-const { Models: { Environment, Rule },
-        UI: { Interactive } } = Populations;
+import { Agent, Environment, Rule, Interactive } from './populations';
 import { variedPlants } from './species/varied-plants';
 
-const env: IEnvironment = new Environment({
+const env = new Environment({
   columns:  45,
   rows:     45,
   imgPath: require('./images/dirt.jpg'),
@@ -15,7 +12,7 @@ const env: IEnvironment = new Environment({
   wrapNorthSouth: false
 });
 
-const interactive: IInteractive = new Interactive({
+const interactive = new Interactive({
   environment: env,
   speedSlider: true,
   addOrganismButtons: [
@@ -92,7 +89,7 @@ export const addTrapCropSparse = () => {
   addTrapCrop(7, 7, 30, 50, 60);
 };
 
-const agentIsCorn = (envAgent: IAgent) => {
+const agentIsCorn = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Corn";
 };
 
@@ -124,7 +121,7 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   }
 
   env.addRule(new Rule({
-    action(agent: IAgent) {
+    action(agent: Agent) {
       agent.set('chance of survival', 1);
     }
   }));

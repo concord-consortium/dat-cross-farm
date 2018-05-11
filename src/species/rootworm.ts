@@ -1,6 +1,4 @@
-import * as Populations from '../populations';
-import { IAgent, ISpecies, ITrait } from '../populations-types';
-const { Models: { Agents: { BasicAnimal }, Species, Trait } } = Populations;
+import { Agent, BasicAnimal, Species, Trait } from '../populations';
 
 const maturity = 250;
 const lifestage = {
@@ -17,7 +15,7 @@ const lifestageThresholds = {
   mature: maturity,
 };
 
-const getLifestage = (agent: IAgent): number => {
+const getLifestage = (agent: Agent): number => {
   const age = agent.get('age');
   let stage = lifestage.egg;
 
@@ -39,7 +37,7 @@ const getLifestage = (agent: IAgent): number => {
   return stage;
 };
 
-const wormTraits: ITrait[] =
+const wormTraits: Trait[] =
   [
     new Trait({
       name: 'default speed',
@@ -86,22 +84,22 @@ class WormAnimal extends BasicAnimal {
   constructor(args: any) {
     super(args);
   }
-  protected step() {
-    super.step();
-    if (super.get('age') === 0) {
-      super.set('speed', super.get('larva max speed'));
-    }
-    if (super.get('age') === maturity) {
-      super.set('speed', super.get('default speed'));
-      super.set('vision distance', 100);
 
+  step() {
+    super.step();
+    if (this.get('age') === 0) {
+      this.set('speed', this.get('larva max speed'));
+    }
+    if (this.get('age') === maturity) {
+      this.set('speed', this.get('default speed'));
+      this.set('vision distance', 100);
     }
   }
-  protected eat() {
-    const nearest = super._nearestPrey();
+  eat() {
+    const nearest = this._nearestPrey();
     // Until we have other plants, assume nearest prey is corn
     if (nearest) {
-      const eatingDist = super.get('eating distance');
+      const eatingDist = this.get('eating distance');
       if (nearest.distanceSq < Math.pow(eatingDist, 2)) {
         // we're close enough, eat corn
         this._eatCorn(nearest.agent);
@@ -112,14 +110,14 @@ class WormAnimal extends BasicAnimal {
       }
     }
     else {
-      super.wander(super.get('default speed'));
+      this.wander(this.get('default speed'));
     }
   }
 
-  private _eatCorn(cornAgent: IAgent) {
-    const consumptionRate = super.get('resource consumption rate');
-    const currEnergy = super.get('energy');
-    super.set('energy', currEnergy + consumptionRate);
+  private _eatCorn(cornAgent: Agent) {
+    const consumptionRate = this.get('resource consumption rate');
+    const currEnergy = this.get('energy');
+    this.set('energy', currEnergy + consumptionRate);
 
     const cornHealth = cornAgent.get('health');
     const newHealth = cornHealth - consumptionRate;
@@ -130,26 +128,26 @@ class WormAnimal extends BasicAnimal {
       cornAgent.die();
     }
   }
-  protected wander(speed: number) {
+  wander(speed: number) {
     super.wander(speed);
   }
-  protected chase(nearestAgent: any) {
+  chase(nearestAgent: any) {
     super.chase(nearestAgent);
   }
-  protected move(speed: number) {
+  move(speed: number) {
     // energy currently used as a health-meter for bugs
-    const currEnergy = super.get('energy');
+    const currEnergy = this.get('energy');
 
     if (currEnergy === 0) {
-      super.die();
+      this.die();
     }
-    if (super.get('current behavior') !== 'eating') {
-      if (super.get('age') < maturity) {
+    if (this.get('current behavior') !== 'eating') {
+      if (this.get('age') < maturity) {
         // larva can't move fast
-        speed = speed > super.get('larva max speed') ? super.get('larva max speed') : speed;
+        speed = speed > this.get('larva max speed') ? this.get('larva max speed') : speed;
       } else {
         // adults that fly will use up energy more quickly
-        super.set('energy', currEnergy - (speed * 0.5));
+        this.set('energy', currEnergy - (speed * 0.5));
       }
       super.move(speed);
     } else {
@@ -159,7 +157,7 @@ class WormAnimal extends BasicAnimal {
   }
 }
 
-export const worm: ISpecies = new Species({
+export const worm = new Species({
   speciesName: "Worm",
   agentClass: WormAnimal,
   defs: {
@@ -185,7 +183,7 @@ export const worm: ISpecies = new Species({
               y: 0.5
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return getLifestage(agent) === lifestage.egg;
           }
         },
@@ -198,7 +196,7 @@ export const worm: ISpecies = new Species({
               y: 0.5
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return getLifestage(agent) === lifestage.larva;
           }
         },
@@ -211,7 +209,7 @@ export const worm: ISpecies = new Species({
               y: 0.5
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return getLifestage(agent) === lifestage.grub;
           }
         },
@@ -224,7 +222,7 @@ export const worm: ISpecies = new Species({
               y: 0.5
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return getLifestage(agent) === lifestage.adult;
           }
         },
@@ -237,7 +235,7 @@ export const worm: ISpecies = new Species({
               y: 0.5
             }
           },
-          useIf(agent: IAgent) {
+          useIf(agent: Agent) {
             return getLifestage(agent) === lifestage.mature;
           }
         }

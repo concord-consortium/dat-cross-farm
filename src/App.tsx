@@ -2,8 +2,7 @@ import * as React from 'react';
 import './App.css';
 import { initCornModel, addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
           addWormsSparse, getCornStats } from './corn-model';
-import * as Populations from './populations';
-const { Events, Models: { Environment } } = Populations;
+import { Events, Environment } from './populations';
 
 interface IAppProps {
   simulationElt: HTMLElement | null;  // null is used for unit tests

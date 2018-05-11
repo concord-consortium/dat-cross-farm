@@ -1,12 +1,10 @@
-import * as Populations from '../populations';
-import { IAgent, ISpecies } from '../populations-types';
-const { Models: { Agents: { BasicPlant }, Species, Trait } } = Populations;
+import { Agent, BasicPlant, Species, Trait } from '../populations';
 
 const kPlantScale = 0.1;
 const kFlowerAnchorX = 0;
 const kFlowerAnchorY = -30;
 
-export const variedPlants: ISpecies = new Species({
+export const variedPlants: Species = new Species({
   speciesName: "varied plants",
   agentClass: BasicPlant,
   defs: {
@@ -36,7 +34,7 @@ export const variedPlants: ISpecies = new Species({
           image: {
             path: require('../images/varied-plants/seed.png')
           },
-          useIf(agent: IAgent) { return agent.get('age') < agent.species.defs.SPROUT_AGE; }
+          useIf(agent: Agent) { return agent.get('age') < agent.species.defs.SPROUT_AGE; }
         },
         {
           image: {
@@ -47,7 +45,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 1) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 1) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -58,7 +56,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 1) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 1) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -69,7 +67,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 2) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 2) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -80,7 +78,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 2) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 2) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -91,7 +89,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 3) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 3) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -102,7 +100,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 3) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 3) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -113,7 +111,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 4) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 4) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -124,7 +122,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 4) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 4) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -135,7 +133,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 5) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 5) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -146,7 +144,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 5) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 5) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -157,7 +155,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 6) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 6) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -168,7 +166,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 6) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 6) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -179,7 +177,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 7) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 7) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -190,7 +188,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 7) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 7) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -201,7 +199,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 8) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 8) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -212,7 +210,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 8) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 8) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -223,7 +221,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 9) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 9) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -234,7 +232,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 9) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 9) && (agent.get('health') <= 0.99); }
         },
         {
           image: {
@@ -245,7 +243,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 10) && (agent.get('health') > 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 10) && (agent.get('health') > 0.99); }
         },
         {
           image: {
@@ -256,7 +254,7 @@ export const variedPlants: ISpecies = new Species({
               y: 1
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 10) && (agent.get('health') <= 0.99); }
+          useIf(agent: Agent) { return (agent.get('size') === 10) && (agent.get('health') <= 0.99); }
         }
       ]
     },
@@ -276,7 +274,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 10); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 10); }
         },
         {
           image: {
@@ -290,7 +288,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 9); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 9); }
         },
         {
           image: {
@@ -304,7 +302,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 5); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 5); }
         },
         {
           image: {
@@ -318,7 +316,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 8); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 8); }
         },
         {
           image: {
@@ -332,7 +330,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 7); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 7); }
         },
         {
           image: {
@@ -346,7 +344,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 6); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 6); }
         },
         {
           image: {
@@ -360,7 +358,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 5); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 5); }
         },
         {
           image: {
@@ -374,7 +372,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 4); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 4); }
         },
         {
           image: {
@@ -388,7 +386,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 3); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 3); }
         },
         {
           image: {
@@ -402,7 +400,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 2); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 2); }
         },
         {
           image: {
@@ -416,7 +414,7 @@ export const variedPlants: ISpecies = new Species({
               y: -2
             }
           },
-          useIf(agent: IAgent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 1); }
+          useIf(agent: Agent) { return (agent.get('age') >= agent.species.defs.SPROUT_AGE) && (agent.get('root size') === 1); }
         }
       ]
     },
@@ -433,7 +431,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 10) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 10) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -444,7 +442,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 9) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 9) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -455,7 +453,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 8) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 8) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -466,7 +464,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 7) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 7) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -477,7 +475,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 6) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 6) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -488,7 +486,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 5) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 5) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -499,7 +497,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 4) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 4) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -510,7 +508,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 3) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 3) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -521,7 +519,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 2) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 2) && agent.get('has flowers'); }
         },
         {
           image: {
@@ -532,7 +530,7 @@ export const variedPlants: ISpecies = new Species({
               y: kFlowerAnchorY
             }
           },
-          useIf(agent: IAgent) { return (agent.get('size') === 1) && agent.get('has flowers'); }
+          useIf(agent: Agent) { return (agent.get('size') === 1) && agent.get('has flowers'); }
         }
       ]
     }
