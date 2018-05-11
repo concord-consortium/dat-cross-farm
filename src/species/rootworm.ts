@@ -39,7 +39,7 @@ const getLifestage = (agent: Agent): number => {
 
 interface IPrey { name: string; preference?: number; }
 
-const wormTraits: Trait[] =
+export let wormTraits: Trait[] =
   [
     new Trait({
       name: 'default speed',

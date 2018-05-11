@@ -26,3 +26,24 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.ui {
+  font-size: 0.8em;
+  max-width: 300px;
+  margin-top: 10px;
+}
+
+.ui .section{
+  border: 1px solid silver;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.ui .sim-adjustment div span{
+  display: inline-block;
+  width: 180px;
+}
+.ui .sim-adjustment div input{
+  display: inline-block;
+  width: 80px;
+}
