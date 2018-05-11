@@ -2,6 +2,58 @@ import { Agent, BasicPlant, Species, Trait } from '../populations';
 
 const maturity = 300;
 
+const lifestage = {
+  seed: 0,
+  shoot: 1,
+  sprout: 2,
+  young: 3,
+  fullygrown: 4,
+  mature: 5,
+  flowering: 6,
+  harvested: 7
+};
+const lifestageThresholds = {
+  seed: 10,
+  shoot: maturity * 0.2,
+  sprout: maturity * 0.4,
+  young: maturity * 0.6,
+  fullygrown: maturity * 0.8,
+  mature: maturity,
+  flowering: maturity * 1.2,
+  harvested: maturity * 2,
+};
+
+const getLifestage = (agent: Agent): number => {
+  const age = agent.get('age');
+  let stage = lifestage.seed;
+
+  if (age < lifestageThresholds.shoot) {
+    stage = lifestage.seed;
+  }
+  if (age >= lifestageThresholds.shoot && age < lifestageThresholds.sprout) {
+    stage = lifestage.shoot;
+  }
+  if (age >= lifestageThresholds.sprout && age < lifestageThresholds.young) {
+    stage = lifestage.sprout;
+  }
+  if (age >= lifestageThresholds.young && age < lifestageThresholds.fullygrown) {
+    stage = lifestage.young;
+  }
+  if (age >= lifestageThresholds.fullygrown && age < lifestageThresholds.mature) {
+    stage = lifestage.fullygrown;
+  }
+  if (age >= lifestageThresholds.mature && age < lifestageThresholds.flowering) {
+    stage = lifestage.mature;
+  }
+  if (age >= lifestageThresholds.flowering && age < lifestageThresholds.harvested) {
+    stage = lifestage.flowering;
+  }
+  if (age >= lifestageThresholds.harvested) {
+    stage = lifestage.harvested;
+  }
+  return stage;
+};
+
 const cornInfectedTrait = new Trait({
   name: 'infected',
   possibleValues: [ true, false ],
@@ -18,6 +70,7 @@ const cornHealthTrait = new Trait({
   float: false,
   mutatable: false
 });
+
 
 const healthyTolerance = 90;
 
@@ -48,7 +101,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return agent.get('age') < 10;
+            return getLifestage(agent) === lifestage.seed;
           }
         },
         {
@@ -61,7 +114,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return agent.get('age') >= 10 && agent.get('age') < (maturity * 0.2);
+            return getLifestage(agent) === lifestage.shoot;
           }
         },
         {
@@ -74,8 +127,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return agent.get('age') >= (maturity * 0.2) &&
-              agent.get('age') < (maturity * 0.4);
+            return getLifestage(agent) === lifestage.sprout;
           }
         },
         {
@@ -89,8 +141,7 @@ export const corn = new Species({
           },
           useIf(agent: Agent) {
             return (
-              agent.get('age') >= (maturity * 0.4) &&
-              agent.get('age') < (maturity * 0.6) &&
+              getLifestage(agent) === lifestage.young &&
               cornIsHealthy(agent)
             );
           }
@@ -106,8 +157,7 @@ export const corn = new Species({
           },
           useIf(agent: Agent) {
             return (
-              agent.get('age') >= (maturity * 0.4) &&
-              agent.get('age') < (maturity * 0.6) &&
+              getLifestage(agent) === lifestage.young &&
               !cornIsHealthy(agent)
             );
           }
@@ -123,8 +173,7 @@ export const corn = new Species({
           },
           useIf(agent: Agent) {
             return (
-              agent.get('age') >= (maturity * 0.6) &&
-              agent.get('age') < (maturity * 0.8) &&
+              getLifestage(agent) === lifestage.fullygrown &&
               cornIsHealthy(agent)
             );
           }
@@ -140,8 +189,7 @@ export const corn = new Species({
           },
           useIf(agent: Agent) {
             return (
-              agent.get('age') >= (maturity * 0.6) &&
-              agent.get('age') < (maturity * 0.8) &&
+              getLifestage(agent) === lifestage.fullygrown &&
               !cornIsHealthy(agent)
             );
           }
@@ -156,8 +204,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return ( agent.get('age') >= (maturity * 0.8) &&
-              agent.get('age') < (maturity) &&
+            return ( getLifestage(agent) === lifestage.mature &&
               cornIsHealthy(agent)
             );
           }
@@ -172,7 +219,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return (agent.get('age') >= (maturity * 0.8) &&
+            return (getLifestage(agent) === lifestage.mature &&
               !cornIsHealthy(agent)
             );
           }
@@ -187,8 +234,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return (agent.get('age') >= (maturity) &&
-              agent.get('age') < (maturity * 1.2)
+            return (getLifestage(agent) === lifestage.flowering
               && cornIsHealthy(agent)
             );
           }
@@ -203,8 +249,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return (agent.get('age') >= (maturity * 1.2) &&
-              agent.get('age') < (maturity * 2)
+            return (getLifestage(agent) === lifestage.flowering
               && cornIsHealthy(agent)
             );
           }
@@ -219,7 +264,7 @@ export const corn = new Species({
             }
           },
           useIf(agent: Agent) {
-            return (agent.get('age') >= (maturity * 2)
+            return (getLifestage(agent) === lifestage.harvested
               && cornIsHealthy(agent)
             );
           }
