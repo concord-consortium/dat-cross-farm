@@ -12,6 +12,7 @@ interface IAppState {
   initialCorn: number;
   initialTrap: number;
   initialWorms: number;
+  dayFirstCornEaten: number | null;
   totalCorn: number;
   totalTrap: number;
   totalWorm: number;
@@ -26,6 +27,7 @@ class App extends React.Component<IAppProps, IAppState> {
     initialCorn: 0,
     initialTrap: 0,
     initialWorms: 0,
+    dayFirstCornEaten: null,
     totalCorn: 0,
     totalTrap: 0,
     totalWorm: 0,
@@ -38,16 +40,20 @@ class App extends React.Component<IAppProps, IAppState> {
     initCornModel(this.props.simulationElt, {});
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
+      let { dayFirstCornEaten } = this.state;
       const { countCorn, countTrap, countWorm, infected, simulationDay } = getCornStats();
       const actualDay = Math.trunc(simulationDay / 3);
-      this.setState({ totalCorn: countCorn, totalTrap: countTrap,
-                      totalWorm: countWorm, infectedCorn: infected, simulationDay: actualDay });
+      if ((this.state.dayFirstCornEaten == null) && (countCorn < this.state.initialCorn)) {
+        dayFirstCornEaten = actualDay;
+      }
+      this.setState({ totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm, 
+                      dayFirstCornEaten, infectedCorn: infected, simulationDay: actualDay });
     });
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
       const { countCorn, countTrap, countWorm, infected } = getCornStats();
-      this.setState({ initialCorn: countCorn, initialTrap: countTrap,
-                      initialWorms: countWorm, infectedCorn: infected });
+      this.setState({ initialCorn: countCorn, initialTrap: countTrap, initialWorms: countWorm, 
+                      dayFirstCornEaten: null, infectedCorn: infected });
     });
   }
 
@@ -76,6 +82,7 @@ class App extends React.Component<IAppProps, IAppState> {
           Day: <span>{this.state.simulationDay}</span><br />
           Corn planted: <span>{this.state.initialCorn}</span><br />
           Corn remaining: <span>{this.state.totalCorn}</span><br />
+          First corn eaten: <span>{this.state.dayFirstCornEaten}</span><br />
           Trap planted: <span>{this.state.initialTrap}</span><br />
           Trap remaining: <span>{this.state.totalTrap}</span><br />
           Worms: <span>{this.state.totalWorm}</span><br />
