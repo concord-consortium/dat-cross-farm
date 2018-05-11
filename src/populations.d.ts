@@ -82,7 +82,7 @@ declare namespace Populations {
       WANDERING: string
     };
 
-    constructor(args:any);
+    constructor(args: any);
 
     makeNewBorn(): void;
 
@@ -154,7 +154,16 @@ declare namespace Populations {
     season: string;
     date: number;
   
-    static EVENTS: { [index: string]: string };
+    static EVENTS: {
+      START: string,
+      STOP: string,
+      STEP: string,
+      RESET: string,
+      AGENT_ADDED: string,
+      AGENT_EATEN: string,
+      SEASON_CHANGED: string,
+      USER_REMOVED_AGENTS: string
+    };
   
     constructor(opts: any);
   

@@ -95,6 +95,7 @@ const agentIsCorn = (envAgent: Agent) => {
 
 export function getCornStats() {
   let countCorn = 0,
+    countTrap = 0,
     countWorm = 0,
     infected = 0;
   const simulationDay = env.date;
@@ -104,11 +105,15 @@ export function getCornStats() {
       if (a.get('health') < 100) {
         ++ infected;
       }
-    } else {
+    } 
+    else if (a.species.speciesName === 'Trap') {
+      ++ countTrap;
+    }
+    else if (a.species.speciesName === 'Worm') {
       ++countWorm;
     }
   });
-  return { countCorn, countWorm, infected, simulationDay };
+  return { countCorn, countTrap, countWorm, infected, simulationDay };
 }
 
 export interface IModelParams {

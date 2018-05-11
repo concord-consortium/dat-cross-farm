@@ -1,4 +1,4 @@
-import { Agent, BasicAnimal, Species, Trait } from '../populations';
+import { Agent, AgentDistance, BasicAnimal, Species, Trait } from '../populations';
 
 const maturity = 250;
 const lifestage = {
@@ -37,6 +37,8 @@ const getLifestage = (agent: Agent): number => {
   return stage;
 };
 
+interface IPrey { name: string; preference?: number; }
+
 const wormTraits: Trait[] =
   [
     new Trait({
@@ -46,10 +48,16 @@ const wormTraits: Trait[] =
       name: 'larva max speed',
       default: 0.5
     }), new Trait({
-      name: 'prey', "default": [{ name: 'Corn' }]
+      // Prey attraction = distance / preference, so a value of one
+      // (the default) leaves distance unchanged, but values > 1
+      // make the agent more attractive by effecticely shrinking the
+      // distance to the agent, while values < 1 make it less attractive
+      // by effectively increasing the distance to the prey.
+      name: 'prey', "default": [{ name: 'Corn', preference: 1 },
+                                { name: 'Trap', preference: 20 }]
     }), new Trait({
       name: 'vision distance',
-      default: 30
+      default: 60
     }), new Trait({
       name: 'eating distance',
       default: 5
@@ -97,15 +105,14 @@ class WormAnimal extends BasicAnimal {
   }
   eat() {
     const nearest = this._nearestPrey();
-    // Until we have other plants, assume nearest prey is corn
     if (nearest) {
       const eatingDist = this.get('eating distance');
       if (nearest.distanceSq < Math.pow(eatingDist, 2)) {
-        // we're close enough, eat corn
-        this._eatCorn(nearest.agent);
+        // we're close enough, eat prey
+        this._eatPrey(nearest.agent);
       }
       else {
-        // move to corn
+        // move to prey
         this.chase(nearest);
       }
     }
@@ -114,18 +121,18 @@ class WormAnimal extends BasicAnimal {
     }
   }
 
-  private _eatCorn(cornAgent: Agent) {
+  _eatPrey(prey: Agent) {
     const consumptionRate = this.get('resource consumption rate');
     const currEnergy = this.get('energy');
     this.set('energy', currEnergy + consumptionRate);
 
-    const cornHealth = cornAgent.get('health');
-    const newHealth = cornHealth - consumptionRate;
+    const preyHealth = prey.get('health');
+    const newHealth = preyHealth - consumptionRate;
     if (newHealth > 10) {
-      cornAgent.set('health', cornHealth - consumptionRate);
+      prey.set('health', preyHealth - consumptionRate);
     }
     else {
-      cornAgent.die();
+      prey.die();
     }
   }
   wander(speed: number) {
@@ -154,6 +161,33 @@ class WormAnimal extends BasicAnimal {
       // we're eating, move slowly
       super.move(speed * 0.01);
     }
+  }
+  _nearestPrey(): AgentDistance | null {
+    const prey: IPrey[] = this.get('prey');
+    if (prey && prey.length) {
+      const nearest = this._nearestAgentsMatching({ types: prey, quantity: 100 });
+      const target = nearest[0],
+            targetWasCorn = target && target.agent.species.speciesName === 'Corn';
+      nearest.forEach((a) => {
+        const preyName = a.agent.species.speciesName,
+              // determine preference for this prey
+              preyPreference = prey.reduce((prev: number, curr: IPrey) =>
+                ((curr.name === preyName) && (curr.preference != null))
+                  ? prev * curr.preference : prev, 1);
+        // adjust distance based on preference
+        a.distanceSq /= preyPreference;
+      });
+      // sort by preference-adjusted distance
+      nearest.sort((a, b) => a.distanceSq - b.distanceSq);
+      // for now, return the most-preferred prey
+      const newTarget = nearest[0],
+            targetIsTrap = newTarget && newTarget.agent.species.speciesName === 'Trap';
+      if (targetWasCorn && targetIsTrap) {
+        // console.log(`Worm targeting more distant trap plant!`);
+      }
+      return nearest[0] || null;
+    }
+    return null;
   }
 }
 

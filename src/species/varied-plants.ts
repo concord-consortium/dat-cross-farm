@@ -4,8 +4,17 @@ const kPlantScale = 0.1;
 const kFlowerAnchorX = 0;
 const kFlowerAnchorY = -30;
 
+const trapHealthTrait = new Trait({
+  name: 'health',
+  min: 0,
+  max: 100,
+  default: 100,
+  float: false,
+  mutatable: false
+});
+
 export const variedPlants: Species = new Species({
-  speciesName: "varied plants",
+  speciesName: "Trap",
   agentClass: BasicPlant,
   defs: {
     MAX_AGE: 10000,
@@ -22,6 +31,7 @@ export const variedPlants: Species = new Species({
     }
   },
   traits: [
+    trapHealthTrait,
     new Trait({ name: "size", min: 1, max: 10, mutatable: true }),
     new Trait({ name: "root size", min: 1, max: 10, mutatable: true })
   ],
