@@ -261,6 +261,14 @@ declare namespace Populations {
   }
   
   export class Trait {
+    name: string;
+    possibleValues: any;
+    min: number;
+    max: number;
+    default: any;
+    float: boolean;
+    mutatable: boolean;
+
     constructor(traitDesc: {
         name: string,
         possibleValues?: any,
