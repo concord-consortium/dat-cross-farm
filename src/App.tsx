@@ -85,9 +85,15 @@ class App extends React.Component<IAppProps, IAppState> {
         wormEatingDistance: wormEatingDistanceTrait !== null ? wormEatingDistanceTrait.getDefaultValue() : 0
       });
     });
-
   }
 
+  setDefaultTraitValue = (e: any) => {
+    // this handler does fire console.log(e);
+    if (e.keyCode === 13) {
+      console.log(e.target.value);
+    }
+    return;
+  }
 
   public render() {
     const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance } = this.state;
@@ -113,10 +119,10 @@ class App extends React.Component<IAppProps, IAppState> {
         </div>
         <div className="section sim-adjustment">
           <h4>Worms</h4>
-          <div><span>Metabolism:</span><input type="number" value={wormMetabolism} /></div>
-          <div><span>Energy:</span><input type="number" value={wormEnergy} /></div>
-          <div><span>Vision Distance (larva):</span><input type="number" value={wormVisionDistance} /></div>
-          <div><span>Eating Distance:</span><input type="number" value={wormEatingDistance} /></div>
+          <div><span>Metabolism:</span><input type="number" value={wormMetabolism} onChange={this.setDefaultTraitValue} /></div>
+          <div><span>Energy:</span><input type="number" value={wormEnergy} onChange={this.setDefaultTraitValue} /></div>
+          <div><span>Vision Distance (larva):</span><input type="number" value={wormVisionDistance} onChange={this.setDefaultTraitValue}  /></div>
+          <div><span>Eating Distance:</span><input type="number" value={wormEatingDistance} onChange={this.setDefaultTraitValue} /></div>
         </div>
         <div className="section stats">
           <h4>Statistics</h4>
