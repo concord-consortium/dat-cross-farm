@@ -144,25 +144,45 @@ class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
+  plantCornDensely = () => {
+    addCornDense();
+  }
+
+  plantCornSparsely = () => {
+    addCornSparse();
+  }
+
+  plantTrapCropDensely = () => {
+    addTrapCropDense();
+  }
+
+  plantTrapCropSparsely = () => {
+    addTrapCropSparse();
+  }
+
+  addWorms = () => {
+    addWormsSparse();
+  }
+
   public render() {
     const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance } = this.state;
     return (
       <div className="ui">
         <div className="section planting-controls">
           <h4>Planting Controls</h4>
-          <div><button id="add-corn-dense" onClick={addCornDense}>
+          <div><button id="add-corn-dense" onClick={this.plantCornDensely}>
             Plant Corn Densely
           </button></div>
-          <div><button id="add-corn-sparse" onClick={addCornSparse}>
+          <div><button id="add-corn-sparse" onClick={this.plantCornSparsely}>
             Plant Corn Sparsely
           </button></div>
-          <div><button id="add-trap-dense" onClick={addTrapCropDense}>
+          <div><button id="add-trap-dense" onClick={this.plantTrapCropDensely}>
             Plant Trap Crop Densely
           </button></div>
-          <div><button id="add-trap-sparse" onClick={addTrapCropSparse}>
+          <div><button id="add-trap-sparse" onClick={this.plantTrapCropSparsely}>
             Plant Trap Crop Sparsely
           </button></div>
-          <div><button id="add-worms-sparse" onClick={addWormsSparse}>
+          <div><button id="add-worms-sparse" onClick={this.addWorms}>
             Add Worms
           </button></div>
         </div>
