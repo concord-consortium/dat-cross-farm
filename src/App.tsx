@@ -28,6 +28,11 @@ const traitMap: { [key: string]: ITraitSpec } = {
     traitName: 'metabolism',
     stateName: 'wormMetabolism'
   },
+  'trait-worm-resource-consumption-rate': {
+    species: worm,
+    traitName: 'resource consumption rate',
+    stateName: 'wormResourceConsumptionRate'
+  },
   'trait-worm-vision-distance': {
     species: worm,
     traitName: 'vision distance',
@@ -54,6 +59,7 @@ interface IAppState {
   wormEatingDistance: string;
   wormEnergy: string;
   wormMetabolism: string;
+  wormResourceConsumptionRate: string;
   wormVisionDistance: string;
 }
 
@@ -73,6 +79,7 @@ class App extends React.Component<IAppProps, IAppState> {
     wormEatingDistance: "",
     wormEnergy: "",
     wormMetabolism: "",
+    wormResourceConsumptionRate: "",
     wormVisionDistance: ""
   };
 
@@ -165,7 +172,7 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance } = this.state;
+    const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance, wormResourceConsumptionRate } = this.state;
     return (
       <div className="ui">
         <div className="section planting-controls">
@@ -213,6 +220,13 @@ class App extends React.Component<IAppProps, IAppState> {
             <span>Eating Distance:</span>
             <input id="trait-worm-eating-distance" type="number"
               value={wormEatingDistance}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
+          <div>
+            <span>Consumption Rate:</span>
+            <input id="trait-worm-resource-consumption-rate" type="number"
+              value={wormResourceConsumptionRate}
               onChange={this.updateDefaultTraitValue}
               onBlur={this.setDefaultTraitValue} />
           </div>
