@@ -88,11 +88,29 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   setDefaultTraitValue = (e: any) => {
-    // this handler does fire console.log(e);
-    if (e.keyCode === 13) {
-      console.log(e.target.value);
+    const elem = e.target.id;
+    const traitName = elem.replace('input-', '').replace('-',' ');
+
+    const wormTrait = worm.getTrait(traitName);
+    if (wormTrait && e.target.value) {
+      wormTrait.default = e.target.value;
+      switch (traitName) {
+        case 'eating distance':
+          this.setState({ wormEatingDistance: e.target.value });
+          break;
+        case 'energy':
+          this.setState({ wormEnergy: e.target.value });
+          break;
+        case 'metabolism':
+          this.setState({ wormMetabolism: e.target.value });
+          break;
+        case 'vision distance':
+          this.setState({ wormVisionDistance: e.target.value });
+          break;
+        default:
+          break;
+      }
     }
-    return;
   }
 
   public render() {
@@ -119,10 +137,10 @@ class App extends React.Component<IAppProps, IAppState> {
         </div>
         <div className="section sim-adjustment">
           <h4>Worms</h4>
-          <div><span>Metabolism:</span><input type="number" value={wormMetabolism} onChange={this.setDefaultTraitValue} /></div>
-          <div><span>Energy:</span><input type="number" value={wormEnergy} onChange={this.setDefaultTraitValue} /></div>
-          <div><span>Vision Distance (larva):</span><input type="number" value={wormVisionDistance} onChange={this.setDefaultTraitValue}  /></div>
-          <div><span>Eating Distance:</span><input type="number" value={wormEatingDistance} onChange={this.setDefaultTraitValue} /></div>
+          <div><span>Metabolism:</span><input id="input-metabolism" type="number" value={wormMetabolism} onChange={this.setDefaultTraitValue} /></div>
+          <div><span>Energy:</span><input id="input-energy" type="number" value={wormEnergy} onChange={this.setDefaultTraitValue} /></div>
+          <div><span>Vision Distance (larva):</span><input id="input-vision-distance" type="number" value={wormVisionDistance} onChange={this.setDefaultTraitValue}  /></div>
+          <div><span>Eating Distance:</span><input id="input-eating-distance" type="number" value={wormEatingDistance} onChange={this.setDefaultTraitValue} /></div>
         </div>
         <div className="section stats">
           <h4>Statistics</h4>
