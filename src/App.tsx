@@ -4,7 +4,36 @@ import { initCornModel, addCornDense, addCornSparse, addTrapCropDense, addTrapCr
   addWormsSparse, getCornStats
 } from './corn-model';
 import { worm } from './species/rootworm';
-import { Events, Environment } from './populations';
+import { Environment, Events, Species } from './populations';
+import { forEach } from 'lodash';
+
+interface ITraitSpec {
+  species: Species;
+  traitName: string;
+  stateName: string;
+}
+const traitMap: { [key: string]: ITraitSpec } = {
+  'trait-worm-eating-distance': {
+    species: worm,
+    traitName: 'eating distance',
+    stateName: 'wormEatingDistance'
+  },
+  'trait-worm-energy': {
+    species: worm,
+    traitName: 'energy',
+    stateName: 'wormEnergy'
+  },
+  'trait-worm-metabolism': {
+    species: worm,
+    traitName: 'metabolism',
+    stateName: 'wormMetabolism'
+  },
+  'trait-worm-vision-distance': {
+    species: worm,
+    traitName: 'vision distance',
+    stateName: 'wormVisionDistance'
+  }
+};
 
 interface IAppProps {
   simulationElt: HTMLElement | null;  // null is used for unit tests
@@ -21,10 +50,11 @@ interface IAppState {
   infectedCorn: number;
   harvestCorn: number;
   simulationDay: number;
-  wormEatingDistance: number;
-  wormEnergy: number;
-  wormMetabolism: number;
-  wormVisionDistance: number;
+  // store as strings during editing
+  wormEatingDistance: string;
+  wormEnergy: string;
+  wormMetabolism: string;
+  wormVisionDistance: string;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -40,14 +70,25 @@ class App extends React.Component<IAppProps, IAppState> {
     infectedCorn: 0,
     harvestCorn: 0,
     simulationDay: 0,
-    wormEatingDistance: 0,
-    wormEnergy: 0,
-    wormMetabolism: 0,
-    wormVisionDistance: 0
+    wormEatingDistance: "",
+    wormEnergy: "",
+    wormMetabolism: "",
+    wormVisionDistance: ""
   };
 
   public componentDidMount() {
     initCornModel(this.props.simulationElt, {});
+
+    const traitState: { [key: string]: string } = {};
+    // initialize trait inputs with default trait values
+    forEach(traitMap, (spec, key) => {
+      const trait = spec.species.getTrait(spec.traitName),
+            defaultValue = trait && trait.getDefaultValue();
+      if (trait && (traitState != null)) {
+        traitState[spec.stateName] = String(defaultValue);
+      }
+      this.setState(traitState as any);
+    });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
       let { dayFirstCornEaten } = this.state;
@@ -71,44 +112,34 @@ class App extends React.Component<IAppProps, IAppState> {
                       totalCorn: 0, totalTrap: 0, totalWorm: 0,
                       dayFirstCornEaten: null, infectedCorn: 0, simulationDay: 0 });
     });
-
-    Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
-      const wormEatingDistanceTrait = worm.getTrait('eating distance'),
-        wormEnergyTrait = worm.getTrait('energy'),
-        wormMetabolismTrait = worm.getTrait('metabolism'),
-        wormVisionDistanceTrait = worm.getTrait('vision distance');
-
-      this.setState({
-        wormMetabolism: wormMetabolismTrait !== null ? wormMetabolismTrait.getDefaultValue() : 0,
-        wormEnergy: wormEnergyTrait !== null ? wormEnergyTrait.getDefaultValue() : 0,
-        wormVisionDistance: wormVisionDistanceTrait !== null ? wormVisionDistanceTrait.getDefaultValue() : 0,
-        wormEatingDistance: wormEatingDistanceTrait !== null ? wormEatingDistanceTrait.getDefaultValue() : 0
-      });
-    });
   }
 
-  setDefaultTraitValue = (e: any) => {
-    const elem = e.target.id;
-    const traitName = elem.replace('input-', '').replace('-',' ');
+  updateDefaultTraitValue = (e: React.FormEvent<HTMLInputElement>) => {
+    const id = e.currentTarget.id,
+          value = e.currentTarget.value,
+          traitSpec = traitMap[id],
+          stateName = traitSpec && traitSpec.stateName;
+    if (stateName) {
+      this.setState({ [stateName]: value } as any);
+    }
+  }
 
-    const wormTrait = worm.getTrait(traitName);
-    if (wormTrait && e.target.value) {
-      wormTrait.default = e.target.value;
-      switch (traitName) {
-        case 'eating distance':
-          this.setState({ wormEatingDistance: e.target.value });
-          break;
-        case 'energy':
-          this.setState({ wormEnergy: e.target.value });
-          break;
-        case 'metabolism':
-          this.setState({ wormMetabolism: e.target.value });
-          break;
-        case 'vision distance':
-          this.setState({ wormVisionDistance: e.target.value });
-          break;
-        default:
-          break;
+  setDefaultTraitValue = (e: React.FormEvent<HTMLInputElement>) => {
+    const id = e.currentTarget.id,
+          value = e.currentTarget.value,
+          numValue = value && value.length ? Number(e.currentTarget.value) : NaN,
+          traitSpec = traitMap[id],
+          traitSpecies = traitSpec && traitSpec.species,
+          traitName = traitSpec && traitSpec.traitName,
+          trait = traitSpecies && traitSpecies.getTrait(traitName);
+    if (trait) {
+      // only set default value if the value is valid
+      if (isFinite(numValue)) {
+        trait.default = numValue;
+      }
+      else {
+        // restore default value if invalid value is entered
+        this.setState({ [traitSpec.stateName]: trait.getDefaultValue() } as any);
       }
     }
   }
@@ -137,10 +168,34 @@ class App extends React.Component<IAppProps, IAppState> {
         </div>
         <div className="section sim-adjustment">
           <h4>Worms</h4>
-          <div><span>Metabolism:</span><input id="input-metabolism" type="number" value={wormMetabolism} onChange={this.setDefaultTraitValue} /></div>
-          <div><span>Energy:</span><input id="input-energy" type="number" value={wormEnergy} onChange={this.setDefaultTraitValue} /></div>
-          <div><span>Vision Distance (larva):</span><input id="input-vision-distance" type="number" value={wormVisionDistance} onChange={this.setDefaultTraitValue}  /></div>
-          <div><span>Eating Distance:</span><input id="input-eating-distance" type="number" value={wormEatingDistance} onChange={this.setDefaultTraitValue} /></div>
+          <div>
+            <span>Metabolism:</span>
+            <input id="trait-worm-metabolism" type="number"
+              value={wormMetabolism}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
+          <div>
+            <span>Energy:</span>
+            <input id="trait-worm-energy" type="number"
+              value={wormEnergy}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
+          <div>
+            <span>Vision Distance (larva):</span>
+            <input id="trait-worm-vision-distance" type="number"
+              value={wormVisionDistance}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
+          <div>
+            <span>Eating Distance:</span>
+            <input id="trait-worm-eating-distance" type="number"
+              value={wormEatingDistance}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
         </div>
         <div className="section stats">
           <h4>Statistics</h4>
