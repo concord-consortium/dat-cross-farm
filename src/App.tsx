@@ -5,6 +5,7 @@ import { initCornModel, addCornDense, addCornSparse, addTrapCropDense, addTrapCr
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Environment, Events, Species } from './populations';
+import { Attribution } from './components/attribution';
 import { forEach } from 'lodash';
 
 interface ITraitSpec {
@@ -173,6 +174,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance, wormResourceConsumptionRate } = this.state;
+
     return (
       <div className="ui">
         <div className="section planting-controls">
@@ -241,6 +243,7 @@ class App extends React.Component<IAppProps, IAppState> {
           <div><span>Trap remaining: </span><span>{this.state.totalTrap}</span></div>
           <div><span>Worms: </span><span>{this.state.totalWorm}</span></div>
         </div>
+        <Attribution />
       </div>
     );
   }
