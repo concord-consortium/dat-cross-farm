@@ -59,12 +59,18 @@ export let wormTraits: Trait[] =
       name: 'vision distance',
       default: 60
     }), new Trait({
+      name: 'vision distance adult',
+      default: 120
+    }), new Trait({
       name: 'eating distance',
       default: 5
     }), new Trait({
       name: 'mating distance',
       default: 1
-    }), new Trait({
+    }),new Trait({
+      name: 'has mated',
+      default: false
+    }),  new Trait({
       name: 'max offspring',
       default: 3
     }), new Trait({
@@ -100,7 +106,7 @@ class WormAnimal extends BasicAnimal {
     }
     if (this.get('age') === maturity) {
       this.set('speed', this.get('default speed'));
-      this.set('vision distance', 100);
+      this.set('vision distance', this.get('vision distance adult'));
     }
   }
   eat() {
@@ -124,6 +130,10 @@ class WormAnimal extends BasicAnimal {
   _eatPrey(prey: Agent) {
     const consumptionRate = this.get('resource consumption rate');
     const currEnergy = this.get('energy');
+    if (!this.get('has mated') && currEnergy > 50 && this.get('age') >= maturity) {
+      this.reproduce(this);
+      this.set('has mated', true);
+    }
     this.set('energy', currEnergy + consumptionRate);
 
     const preyHealth = prey.get('health');
@@ -137,6 +147,9 @@ class WormAnimal extends BasicAnimal {
   }
   wander(speed: number) {
     super.wander(speed);
+    if (this.get('age') > maturity) {
+      this.set('wings', 1);
+    }
   }
   chase(nearestAgent: any) {
     super.chase(nearestAgent);

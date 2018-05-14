@@ -34,10 +34,25 @@ const traitMap: { [key: string]: ITraitSpec } = {
     traitName: 'resource consumption rate',
     stateName: 'wormResourceConsumptionRate'
   },
+  'trait-worm-speed': {
+    species: worm,
+    traitName: 'default speed',
+    stateName: 'wormSpeed'
+  },
+  'trait-worm-larva-speed': {
+    species: worm,
+    traitName: 'larva max speed',
+    stateName: 'wormLarvaSpeed'
+  },
   'trait-worm-vision-distance': {
     species: worm,
-    traitName: 'vision distance',
+    traitName: 'vision distance adult',
     stateName: 'wormVisionDistance'
+  },
+  'trait-worm-larva-vision-distance': {
+    species: worm,
+    traitName: 'vision distance',
+    stateName: 'wormVisionDistanceLarva'
   }
 };
 
@@ -61,7 +76,10 @@ interface IAppState {
   wormEnergy: string;
   wormMetabolism: string;
   wormResourceConsumptionRate: string;
+  wormSpeed: string;
+  wormLarvaSpeed: string;
   wormVisionDistance: string;
+  wormVisionDistanceLarva: string;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -81,7 +99,10 @@ class App extends React.Component<IAppProps, IAppState> {
     wormEnergy: "",
     wormMetabolism: "",
     wormResourceConsumptionRate: "",
-    wormVisionDistance: ""
+    wormSpeed: "",
+    wormLarvaSpeed: "",
+    wormVisionDistance: "",
+    wormVisionDistanceLarva: ""
   };
 
   public componentDidMount() {
@@ -173,7 +194,7 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance, wormResourceConsumptionRate } = this.state;
+    const { wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva, wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state;
 
     return (
       <div className="ui">
@@ -212,7 +233,14 @@ class App extends React.Component<IAppProps, IAppState> {
               onBlur={this.setDefaultTraitValue} />
           </div>
           <div>
-            <span>Vision Distance (larva):</span>
+            <span>Sensing Distance (larva):</span>
+            <input id="trait-worm-larva-vision-distance" type="number"
+              value={wormVisionDistanceLarva}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
+          <div>
+            <span>Sensing Distance (adult):</span>
             <input id="trait-worm-vision-distance" type="number"
               value={wormVisionDistance}
               onChange={this.updateDefaultTraitValue}
@@ -232,7 +260,22 @@ class App extends React.Component<IAppProps, IAppState> {
               onChange={this.updateDefaultTraitValue}
               onBlur={this.setDefaultTraitValue} />
           </div>
+          <div>
+            <span>Worm speed:</span>
+            <input id="trait-worm-speed" type="number"
+              value={wormSpeed}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
+          <div>
+            <span>Worm larva speed:</span>
+            <input id="trait-worm-larva-speed" type="number"
+              value={wormLarvaSpeed}
+              onChange={this.updateDefaultTraitValue}
+              onBlur={this.setDefaultTraitValue} />
+          </div>
         </div>
+
         <div className="section stats">
           <h4>Statistics</h4>
           <div><span>Day: </span><span>{this.state.simulationDay}</span></div>

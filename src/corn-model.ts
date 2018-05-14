@@ -1,5 +1,6 @@
 import { corn } from './species/corn';
 import { worm } from './species/rootworm';
+import { wormEgg } from './species/worm-egg';
 import { Agent, Environment, Rule, Interactive } from './populations';
 import { variedPlants } from './species/varied-plants';
 
@@ -54,7 +55,7 @@ export const addCornSparse = () => {
 function addWorms(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
-      const larva = worm.createAgent();
+      const larva = wormEgg.createAgent();
       larva.setLocation({
           x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
           y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
@@ -93,6 +94,10 @@ const agentIsCorn = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Corn";
 };
 
+const agentIsEgg = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "WormEgg";
+};
+
 export function getCornStats() {
   let countCorn = 0,
     countTrap = 0,
@@ -105,7 +110,7 @@ export function getCornStats() {
       if (a.get('health') < 100) {
         ++ infected;
       }
-    } 
+    }
     else if (a.species.speciesName === 'Trap') {
       ++ countTrap;
     }
@@ -124,7 +129,21 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   if (simulationElt) {
     simulationElt.appendChild(interactive.getEnvironmentPane());
   }
+  env.addRule(new Rule({
+    test(agent: Agent) {
+      return env.date > 50 && env.date < 60 && agentIsEgg(agent) && agent.get('hatched') === false;
+    },
+    action(agent: Agent) {
+      agent.set('hatched', true);
+      const wormAgent = worm.createAgent();
+      wormAgent.setLocation(agent.getLocation());
+      // hatch a worm at the location of the egg
+      env.addAgent(wormAgent);
+      // remove the egg agent
+      agent.die();
+    }
 
+  }));
   env.addRule(new Rule({
     action(agent: Agent) {
       agent.set('chance of survival', 1);
