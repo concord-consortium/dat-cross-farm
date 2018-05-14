@@ -5,6 +5,7 @@ import { initCornModel, addCornDense, addCornSparse, addTrapCropDense, addTrapCr
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Environment, Events, Species } from './populations';
+import { Attribution } from './components/attribution';
 import { forEach } from 'lodash';
 
 interface ITraitSpec {
@@ -45,7 +46,6 @@ interface IAppProps {
 }
 
 interface IAppState {
-  attributionVisible: boolean;
   initialCorn: number;
   initialTrap: number;
   initialWorms: number;
@@ -67,7 +67,6 @@ interface IAppState {
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
-    attributionVisible: false,
     initialCorn: 0,
     initialTrap: 0,
     initialWorms: 0,
@@ -173,14 +172,9 @@ class App extends React.Component<IAppProps, IAppState> {
     addWormsSparse();
   }
 
-  toggleAttribution = () => {
-    const visible = this.state.attributionVisible;
-    this.setState({ attributionVisible: !visible });
-  }
-
   public render() {
-    const { attributionVisible, wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance, wormResourceConsumptionRate } = this.state;
-    const attributionDisplayClass = attributionVisible ? "attribution-container" : "attribution-container-hidden";
+    const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance, wormResourceConsumptionRate } = this.state;
+
     return (
       <div className="ui">
         <div className="section planting-controls">
@@ -249,16 +243,7 @@ class App extends React.Component<IAppProps, IAppState> {
           <div><span>Trap remaining: </span><span>{this.state.totalTrap}</span></div>
           <div><span>Worms: </span><span>{this.state.totalWorm}</span></div>
         </div>
-        <div className="attribution">
-          <img className="attribution-logo" src={require('./images/cclogo.png')} onClick={this.toggleAttribution} />
-          <div className={attributionDisplayClass} onClick={this.toggleAttribution}>
-            <div className="attribution-text">
-              <img src={require('./images/cclogo.png')} onClick={this.toggleAttribution} />
-              <div>This interactive was created by the Concord Consortium using our Populations library.</div>
-              <div>Copyright © 2018 The Concord Consortium. All rights reserved. The software is licensed under the MIT license. Please see <a href="https://github.com/concord-consortium/dat-cross-farm/blob/master/LICENSE" target="_blank">license</a> for other software and associated licensing included in this product. Please provide attribution to the Concord Consortium and the URL <a href="https://concord.org" target="_blank">https://concord.org</a>.</div>
-            </div>
-          </div>
-        </div>
+        <Attribution />
       </div>
     );
   }

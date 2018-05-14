@@ -49,16 +49,21 @@
 }
 
 .attribution .attribution-logo{
+  background: url('./images/cclogo.png');
+  background-size: 200px 84px;
+  background-repeat: no-repeat;
   position: fixed;
   bottom: 0px;
   left: 0px;
   width:200px;
+  height:84px;
 }
 
 .attribution-container-hidden{
   width:0px;
   height:0px;
 }
+
 .attribution-container-hidden div{
   display: none;
 }
@@ -73,12 +78,12 @@
   transition: background 0.5s;
   transition-timing-function: ease;
 }
+
 .attribution-text{
   position: absolute;
   top: 50%;
   left: 50%;
   margin: -200px 0 0 -150px;
-
   padding:20px;
   border-radius:12px;
   border: 1px solid silver;
@@ -86,10 +91,15 @@
   width:400px;
   height:200px;
 }
+
 .attribution-text div{
   margin:10px;
 }
-.attribution-text img{
-  width:120px;
 
+.attribution-text .small-logo{
+
+  background: url('./images/cclogo.png');
+  background-size: 100px 42px;
+  width:100px;
+  height:42px;
 }
