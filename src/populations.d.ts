@@ -210,13 +210,13 @@ declare namespace Populations {
   
     /*** Getters and Setters ***/
     
-    getView(): any; // TODO
+    getView(): any;
   
     addRule(rule: Rule): void;
     removeRule(rule: Rule): void;
     clearRules(): void;
   
-    setBackground(path: any): void; // TODO
+    setBackground(path: string): void;
   }
   
   export type RuleTestFunc = (agent: Agent) => boolean;
@@ -259,36 +259,62 @@ declare namespace Populations {
     addTrait(trait: Trait): void;
     setMutatable(traitName: string, mutatable: boolean): void;
   }
+
+  export interface IAgentSpec {
+    name: string;
+    preference?: number;
+  }
+
+  export type _ITraitValue = number | string | boolean | IAgentSpec;
+  // 'predator'/'prey' traits have arrays as values, for instance
+  export type ITraitValue = _ITraitValue | _ITraitValue[];
   
   export class Trait {
     name: string;
-    possibleValues: any;
+    possibleValues: ITraitValue[];
     min: number;
     max: number;
-    default: any;
+    default: ITraitValue;
     float: boolean;
     mutatable: boolean;
 
     constructor(traitDesc: {
         name: string,
-        possibleValues?: any,
+        possibleValues?: ITraitValue[],
         min?: number,
         max?: number,
-        default?: any,
+        default?: ITraitValue,
         float?: boolean,
         mutatable?: boolean
     });
   
-    getDefaultValue(): any;
-    getRandomValue(): any;
-    mutate(value: any): any;
-    isPossibleValue(value: any): boolean;
+    getDefaultValue(): ITraitValue;
+    getRandomValue(): ITraitValue;
+    mutate(value: ITraitValue): ITraitValue;
+    isPossibleValue(value: ITraitValue[]): boolean;
 
-    _mutateValueFromRange(value: any): any;
+    _mutateValueFromRange(value: number): number;
+  }
+
+  export interface IAddOrganismButtonSpec {
+    species: Species;
+    limit: number;
+    imagePath: string;
+  }
+
+  export interface IToolButtonSpec {
+    type: string;
   }
   
   export class Interactive {
-    constructor(options: any);
+    constructor(options: {
+      environment: Environment,
+      addOrganismButtons?: IAddOrganismButtonSpec[],
+      toolButtons?: IToolButtonSpec[],
+      speedSlider?: boolean,
+      playButton?: () => void,
+      resetButton?: () => void
+    });
   
     getEnvironmentPane(): any;
   
@@ -300,6 +326,35 @@ declare namespace Populations {
     stop(): void;
     reset(): void;
   }
-}
+
+  export class Toolbar {
+    constructor(interactive: Interactive);
+
+    addButton(type: string, action: () => void): void;
+    addToggleButton(type1: string, action1: () => void,
+                    type2: string, action2: () => void): void;
+
+    registerModalButton(btn: any): void;
+    activateModalButton(btn: any): void;
+
+    reset(): void;
+
+    getView(): any;
+  }
+
+  export class ToolButton {
+    static INFO_TOOL: string;
+    static CARRY_TOOL: string;
+  
+    constructor(environment: Environment, toolbar: Toolbar, specs: { type: string });
+
+    render(): void;
+
+    getView(): any;
+
+    action(): void;
+  }
+  
+} // namespace Populations
 
 export = Populations;
