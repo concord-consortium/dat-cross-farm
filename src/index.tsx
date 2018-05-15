@@ -4,10 +4,8 @@ import App from './App';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
-const simulationElt = document.getElementById('environment') as HTMLElement;
-
 ReactDOM.render(
-  <App simulationElt={simulationElt}/>,
+  <App />,
   document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();

@@ -16,5 +16,6 @@ module.exports = {
     Trait: require_brunch('models/trait'),
     // UI
     Interactive: require_brunch('ui/interactive'),
+    Toolbar: require_brunch('ui/toolbar'),
     ToolButton: require_brunch('ui/tool-button')
 };
