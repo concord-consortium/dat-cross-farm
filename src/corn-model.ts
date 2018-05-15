@@ -1,5 +1,6 @@
 import { corn } from './species/corn';
-import { worm } from './species/rootworm';
+import { worm, wormLifestage, getWormLifestage } from './species/rootworm';
+import { wormEgg } from './species/worm-egg';
 import { Agent, Environment, Rule, Interactive } from './populations';
 import { variedPlants } from './species/varied-plants';
 
@@ -22,7 +23,7 @@ const interactive = new Interactive({
       imagePath: require('./images/corn-5.png')
     },
     {
-      species: worm,
+      species: wormEgg,
       limit: 20,
       imagePath: require('./images/rootworm-mature.png')
     }
@@ -54,7 +55,7 @@ export const addCornSparse = () => {
 function addWorms(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {
-      const larva = worm.createAgent();
+      const larva = wormEgg.createAgent();
       larva.setLocation({
           x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
           y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
@@ -93,6 +94,14 @@ const agentIsCorn = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Corn";
 };
 
+const agentIsEgg = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "WormEgg";
+};
+
+const agentIsWorm = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "Worm";
+};
+
 export function getCornStats() {
   let countCorn = 0,
     countTrap = 0,
@@ -105,7 +114,7 @@ export function getCornStats() {
       if (a.get('health') < 100) {
         ++ infected;
       }
-    } 
+    }
     else if (a.species.speciesName === 'Trap') {
       ++ countTrap;
     }
@@ -124,7 +133,20 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   if (simulationElt) {
     simulationElt.appendChild(interactive.getEnvironmentPane());
   }
-
+  env.addRule(new Rule({
+    test(agent: Agent) {
+      return env.date > 50 && env.date < 60 && agentIsEgg(agent) && agent.get('hatched') === false;
+    },
+    action(agent: Agent) {
+      agent.set('hatched', true);
+      const wormAgent = worm.createAgent();
+      wormAgent.setLocation(agent.getLocation());
+      // hatch a worm at the location of the egg
+      env.addAgent(wormAgent);
+      // remove the egg agent
+      agent.die();
+    }
+  }));
   env.addRule(new Rule({
     action(agent: Agent) {
       agent.set('chance of survival', 1);
@@ -138,6 +160,25 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
     },
     action() {
       env.stop();
+    }
+  }));
+
+  env.addRule(new Rule({
+    test(agent: Agent) {
+      return agentIsWorm(agent) && getWormLifestage(agent) === wormLifestage.mature;
+    },
+    action(agent: Agent) {
+      if (!agent.get('has mated') && agent.get('energy') > 50) {
+        const offspring = agent.get('max offspring');
+        // lay a number of eggs at the worm's location
+        // TODO: vary egg quantity by worm energy?
+        for (let i = 0; i < offspring; i++) {
+          const wormEggAgent = wormEgg.createAgent();
+          wormEggAgent.setLocation(agent.getLocation());
+          env.addAgent(wormEggAgent);
+        }
+        agent.set('has mated', true);
+      }
     }
   }));
 }

@@ -1,11 +1,13 @@
 import * as React from 'react';
 import './App.css';
-import { addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
-          addWormsSparse, getCornStats
+import {
+  addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
+  addWormsSparse
 } from './corn-model';
 import { worm } from './species/rootworm';
-import { Environment, Events, Species } from './populations';
+import { Species } from './populations';
 import { Attribution } from './components/attribution';
+import { SimulationStatistics } from './components/simulation-statistics';
 import PopulationsModel from './components/populations-model';
 import { forEach } from 'lodash';
 
@@ -35,10 +37,25 @@ const traitMap: { [key: string]: ITraitSpec } = {
     traitName: 'resource consumption rate',
     stateName: 'wormResourceConsumptionRate'
   },
+  'trait-worm-speed': {
+    species: worm,
+    traitName: 'default speed',
+    stateName: 'wormSpeed'
+  },
+  'trait-worm-larva-speed': {
+    species: worm,
+    traitName: 'larva max speed',
+    stateName: 'wormLarvaSpeed'
+  },
   'trait-worm-vision-distance': {
     species: worm,
-    traitName: 'vision distance',
+    traitName: 'vision distance adult',
     stateName: 'wormVisionDistance'
+  },
+  'trait-worm-larva-vision-distance': {
+    species: worm,
+    traitName: 'vision distance',
+    stateName: 'wormVisionDistanceLarva'
   }
 };
 
@@ -47,42 +64,29 @@ interface IAppProps {
 }
 
 interface IAppState {
-  initialCorn: number;
-  initialTrap: number;
-  initialWorms: number;
-  dayFirstCornEaten: number | null;
-  totalCorn: number;
-  totalTrap: number;
-  totalWorm: number;
-  infectedCorn: number;
-  harvestCorn: number;
-  simulationDay: number;
   // store as strings during editing
   wormEatingDistance: string;
   wormEnergy: string;
   wormMetabolism: string;
   wormResourceConsumptionRate: string;
+  wormSpeed: string;
+  wormLarvaSpeed: string;
   wormVisionDistance: string;
+  wormVisionDistanceLarva: string;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
-    initialCorn: 0,
-    initialTrap: 0,
-    initialWorms: 0,
-    dayFirstCornEaten: null,
-    totalCorn: 0,
-    totalTrap: 0,
-    totalWorm: 0,
-    infectedCorn: 0,
-    harvestCorn: 0,
-    simulationDay: 0,
+
     wormEatingDistance: "",
     wormEnergy: "",
     wormMetabolism: "",
     wormResourceConsumptionRate: "",
-    wormVisionDistance: ""
+    wormSpeed: "",
+    wormLarvaSpeed: "",
+    wormVisionDistance: "",
+    wormVisionDistanceLarva: ""
   };
 
   public componentDidMount() {
@@ -90,34 +94,11 @@ class App extends React.Component<IAppProps, IAppState> {
     // initialize trait inputs with default trait values
     forEach(traitMap, (spec, key) => {
       const trait = spec.species.getTrait(spec.traitName),
-            defaultValue = trait && trait.getDefaultValue();
+        defaultValue = trait && trait.getDefaultValue();
       if (trait && (traitState != null)) {
         traitState[spec.stateName] = String(defaultValue);
       }
       this.setState(traitState as any);
-    });
-
-    Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      let { dayFirstCornEaten } = this.state;
-      const { countCorn, countTrap, countWorm, infected, simulationDay } = getCornStats();
-      const actualDay = Math.trunc(simulationDay / 3);
-      if ((this.state.dayFirstCornEaten == null) && (countCorn < this.state.initialCorn)) {
-        dayFirstCornEaten = actualDay;
-      }
-      this.setState({ totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm,
-                      dayFirstCornEaten, infectedCorn: infected, simulationDay: actualDay });
-    });
-
-    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      const { countCorn, countTrap, countWorm, infected } = getCornStats();
-      this.setState({ initialCorn: countCorn, initialTrap: countTrap, initialWorms: countWorm,
-                      dayFirstCornEaten: null, infectedCorn: infected });
-    });
-
-    Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
-      this.setState({ initialCorn: 0, initialTrap: 0, initialWorms: 0,
-                      totalCorn: 0, totalTrap: 0, totalWorm: 0,
-                      dayFirstCornEaten: null, infectedCorn: 0, simulationDay: 0 });
     });
   }
 
@@ -172,8 +153,8 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { wormMetabolism, wormEnergy, wormVisionDistance, wormEatingDistance, wormResourceConsumptionRate } = this.state,
-          populationsModel = !this.props.hideModel ? <PopulationsModel /> : null;
+    const { wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva, wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
+      populationsModel = !this.props.hideModel ? <PopulationsModel /> : null;
 
     return (
       <div className="app">
@@ -200,53 +181,65 @@ class App extends React.Component<IAppProps, IAppState> {
           <div className="section sim-adjustment">
             <h4>Worms</h4>
             <div>
-              <span>Metabolism:</span>
-              <input id="trait-worm-metabolism" type="number"
-                value={wormMetabolism}
+              <span>Sensing Distance (larva):</span>
+              <input id="trait-worm-larva-vision-distance" type="number"
+                value={wormVisionDistanceLarva}
                 onChange={this.updateDefaultTraitValue}
                 onBlur={this.setDefaultTraitValue} />
             </div>
             <div>
-              <span>Energy:</span>
-              <input id="trait-worm-energy" type="number"
-                value={wormEnergy}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
-            </div>
-            <div>
-              <span>Vision Distance (larva):</span>
+              <span>Sensing Distance (adult):</span>
               <input id="trait-worm-vision-distance" type="number"
                 value={wormVisionDistance}
                 onChange={this.updateDefaultTraitValue}
                 onBlur={this.setDefaultTraitValue} />
-            </div>
-            <div>
-              <span>Eating Distance:</span>
-              <input id="trait-worm-eating-distance" type="number"
-                value={wormEatingDistance}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
-            </div>
-            <div>
-              <span>Consumption Rate:</span>
-              <input id="trait-worm-resource-consumption-rate" type="number"
-                value={wormResourceConsumptionRate}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
+              <div>
+                <span>Metabolism:</span>
+                <input id="trait-worm-metabolism" type="number"
+                  value={wormMetabolism}
+                  onChange={this.updateDefaultTraitValue}
+                  onBlur={this.setDefaultTraitValue} />
+              </div>
+              <div>
+                <span>Energy:</span>
+                <input id="trait-worm-energy" type="number"
+                  value={wormEnergy}
+                  onChange={this.updateDefaultTraitValue}
+                  onBlur={this.setDefaultTraitValue} />
+              </div>
+              <div>
+                <span>Eating Distance:</span>
+                <input id="trait-worm-eating-distance" type="number"
+                  value={wormEatingDistance}
+                  onChange={this.updateDefaultTraitValue}
+                  onBlur={this.setDefaultTraitValue} />
+              </div>
+              <div>
+                <span>Consumption Rate:</span>
+                <input id="trait-worm-resource-consumption-rate" type="number"
+                  value={wormResourceConsumptionRate}
+                  onChange={this.updateDefaultTraitValue}
+                  onBlur={this.setDefaultTraitValue} />
+              </div>
+              <div>
+                <span>Worm speed:</span>
+                <input id="trait-worm-speed" type="number"
+                  value={wormSpeed}
+                  onChange={this.updateDefaultTraitValue}
+                  onBlur={this.setDefaultTraitValue} />
+              </div>
+              <div>
+                <span>Worm larva speed:</span>
+                <input id="trait-worm-larva-speed" type="number"
+                  value={wormLarvaSpeed}
+                  onChange={this.updateDefaultTraitValue}
+                  onBlur={this.setDefaultTraitValue} />
+              </div>
             </div>
           </div>
-          <div className="section stats">
-            <h4>Statistics</h4>
-            <div><span>Day: </span><span>{this.state.simulationDay}</span></div>
-            <div><span>Corn planted: </span><span>{this.state.initialCorn}</span></div>
-            <div><span>Corn remaining: </span><span>{this.state.totalCorn}</span></div>
-            <div><span>First corn eaten: </span><span>{this.state.dayFirstCornEaten}</span></div>
-            <div><span>Trap planted: </span><span>{this.state.initialTrap}</span></div>
-            <div><span>Trap remaining: </span><span>{this.state.totalTrap}</span></div>
-            <div><span>Worms: </span><span>{this.state.totalWorm}</span></div>
-          </div>
-          <Attribution />
+          <SimulationStatistics />
         </div>
+        <Attribution />
       </div>
     );
   }
