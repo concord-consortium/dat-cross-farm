@@ -23,7 +23,7 @@ const interactive = new Interactive({
       imagePath: require('./images/corn-5.png')
     },
     {
-      species: worm,
+      species: wormEgg,
       limit: 20,
       imagePath: require('./images/rootworm-mature.png')
     }
