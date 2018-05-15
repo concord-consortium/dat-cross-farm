@@ -1,6 +1,6 @@
 import { Agent, BasicAnimal, Species, Trait } from '../populations';
 
-const maturity = 5;
+const maturity = 1;
 
 const eggTraits = [
   new Trait({
@@ -10,10 +10,6 @@ const eggTraits = [
   new Trait({
     name: 'default speed',
     default: 0
-  }),
-  new Trait({
-    name: 'metabolism',
-    default: 0
   })
 
 ];
@@ -21,14 +17,19 @@ const eggTraits = [
 class WormEgg extends BasicAnimal {
   constructor(args: any) {
     super(args);
-  }
-
-  step() {
-
     this.set('speed', 0);
-    // if (this.get('hatched') && this.get('age') > maturity) {
-    //   this.die();
-    // }
+  }
+  _setSpeedAppropriateForAge() {
+    // override / ignore base functionality - no speed for eggs
+    return;
+  }
+  getSize() {
+    // no growing over time
+    return 1;
+  }
+  step() {
+    // stop agent from moving, growing, doing anything each step.
+    return;
   }
 }
 
@@ -42,24 +43,23 @@ export const wormEgg = new Species({
   traits: eggTraits,
   imageProperties:
     {
-      rotate: true,
-      initialRotationDirection: -Math.PI
+      rotate: false,
     },
   imageRules: [
     {
-      name: 'egg',
+      name: 'wormEgg',
       rules: [
         {
           image: {
             path: require('../images/rootworm-larva1.png'),
-            scale: 1,
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 0.5
             }
           },
           useIf(agent: Agent) {
-            return agent.get('age') < maturity;
+            return true;
           }
         }]
     }]

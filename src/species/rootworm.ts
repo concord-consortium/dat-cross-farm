@@ -1,6 +1,7 @@
 import { Agent, AgentDistance, BasicAnimal, Species, Trait } from '../populations';
 
 const maturity = 250;
+
 const lifestage = {
   egg: 0,
   larva: 1,
@@ -9,7 +10,7 @@ const lifestage = {
   mature: 4
 };
 const lifestageThresholds = {
-  larva: 10,
+  larva: 1,
   grub: maturity * 0.25,
   adult: maturity * 0.5,
   mature: maturity,
@@ -98,17 +99,14 @@ class WormAnimal extends BasicAnimal {
   constructor(args: any) {
     super(args);
   }
-
   step() {
     super.step();
-    if (this.get('age') === 0) {
-      this.set('speed', this.get('larva max speed'));
-    }
     if (this.get('age') === maturity) {
       this.set('speed', this.get('default speed'));
       this.set('vision distance', this.get('vision distance adult'));
     }
   }
+
   eat() {
     const nearest = this._nearestPrey();
     if (nearest) {
@@ -130,10 +128,7 @@ class WormAnimal extends BasicAnimal {
   _eatPrey(prey: Agent) {
     const consumptionRate = this.get('resource consumption rate');
     const currEnergy = this.get('energy');
-    if (!this.get('has mated') && currEnergy > 50 && this.get('age') >= maturity) {
-      this.reproduce(this);
-      this.set('has mated', true);
-    }
+
     this.set('energy', currEnergy + consumptionRate);
 
     const preyHealth = prey.get('health');
@@ -223,8 +218,8 @@ export const worm = new Species({
       rules: [
         {
           image: {
-            path: require('../images/rootworm-larva1.png'),
-            scale: 0.4,
+            path: require('../images/rootworm-larva2.png'),
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 0.5
@@ -236,8 +231,8 @@ export const worm = new Species({
         },
         {
           image: {
-            path: require('../images/rootworm-larva1.png'),
-            scale: 0.5,
+            path: require('../images/rootworm-larva2.png'),
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 0.5
