@@ -1,7 +1,12 @@
+.app {
+  display: flex;
+}
+
 .ui {
   font-size: 0.8em;
   max-width: 300px;
   margin-top: 10px;
+  margin-left: 20px;
 }
 
 .ui .section{
