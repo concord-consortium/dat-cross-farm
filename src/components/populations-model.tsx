@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { initCornModel } from '../corn-model';
+import { Interactive } from '../populations';
 
-interface IProps {}
+interface IProps {
+  interactive?: Interactive;
+  onSetInteractive: (interactive: Interactive) => void;
+}
 interface IState {}
 
 class PopulationsModel extends React.Component<IProps, IState> {
@@ -12,7 +16,11 @@ class PopulationsModel extends React.Component<IProps, IState> {
   };
 
   public componentDidMount() {
-    initCornModel(this.modelDiv, {});
+    const { onSetInteractive } = this.props,
+          interactive = initCornModel(this.modelDiv, {});
+    if (onSetInteractive) {
+      onSetInteractive(interactive);
+    }
   }
 
   public render() {

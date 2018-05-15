@@ -8,6 +8,7 @@ const env = new Environment({
   columns:  45,
   rows:     45,
   imgPath: require('./images/dirt.jpg'),
+  // seasonLengths: [50, 50, 50, 50],
   barriers: [],
   wrapEastWest: false,
   wrapNorthSouth: false
@@ -128,11 +129,15 @@ export function getCornStats() {
 export interface IModelParams {
 }
 
-export function initCornModel(simulationElt: HTMLElement | null, params?: IModelParams) {
+export function initCornModel(simulationElt: HTMLElement | null, params?: IModelParams): Interactive {
   // no simulationElt is useful for unit testing
   if (simulationElt) {
-    simulationElt.appendChild(interactive.getEnvironmentPane());
+    const envPane = interactive.getEnvironmentPane();
+    if (envPane) {
+      simulationElt.appendChild(envPane);
+    }
   }
+
   env.addRule(new Rule({
     test(agent: Agent) {
       return env.date > 50 && env.date < 60 && agentIsEgg(agent) && agent.get('hatched') === false;
@@ -181,4 +186,6 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
       }
     }
   }));
+
+  return interactive;
 }
