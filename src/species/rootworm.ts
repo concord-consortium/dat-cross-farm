@@ -2,38 +2,38 @@ import { Agent, AgentDistance, BasicAnimal, Species, Trait } from '../population
 
 const maturity = 250;
 
-const lifestage = {
+export const wormLifestage = {
   egg: 0,
   larva: 1,
   grub: 2,
   adult: 3,
   mature: 4
 };
-const lifestageThresholds = {
+const wormLifestageThresholds = {
   larva: 1,
   grub: maturity * 0.25,
   adult: maturity * 0.5,
   mature: maturity,
 };
 
-const getLifestage = (agent: Agent): number => {
+export const getWormLifestage = (agent: Agent): number => {
   const age = agent.get('age');
-  let stage = lifestage.egg;
+  let stage = wormLifestage.egg;
 
-  if (age < lifestageThresholds.larva) {
-    stage = lifestage.egg;
+  if (age < wormLifestageThresholds.larva) {
+    stage = wormLifestage.egg;
   }
-  if (age >= lifestageThresholds.larva && age < lifestageThresholds.grub) {
-    stage = lifestage.larva;
+  if (age >= wormLifestageThresholds.larva && age < wormLifestageThresholds.grub) {
+    stage = wormLifestage.larva;
   }
-  if (age >= lifestageThresholds.grub && age < lifestageThresholds.adult) {
-    stage = lifestage.grub;
+  if (age >= wormLifestageThresholds.grub && age < wormLifestageThresholds.adult) {
+    stage = wormLifestage.grub;
   }
-  if (age >= lifestageThresholds.adult && age < lifestageThresholds.mature) {
-    stage = lifestage.adult;
+  if (age >= wormLifestageThresholds.adult && age < wormLifestageThresholds.mature) {
+    stage = wormLifestage.adult;
   }
-  if (age >= lifestageThresholds.mature) {
-    stage = lifestage.mature;
+  if (age >= wormLifestageThresholds.mature) {
+    stage = wormLifestage.mature;
   }
   return stage;
 };
@@ -226,7 +226,7 @@ export const worm = new Species({
             }
           },
           useIf(agent: Agent) {
-            return getLifestage(agent) === lifestage.egg;
+            return getWormLifestage(agent) === wormLifestage.egg;
           }
         },
         {
@@ -239,7 +239,7 @@ export const worm = new Species({
             }
           },
           useIf(agent: Agent) {
-            return getLifestage(agent) === lifestage.larva;
+            return getWormLifestage(agent) === wormLifestage.larva;
           }
         },
         {
@@ -252,7 +252,7 @@ export const worm = new Species({
             }
           },
           useIf(agent: Agent) {
-            return getLifestage(agent) === lifestage.grub;
+            return getWormLifestage(agent) === wormLifestage.grub;
           }
         },
         {
@@ -265,7 +265,7 @@ export const worm = new Species({
             }
           },
           useIf(agent: Agent) {
-            return getLifestage(agent) === lifestage.adult;
+            return getWormLifestage(agent) === wormLifestage.adult;
           }
         },
         {
@@ -278,7 +278,7 @@ export const worm = new Species({
             }
           },
           useIf(agent: Agent) {
-            return getLifestage(agent) === lifestage.mature;
+            return getWormLifestage(agent) === wormLifestage.mature;
           }
         }
       ]
