@@ -120,6 +120,8 @@ class App extends React.Component<IAppProps, IAppState> {
       const yearRelativeStep = currentStats.simulationStep / (currentStats.simulationYear + 1);
       if (yearRelativeStep === currentStats.simulationYearLength - 1) {
         // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
+        // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
+        // should only execute once per step.
         endYear();
         // Ending year stops the simulation, and the result is still displayed. We ideally need another
         // step after this, to clear the sim (but not using the reset button), leaving just the eggs.

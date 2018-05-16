@@ -130,6 +130,8 @@ export function getCornStats(): ISimulationState {
     infected = 0;
   const simulationYear = Math.floor(env.date/simulationYearLengthInSteps);
   const simulationStep = env.date;
+  // currentYearStep is useful later on for agent rule tests - since those rules execute
+  // once per agent per step, this should improve performance.
   currentYearStep = env.date - (simulationYearLengthInSteps * simulationYear);
   const simulationDay = Math.round(currentYearStep / simulationStepToDayRatio);
 
