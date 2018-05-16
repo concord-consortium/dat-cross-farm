@@ -111,7 +111,11 @@ class WormAnimal extends BasicAnimal {
     // Normally populations.js will smoothly grow the organism from invisible infant (0) to maturity (1), but
     // since worms hatch from eggs we need our worms to grow from small to mature
     const sizeScale = this.get('age') / maturity;
-    return Math.max(0.5, sizeScale);
+    if (sizeScale < 1) {
+      return Math.max(0.5, sizeScale);
+    } else {
+      return 1;
+    }
   }
 
   eat() {

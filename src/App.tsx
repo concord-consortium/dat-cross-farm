@@ -2,7 +2,7 @@ import * as React from 'react';
 import './style/App.css';
 import {
   addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
-  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState
+  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState, endYear
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Events, Environment, Interactive, Species } from './populations';
@@ -106,11 +106,26 @@ class App extends React.Component<IAppProps, IAppState> {
     });
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      this.setState({ simulationState: getCornStats() });
+      const nextCycle = kNullSimulationState;
+      const currentStats = getCornStats();
+      if (currentStats.simulationDay === 200) {
+        nextCycle.simulationYear = currentStats.simulationYear;
+      }
+      this.setState({ simulationState: nextCycle });
     });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      this.setState({ simulationState: getCornStats() });
+      const currentStats = getCornStats();
+      this.setState({ simulationState: currentStats });
+      const yearRelativeStep = currentStats.simulationStep / (currentStats.simulationYear + 1);
+      if (yearRelativeStep === currentStats.simulationYearLength - 1) {
+        // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
+        endYear();
+        // Ending year stops the simulation, and the result is still displayed. We ideally need another
+        // step after this, to clear the sim (but not using the reset button), leaving just the eggs.
+        // We can probably do this by advancing the simulation by one day and pausing immediately after -
+        // then prompt the user to sow more corn.
+      }
     });
 
     Events.addEventListener(Environment.EVENTS.STOP, (evt: any) => {
