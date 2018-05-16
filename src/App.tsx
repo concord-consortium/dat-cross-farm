@@ -65,6 +65,7 @@ interface IAppProps {
 
 interface IAppState {
   interactive?: Interactive;
+  year: number;
   simulationState: ISimulationState;
   // store as strings during editing
   wormEatingDistance: string;
@@ -80,6 +81,7 @@ interface IAppState {
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
+    year: 0,
     simulationState: kNullSimulationState,
     wormEatingDistance: "",
     wormEnergy: "",
@@ -103,11 +105,15 @@ class App extends React.Component<IAppProps, IAppState> {
       this.setState(traitState as any);
     });
 
+    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
+      this.setState({ simulationState: getCornStats() });
+    });
+
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
       this.setState({ simulationState: getCornStats() });
     });
 
-    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
+    Events.addEventListener(Environment.EVENTS.STOP, (evt: any) => {
       this.setState({ simulationState: getCornStats() });
     });
 
@@ -177,6 +183,7 @@ class App extends React.Component<IAppProps, IAppState> {
     return (
       <div className="app">
         <PopulationsModelPanel hideModel={this.props.hideModel}
+                                year={this.state.year}
                                 simulationStep={simulationStep}
                                 interactive={interactive}
                                 onSetInteractive={this.handleSetInteractive}/>
@@ -258,7 +265,7 @@ class App extends React.Component<IAppProps, IAppState> {
               </div>
             </div>
           </div>
-          <SimulationStatistics simulationState={simulationState}/>
+          <SimulationStatistics year={this.state.year} simulationState={simulationState}/>
         </div>
         <Attribution />
       </div>
