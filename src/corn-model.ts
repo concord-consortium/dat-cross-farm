@@ -169,6 +169,10 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   }));
 
   // limit growing season length - at the end of a year, the remaining corn is harvested
+  // NOTE: since rules are executed in the context of agents, this rule is not applied
+  // when there are no agents, and so the simulation runs forever. A simulation with
+  // no agents is unlikely to be useful, so it doesn't generally come up in practice,
+  // bit it can arise if all of the agents die, for instance.
   env.addRule(new Rule({
     test() {
       return env.date >= 600;

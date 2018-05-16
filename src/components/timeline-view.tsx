@@ -1,8 +1,9 @@
 import * as React from 'react';
-import sizeMe from 'react-sizeme';
-import { sum } from 'lodash';
+import TimelineBar from './timeline-bar';
+import '../style/timeline-view.css';
 
 interface IProps extends ISizeMeProps {
+  year: number;
   seasons?: string[];
   seasonLengths?: number[];
   simulationStep: number;
@@ -10,49 +11,20 @@ interface IProps extends ISizeMeProps {
 
 interface IState {}
 
-class TimelineView extends React.Component<IProps, IState> {
+export default class TimelineView extends React.Component<IProps, IState> {
 
   state: IState = {
   };
 
   render() {
-    let cumulativeLength = 0;
-    const width = this.props.size.width || undefined,
-          height = this.props.size.height || undefined,
-          { seasons, seasonLengths, simulationStep } = this.props,
-          yearLength = seasonLengths ? sum(seasonLengths) : 0,
-          cumulativeLengths = seasonLengths && seasonLengths.map((length) => {
-                                                cumulativeLength += length;
-                                                return cumulativeLength;
-                                              }),
-          seasonTicks = cumulativeLengths
-                          ? cumulativeLengths.map((length, index) => {
-                              const x = width && (length / yearLength) * width;
-                              return <rect key={index} x={x} width={0.1} height={height} stroke="gray" fill="gray"/>;
-                            })
-                          : 0,
-          seasonLabels = cumulativeLengths
-                          ? cumulativeLengths.map((length, index) => {
-                              const prevLength = index > 0 ? cumulativeLengths[index-1] : 0,
-                                    x = width && (0.5 * (prevLength + length) / yearLength) * width;
-                              return <text key={index} style={{textAnchor: 'middle'}} x={x} y={16} fill="gray">
-                                      {seasons && seasons[index]}
-                                     </text>;
-                            })
-                          : 0,
-          xCurrent = (simulationStep  / yearLength) * (width || 0);
+    const { seasons, seasonLengths, simulationStep } = this.props,
+          year = this.props.year != null ? this.props.year + 1 : 1,
+          yearLabel = `Year ${year}`;
     return (
       <div className="timeline-view">
-        <svg width={width} height={height} >
-          <rect width={width} height={height} stroke="gray" strokeWidth={2} fill="transparent"/>
-          {seasonTicks}
-          {seasonLabels}
-          <rect x={xCurrent} width={1} height={height} stroke="gray" fill="gray"/>
-        </svg>
+        <span className='year-label'>{yearLabel}</span>
+        <TimelineBar seasons={seasons} seasonLengths={seasonLengths} simulationStep={simulationStep} />
       </div>
     );
   }
 }
-
-const sizeMeConfig = { monitorWidth: true, monitorHeight: true, noPlaceholder: true };
-export default sizeMe(sizeMeConfig)(TimelineView as any);

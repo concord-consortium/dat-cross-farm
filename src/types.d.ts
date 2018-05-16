@@ -3,7 +3,7 @@
 declare module "react-sizeme";
 // usage: interface IComponentProps extends ISizeMeProps
 interface ISizeMeProps {
-  size: {
+  size?: {
     width: number | null;
     height: number | null;
   }
