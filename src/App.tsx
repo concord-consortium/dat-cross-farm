@@ -1,13 +1,13 @@
 import * as React from 'react';
 import './style/App.css';
 import {
-  addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
-  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState,
+  getCornStats, ISimulationState, kNullSimulationState,
   simulationStepsPerYear, prepareToEndYear, endYear
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Events, Environment, Interactive, Species } from './populations';
 import Attribution from './components/attribution';
+import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
 import SimulationStatistics from './components/simulation-statistics';
 import { forEach } from 'lodash';
@@ -181,26 +181,6 @@ class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
-  plantCornDensely = () => {
-    addCornDense();
-  }
-
-  plantCornSparsely = () => {
-    addCornSparse();
-  }
-
-  plantTrapCropDensely = () => {
-    addTrapCropDense();
-  }
-
-  plantTrapCropSparsely = () => {
-    addTrapCropSparse();
-  }
-
-  addWorms = () => {
-    addWormsSparse();
-  }
-
   public render() {
     const { interactive, simulationState, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva,
             wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
@@ -213,24 +193,7 @@ class App extends React.Component<IAppProps, IAppState> {
                                 interactive={interactive}
                                 onSetInteractive={this.handleSetInteractive}/>
         <div className="ui">
-          <div className="section planting-controls">
-            <h4>Planting Controls</h4>
-            <div><button id="add-corn-dense" onClick={this.plantCornDensely}>
-              Plant Corn Densely
-            </button></div>
-            <div><button id="add-corn-sparse" onClick={this.plantCornSparsely}>
-              Plant Corn Sparsely
-            </button></div>
-            <div><button id="add-trap-dense" onClick={this.plantTrapCropDensely}>
-              Plant Trap Crop Densely
-            </button></div>
-            <div><button id="add-trap-sparse" onClick={this.plantTrapCropSparsely}>
-              Plant Trap Crop Sparsely
-            </button></div>
-            <div><button id="add-worms-sparse" onClick={this.addWorms}>
-              Add Worms
-            </button></div>
-          </div>
+          <PlantingControls />
           <div className="section sim-adjustment">
             <h4>Worms</h4>
             <div>
