@@ -8,6 +8,7 @@ const env = new Environment({
   columns:  45,
   rows:     45,
   imgPath: require('./images/dirt.jpg'),
+  // seasonLengths: [50, 50, 50, 50],
   barriers: [],
   wrapEastWest: false,
   wrapNorthSouth: false
@@ -102,12 +103,22 @@ const agentIsWorm = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Worm";
 };
 
-export function getCornStats() {
+export interface ISimulationState {
+  countCorn: number;
+  countTrap: number;
+  countWorm: number;
+  infected: number;
+  simulationStep: number;
+}
+export const kNullSimulationState =
+        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0, simulationStep: 0 };
+
+export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
     infected = 0;
-  const simulationDay = env.date;
+  const simulationStep = env.date;
   env.agents.forEach((a) => {
     if (agentIsCorn(a)) {
       ++ countCorn;
@@ -122,17 +133,21 @@ export function getCornStats() {
       ++countWorm;
     }
   });
-  return { countCorn, countTrap, countWorm, infected, simulationDay };
+  return { countCorn, countTrap, countWorm, infected, simulationStep };
 }
 
 export interface IModelParams {
 }
 
-export function initCornModel(simulationElt: HTMLElement | null, params?: IModelParams) {
+export function initCornModel(simulationElt: HTMLElement | null, params?: IModelParams): Interactive {
   // no simulationElt is useful for unit testing
   if (simulationElt) {
-    simulationElt.appendChild(interactive.getEnvironmentPane());
+    const envPane = interactive.getEnvironmentPane();
+    if (envPane) {
+      simulationElt.appendChild(envPane);
+    }
   }
+
   env.addRule(new Rule({
     test(agent: Agent) {
       return env.date > 50 && env.date < 60 && agentIsEgg(agent) && agent.get('hatched') === false;
@@ -181,4 +196,6 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
       }
     }
   }));
+
+  return interactive;
 }

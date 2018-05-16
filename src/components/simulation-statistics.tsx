@@ -1,11 +1,12 @@
 import * as React from 'react';
 import '../App.css';
-import {
-  getCornStats
-} from '../corn-model';
-import { Environment, Events} from '../populations';
+import { ISimulationState } from '../corn-model';
 
-interface ISimulationState {
+interface IProps {
+  simulationState: ISimulationState;
+}
+
+interface IState {
   initialCorn: number;
   initialTrap: number;
   initialWorms: number;
@@ -18,9 +19,9 @@ interface ISimulationState {
   simulationDay: number;
 }
 
-export class SimulationStatistics extends React.Component<{}, ISimulationState> {
+export class SimulationStatistics extends React.Component<IProps, IState> {
 
-  public state: ISimulationState = {
+  public state: IState = {
     initialCorn: 0,
     initialTrap: 0,
     initialWorms: 0,
@@ -33,35 +34,22 @@ export class SimulationStatistics extends React.Component<{}, ISimulationState> 
     simulationDay: 0
   };
 
-  public componentDidMount() {
-    Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      let { dayFirstCornEaten } = this.state;
-      const { countCorn, countTrap, countWorm, infected, simulationDay } = getCornStats();
-      const actualDay = Math.trunc(simulationDay / 3);
-      if ((this.state.dayFirstCornEaten == null) && (countCorn < this.state.initialCorn)) {
-        dayFirstCornEaten = actualDay;
-      }
-      this.setState({
-        totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm,
-        dayFirstCornEaten, infectedCorn: infected, simulationDay: actualDay
-      });
-    });
+  static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
+    const { simulationStep, countCorn, countTrap, countWorm, infected } = nextProps.simulationState;
+    const actualDay = Math.trunc(simulationStep / 3);
 
-    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      const { countCorn, countTrap, countWorm, infected } = getCornStats();
-      this.setState({
-        initialCorn: countCorn, initialTrap: countTrap, initialWorms: countWorm,
-        dayFirstCornEaten: null, infectedCorn: infected
-      });
-    });
-
-    Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
-      this.setState({
-        initialCorn: 0, initialTrap: 0, initialWorms: 0,
-        totalCorn: 0, totalTrap: 0, totalWorm: 0,
-        dayFirstCornEaten: null, infectedCorn: 0, simulationDay: 0
-      });
-    });
+    let nextState = { totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm,
+                      infectedCorn: infected, simulationDay: actualDay };
+    if (!simulationStep) {
+      nextState = Object.assign(nextState, {
+                                  initialCorn: countCorn, initialTrap: countTrap,
+                                  initialWorms: countWorm, dayFirstCornEaten: null
+                                });
+    }
+    if ((prevState.dayFirstCornEaten == null) && (countCorn < prevState.initialCorn)) {
+      nextState = Object.assign(nextState, { dayFirstCornEaten: actualDay });
+    }
+    return nextState;
   }
 
   public render() {

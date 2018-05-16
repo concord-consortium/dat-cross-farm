@@ -153,6 +153,9 @@ declare namespace Populations {
     rules: Rule[];
     season: string;
     date: number;
+    seasonLengths?: number[];
+    usingSeasons: boolean;
+    yearLength: number;
   
     static EVENTS: {
       START: string,
@@ -307,6 +310,11 @@ declare namespace Populations {
   }
   
   export class Interactive {
+    environment: Environment;
+    addOrganismButtons?: IAddOrganismButtonSpec[];
+    toolButtons?: IToolButtonSpec[];
+    view?: HTMLDivElement;
+
     constructor(options: {
       environment: Environment,
       addOrganismButtons?: IAddOrganismButtonSpec[],
@@ -316,7 +324,7 @@ declare namespace Populations {
       resetButton?: () => void
     });
   
-    getEnvironmentPane(): any;
+    getEnvironmentPane(): HTMLDivElement | undefined;
   
     showPlayButton(): void;
     showResetButton(): void;
