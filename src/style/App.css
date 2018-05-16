@@ -2,13 +2,6 @@
   display: flex;
 }
 
-.timeline-view {
-  /* border: 1px solid gray; */
-  height: 22px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
 .ui {
   font-size: 0.8em;
   max-width: 300px;
