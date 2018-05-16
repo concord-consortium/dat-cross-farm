@@ -103,12 +103,22 @@ const agentIsWorm = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Worm";
 };
 
-export function getCornStats() {
+export interface ISimulationState {
+  countCorn: number;
+  countTrap: number;
+  countWorm: number;
+  infected: number;
+  simulationStep: number;
+}
+export const kNullSimulationState =
+        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0, simulationStep: 0 };
+
+export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
     infected = 0;
-  const simulationDay = env.date;
+  const simulationStep = env.date;
   env.agents.forEach((a) => {
     if (agentIsCorn(a)) {
       ++ countCorn;
@@ -123,7 +133,7 @@ export function getCornStats() {
       ++countWorm;
     }
   });
-  return { countCorn, countTrap, countWorm, infected, simulationDay };
+  return { countCorn, countTrap, countWorm, infected, simulationStep };
 }
 
 export interface IModelParams {

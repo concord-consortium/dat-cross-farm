@@ -2,10 +2,10 @@ import * as React from 'react';
 import './App.css';
 import {
   addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
-  addWormsSparse
+  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState
 } from './corn-model';
 import { worm } from './species/rootworm';
-import { Interactive, Species } from './populations';
+import { Events, Environment, Interactive, Species } from './populations';
 import { Attribution } from './components/attribution';
 import PopulationsModelPanel from './components/populations-model-panel';
 import { SimulationStatistics } from './components/simulation-statistics';
@@ -65,6 +65,7 @@ interface IAppProps {
 
 interface IAppState {
   interactive?: Interactive;
+  simulationState: ISimulationState;
   // store as strings during editing
   wormEatingDistance: string;
   wormEnergy: string;
@@ -79,7 +80,7 @@ interface IAppState {
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
-
+    simulationState: kNullSimulationState,
     wormEatingDistance: "",
     wormEnergy: "",
     wormMetabolism: "",
@@ -100,6 +101,18 @@ class App extends React.Component<IAppProps, IAppState> {
         traitState[spec.stateName] = String(defaultValue);
       }
       this.setState(traitState as any);
+    });
+
+    Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
+      this.setState({ simulationState: getCornStats() });
+    });
+
+    Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
+      this.setState({ simulationState: getCornStats() });
+    });
+
+    Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
+      this.setState({ simulationState: kNullSimulationState });
     });
   }
 
@@ -158,11 +171,13 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { interactive, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva, wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
+    const { interactive, simulationState, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva,
+            wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
+          { simulationStep } = simulationState;
     return (
       <div className="app">
         <PopulationsModelPanel hideModel={this.props.hideModel}
-                                simulationDay={simulationDay}
+                                simulationStep={simulationStep}
                                 interactive={interactive}
                                 onSetInteractive={this.handleSetInteractive}/>
         <div className="ui">
@@ -243,7 +258,7 @@ class App extends React.Component<IAppProps, IAppState> {
               </div>
             </div>
           </div>
-          <SimulationStatistics />
+          <SimulationStatistics simulationState={simulationState}/>
         </div>
         <Attribution />
       </div>

@@ -7,7 +7,7 @@ const SEASONS = ["spring", "summer", "fall", "winter"];
 
 interface IProps {
   hideModel?: boolean;
-  simulationDay: number;
+  simulationStep: number;
   interactive?: Interactive;
   onSetInteractive: (interactive: Interactive) => void;
 }
@@ -20,19 +20,19 @@ export default class PopulationsModelPanel extends React.Component<IProps, IStat
   };
 
   public render() {
-    const { simulationDay, interactive, onSetInteractive } = this.props,
+    const { simulationStep, interactive, onSetInteractive } = this.props,
           populationsModel = !this.props.hideModel
                               ? <PopulationsModel
                                   interactive={interactive}
                                   onSetInteractive={onSetInteractive} />
                               : null,
           // env = interactive && interactive.environment,
-          seasonLengths = [50, 50, 50, 50]; // env && env.seasonLengths;
+          seasonLengths = [150, 150, 150, 150]; // env && env.seasonLengths;
     return (
       <div className="populations-model-panel">
         {populationsModel}
         <TimelineView seasons={SEASONS} seasonLengths={seasonLengths}
-                      simulationDay={simulationDay} />
+                      simulationStep={simulationStep} />
       </div>
     );
   }

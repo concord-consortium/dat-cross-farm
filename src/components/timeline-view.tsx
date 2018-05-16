@@ -5,7 +5,7 @@ import { sum } from 'lodash';
 interface IProps extends ISizeMeProps {
   seasons?: string[];
   seasonLengths?: number[];
-  simulationDay: number;
+  simulationStep: number;
 }
 
 interface IState {}
@@ -19,7 +19,7 @@ class TimelineView extends React.Component<IProps, IState> {
     let cumulativeLength = 0;
     const width = this.props.size.width || undefined,
           height = this.props.size.height || undefined,
-          { seasons, seasonLengths } = this.props,
+          { seasons, seasonLengths, simulationStep } = this.props,
           yearLength = seasonLengths ? sum(seasonLengths) : 0,
           cumulativeLengths = seasonLengths && seasonLengths.map((length) => {
                                                 cumulativeLength += length;
@@ -40,7 +40,7 @@ class TimelineView extends React.Component<IProps, IState> {
                                      </text>;
                             })
                           : 0,
-          xCurrent = (this.props.simulationDay  / yearLength) * (width || 0);
+          xCurrent = (simulationStep  / yearLength) * (width || 0);
     return (
       <div className="timeline-view">
         <svg width={width} height={height} >
