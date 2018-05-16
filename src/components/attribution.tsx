@@ -1,11 +1,11 @@
 import * as React from 'react';
-import '../App.css';
+import '../style/attribution.css';
 
 interface IAttributionState {
   attributionVisible: boolean;
 }
 
-export class Attribution extends React.Component<{}, IAttributionState> {
+class Attribution extends React.Component<{}, IAttributionState> {
 
   public state: IAttributionState = {
     attributionVisible: false

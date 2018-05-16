@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../App.css';
+import '../style/App.css';
 import { ISimulationState } from '../corn-model';
 
 interface IProps {
@@ -19,7 +19,7 @@ interface IState {
   simulationDay: number;
 }
 
-export class SimulationStatistics extends React.Component<IProps, IState> {
+class SimulationStatistics extends React.Component<IProps, IState> {
 
   public state: IState = {
     initialCorn: 0,
