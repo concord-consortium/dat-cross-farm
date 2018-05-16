@@ -1,0 +1,32 @@
+.app {
+  display: flex;
+}
+
+.timeline-view {
+  /* border: 1px solid gray; */
+  height: 22px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.ui {
+  font-size: 0.8em;
+  max-width: 300px;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.ui .section{
+  border: 1px solid silver;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.ui .sim-adjustment div span{
+  display: inline-block;
+  width: 180px;
+}
+.ui .sim-adjustment div input{
+  display: inline-block;
+  width: 80px;
+}

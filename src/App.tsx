@@ -1,14 +1,14 @@
 import * as React from 'react';
-import './App.css';
+import './style/App.css';
 import {
   addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
   addWormsSparse, getCornStats, ISimulationState, kNullSimulationState
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Events, Environment, Interactive, Species } from './populations';
-import { Attribution } from './components/attribution';
+import Attribution from './components/attribution';
 import PopulationsModelPanel from './components/populations-model-panel';
-import { SimulationStatistics } from './components/simulation-statistics';
+import SimulationStatistics from './components/simulation-statistics';
 import { forEach } from 'lodash';
 
 interface ITraitSpec {
