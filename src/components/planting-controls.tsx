@@ -4,11 +4,14 @@ import { addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse, addWo
 
 interface IProps {
 }
-interface IState {}
+interface IState {
+  cornPct: number;
+}
 
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
+    cornPct: 50
   };
 
   plantCornDensely = () => {
@@ -31,22 +34,44 @@ export default class PlantingControls extends React.Component<IProps, IState> {
     addWormsSparse();
   }
 
+  handleCornPctChange = (evt: React.FormEvent<HTMLSelectElement>) => {
+    this.setState({ cornPct: Number(evt.currentTarget.value) });
+  }
+
+  plantCrop = () => {
+    //
+  }
+
   render() {
+    const trapPct = 100 - this.state.cornPct,
+          plantButtonLabel = trapPct === 0
+                              ? "Plant Corn Crop"
+                              : (trapPct === 100 ? "Plant Trap Crop" : "Plant Mixed Crop");
     return (
       <div className="section planting-controls">
         <h4>Planting Controls</h4>
-        <div><button id="add-corn-dense" onClick={this.plantCornDensely}>
-          Plant Corn Densely
-        </button></div>
-        <div><button id="add-corn-sparse" onClick={this.plantCornSparsely}>
-          Plant Corn Sparsely
-        </button></div>
-        <div><button id="add-trap-dense" onClick={this.plantTrapCropDensely}>
-          Plant Trap Crop Densely
-        </button></div>
-        <div><button id="add-trap-sparse" onClick={this.plantTrapCropSparsely}>
-          Plant Trap Crop Sparsely
-        </button></div>
+        <label>
+          Corn:&nbsp;
+          <select className="corn-percent-select"
+                  value={this.state.cornPct}
+                  onChange={this.handleCornPctChange}>
+            <option value="0">0%</option>
+            <option value="25">25%</option>
+            <option value="50">50%</option>
+            <option value="75">75%</option>
+            <option value="100">100%</option>
+          </select>
+        </label>
+        <br/>
+        <br/>
+        <div>Trap Crop: {trapPct}%</div>
+        <br/>
+        <div>
+          <button id="plant-crop" onClick={this.plantCrop}>
+            {plantButtonLabel}
+          </button>
+        </div>
+        <br/>
         <div><button id="add-worms-sparse" onClick={this.addWorms}>
           Add Worms
         </button></div>
