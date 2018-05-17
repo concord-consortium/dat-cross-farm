@@ -6,7 +6,7 @@ interface IProps extends ISizeMeProps {
   seasons?: string[];
   seasonLengths?: number[];
   simulationYear: number;
-  simulationStep: number;
+  simulationStepInYear: number;
 }
 
 interface IState {}
@@ -17,12 +17,14 @@ export default class TimelineView extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { seasons, seasonLengths, simulationYear, simulationStep } = this.props,
+    const { seasons, seasonLengths, simulationYear, simulationStepInYear } = this.props,
           yearLabel = `Year ${simulationYear + 1}`;
     return (
       <div className="timeline-view">
         <span className='year-label'>{yearLabel}</span>
-        <TimelineBar seasons={seasons} seasonLengths={seasonLengths} simulationStep={simulationStep} />
+        <TimelineBar seasons={seasons}
+                    seasonLengths={seasonLengths}
+                    simulationStepInYear={simulationStepInYear} />
       </div>
     );
   }

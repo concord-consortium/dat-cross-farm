@@ -2,7 +2,8 @@ import * as React from 'react';
 import './style/App.css';
 import {
   addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
-  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState, endYear
+  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState,
+  simulationStepsPerYear, prepareToEndYear, endYear
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Events, Environment, Interactive, Species } from './populations';
@@ -59,6 +60,11 @@ const traitMap: { [key: string]: ITraitSpec } = {
   }
 };
 
+interface ISimulationYearState {
+  initial: ISimulationState;
+  final?: ISimulationState;
+}
+
 interface IAppProps {
   hideModel?: boolean;
 }
@@ -79,6 +85,8 @@ interface IAppState {
 
 class App extends React.Component<IAppProps, IAppState> {
 
+  simulationHistory: ISimulationYearState[];
+
   public state: IAppState = {
     simulationState: kNullSimulationState,
     wormEatingDistance: "",
@@ -90,6 +98,11 @@ class App extends React.Component<IAppProps, IAppState> {
     wormVisionDistance: "",
     wormVisionDistanceLarva: ""
   };
+
+  constructor(props: IAppProps) {
+    super(props);
+    this.simulationHistory = [];
+  }
 
   public componentDidMount() {
     const traitState: { [key: string]: string } = {};
@@ -104,32 +117,29 @@ class App extends React.Component<IAppProps, IAppState> {
     });
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      const nextCycle = kNullSimulationState;
-      const currentStats = getCornStats();
-      if (currentStats.simulationDay === 200) {
-        nextCycle.simulationYear = currentStats.simulationYear;
+      const simulationState = getCornStats(),
+            { simulationStepInYear } = simulationState;
+      if (simulationStepInYear === 0) {
+        this.simulationHistory.push({ initial: simulationState });
       }
-      this.setState({ simulationState: nextCycle });
     });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      const currentStats = getCornStats();
-      this.setState({ simulationState: currentStats });
-      const yearRelativeStep = currentStats.simulationStep / (currentStats.simulationYear + 1);
-      if (yearRelativeStep === currentStats.simulationYearLength - 1) {
+      const simulationState = getCornStats(),
+            { simulationStepInYear, simulationYear } = simulationState;
+      this.setState({ simulationState });
+      // last step of the year
+      if (simulationStepInYear === simulationStepsPerYear - 1) {
         // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
         // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
         // should only execute once per step.
-        endYear();
-        // Ending year stops the simulation, and the result is still displayed. We ideally need another
-        // step after this, to clear the sim (but not using the reset button), leaving just the eggs.
-        // We can probably do this by advancing the simulation by one day and pausing immediately after -
-        // then prompt the user to sow more corn.
+        this.simulationHistory[simulationYear].final = simulationState;
+        prepareToEndYear();
       }
-    });
-
-    Events.addEventListener(Environment.EVENTS.STOP, (evt: any) => {
-      this.setState({ simulationState: getCornStats() });
+      // stop at the end of the year before starting the new year
+      else if (simulationStepInYear === 0) {
+        endYear();
+      }
     });
 
     Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
@@ -194,12 +204,12 @@ class App extends React.Component<IAppProps, IAppState> {
   public render() {
     const { interactive, simulationState, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva,
             wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
-          { simulationStep } = simulationState;
+          { simulationStepInYear } = simulationState;
     return (
       <div className="app">
         <PopulationsModelPanel hideModel={this.props.hideModel}
                                 simulationYear={simulationState.simulationYear}
-                                simulationStep={simulationStep}
+                                simulationStepInYear={simulationStepInYear}
                                 interactive={interactive}
                                 onSetInteractive={this.handleSetInteractive}/>
         <div className="ui">

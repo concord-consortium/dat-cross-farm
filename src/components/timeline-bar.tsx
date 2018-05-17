@@ -5,7 +5,7 @@ import { sum } from 'lodash';
 interface IProps extends ISizeMeProps {
   seasons?: string[];
   seasonLengths?: number[];
-  simulationStep: number;
+  simulationStepInYear: number;
 }
 
 interface IState {}
@@ -20,7 +20,7 @@ class TimelineBar extends React.Component<IProps, IState> {
     const { size } = this.props,
           width = size && size.width || undefined,
           height = size && size.height || undefined,
-          { seasons, seasonLengths, simulationStep } = this.props,
+          { seasons, seasonLengths, simulationStepInYear } = this.props,
           yearLength = seasonLengths ? sum(seasonLengths) : 0,
           cumulativeLengths = seasonLengths && seasonLengths.map((length) => {
                                                 cumulativeLength += length;
@@ -41,7 +41,7 @@ class TimelineBar extends React.Component<IProps, IState> {
                                      </text>;
                             })
                           : 0,
-          xCurrent = (simulationStep  / yearLength) * (width || 0);
+          xCurrent = (simulationStepInYear  / yearLength) * (width || 0);
     return (
       <div className="timeline-bar">
         <svg width={width} height={height} >

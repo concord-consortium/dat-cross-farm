@@ -4,9 +4,12 @@ import { wormEgg } from './species/worm-egg';
 import { Agent, Environment, Rule, Interactive } from './populations';
 import { variedPlants } from './species/varied-plants';
 
-const simulationYearLengthInSteps: number = 600;
-const simulationStepToDayRatio: number = 3;
-let currentYearStep = 0;
+export const simulationDaysPerYear = 200;
+export const simulationStepsPerDay = 3;
+export const simulationStepsPerYear = simulationDaysPerYear * simulationStepsPerDay;
+
+let simulationStepInYear = 0;
+
 const eggHatchSeason = {
   startStep: 50,
   endStep: 60
@@ -115,25 +118,27 @@ export interface ISimulationState {
   countTrap: number;
   countWorm: number;
   infected: number;
-  simulationDay: number;
-  simulationStep: number;
-  simulationYear: number;
-  simulationYearLength: number;
+                                // all simulation values are zero-based
+  simulationStep: number;       // cumulative step in simulation
+  simulationStepInYear: number; // step in current year
+  simulationDay: number;        // day in current year
+  simulationYear: number;       // year
 }
-export const kNullSimulationState =
-        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0, simulationDay: 0, simulationStep: 0, simulationYear: 0, simulationYearLength: simulationYearLengthInSteps };
+export const kNullSimulationState: ISimulationState =
+        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0,
+          simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
 
 export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
     infected = 0;
-  const simulationYear = Math.floor(env.date/simulationYearLengthInSteps);
+  const simulationYear = Math.floor(env.date / simulationStepsPerYear);
   const simulationStep = env.date;
-  // currentYearStep is useful later on for agent rule tests - since those rules execute
+  // simulationStepInYear is useful later on for agent rule tests - since those rules execute
   // once per agent per step, this should improve performance.
-  currentYearStep = env.date - (simulationYearLengthInSteps * simulationYear);
-  const simulationDay = Math.round(currentYearStep / simulationStepToDayRatio);
+  simulationStepInYear = simulationStep % simulationStepsPerYear;
+  const simulationDay = Math.floor(simulationStepInYear / simulationStepsPerDay);
 
   env.agents.forEach((a) => {
     if (agentIsCorn(a)) {
@@ -149,10 +154,10 @@ export function getCornStats(): ISimulationState {
       ++countWorm;
     }
   });
-  return { countCorn, countTrap, countWorm, infected, simulationDay, simulationStep, simulationYear, simulationYearLength: simulationYearLengthInSteps};
+  return { countCorn, countTrap, countWorm, infected,
+          simulationStep, simulationStepInYear, simulationDay, simulationYear };
 }
-export function endYear() {
-  env.stop();
+export function prepareToEndYear() {
   env.agents.forEach((a) => {
     // we could store location of all eggs, remove everything, then re-create eggs, but it seems that just killing
     // all the non-egg agents does the job just as well.
@@ -161,6 +166,10 @@ export function endYear() {
       a.die();
     }
   });
+}
+
+export function endYear() {
+  env.stop();
 }
 
 export interface IModelParams {
@@ -178,7 +187,9 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   env.addRule(new Rule({
     test(agent: Agent) {
       // currentYearStep is updated once per step as part of the corn stats
-      return currentYearStep > eggHatchSeason.startStep && currentYearStep < eggHatchSeason.endStep && agentIsEgg(agent) && agent.get('hatched') === false;
+      return simulationStepInYear > eggHatchSeason.startStep &&
+              simulationStepInYear < eggHatchSeason.endStep &&
+              agentIsEgg(agent) && agent.get('hatched') === false;
     },
     action(agent: Agent) {
       agent.set('hatched', true);
