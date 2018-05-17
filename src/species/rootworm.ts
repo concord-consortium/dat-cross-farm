@@ -92,12 +92,23 @@ export let wormTraits: Trait[] =
     }), new Trait({
       name: 'hunger bonus',
       default: 15
+    }), new Trait({
+      name: 'egg lay variance',
+      default: 0
+    }), new Trait({
+      name: 'has laid eggs',
+      default: false
+    }), new Trait({
+      name: 'egg lay energy threshold',
+      default: 80
     })
   ];
 
 class WormAnimal extends BasicAnimal {
   constructor(args: any) {
     super(args);
+    this.set('maturity age', maturity);
+    this.set('egg lay variance', Math.floor(Math.random() * 10));
   }
   step() {
     super.step();
