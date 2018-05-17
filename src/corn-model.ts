@@ -91,22 +91,20 @@ export const addCornSparse = () => {
   addCorn(6, 6, 50, 110, 60);
 };
 
-function addWorms(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      const matureWorm = worm.createAgent();
-      matureWorm.setLocation({
-          x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
-          y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
-      });
-      matureWorm.set('age', matureWorm.get('maturity age'));
-      matureWorm.set('energy', matureWorm.get('egg lay energy threshold') - 1);
-      env.addAgent(matureWorm);
-    }
+function addRandomWorms(quantity: number) {
+  for (let i = 0; i < quantity; i++) {
+    const matureWorm = worm.createAgent();
+    matureWorm.setLocation({
+        x: Math.floor(Math.random() * 10 * 45),
+        y: Math.floor(Math.random() * 10 * 45)
+    });
+    matureWorm.set('age', matureWorm.get('maturity age'));
+    matureWorm.set('energy', matureWorm.get('egg lay energy threshold') - 1);
+    env.addAgent(matureWorm);
   }
 }
 export const addWormsSparse = () => {
-  addWorms(8, 8, 40, 80, 20);
+  addRandomWorms(20);
 };
 
 function addTrapCrop(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
