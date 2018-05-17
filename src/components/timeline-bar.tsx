@@ -1,5 +1,5 @@
 import * as React from 'react';
-import sizeMe from 'react-sizeme';
+import * as sizeMe from 'react-sizeme';
 import { sum } from 'lodash';
 
 interface IProps extends ISizeMeProps {
