@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../style/App.css';
 import { ISimulationState } from '../corn-model';
 import '../style/simulation-statistics.css';
 
@@ -20,7 +19,6 @@ interface IState {
   initialTrap: number;
   initialWorms: number;
   initialEggs: number;
-  dayFirstCornEaten?: number;
   totalCorn: number;
   totalTrap: number;
   totalWorm: number;
@@ -57,11 +55,8 @@ class SimulationStatistics extends React.Component<IProps, IState> {
     if (!simulationStepInYear) {
       nextState = Object.assign(nextState, {
                                   initialCorn: countCorn, initialTrap: countTrap,
-                                  initialWorms: countWorm, initialEggs: countEggs, dayFirstCornEaten: null
+                                  initialWorms: countWorm, initialEggs: countEggs
                                 });
-    }
-    if ((prevState.dayFirstCornEaten == null) && (countCorn < prevState.initialCorn)) {
-      nextState = Object.assign(nextState, { dayFirstCornEaten: simulationDay });
     }
     return nextState;
   }
@@ -114,19 +109,16 @@ class SimulationStatistics extends React.Component<IProps, IState> {
             {this.renderDataRow("Corn remaining",
                                 state => state.final && state.final.countCorn,
                                 this.state.totalCorn)}
-            {this.renderDataRow("First corn eaten",
-                                state => undefined,
-                                this.state.dayFirstCornEaten)}
-            {this.renderInitialDataRow("Trap planted",
+            {this.renderInitialDataRow("Alfalfa planted",
                                       state => state.initial.countTrap,
                                       this.state.initialTrap)}
-            {this.renderDataRow("Trap remaining",
+            {this.renderDataRow("Alfalfa remaining",
                                 state => state.final && state.final.countTrap,
                                 this.state.totalTrap)}
             {this.renderDataRow("Rootworms",
                                 state => state.final && state.final.countWorm,
                                 this.state.totalWorm)}
-            {this.renderDataRow("Rootworm Eggs",
+            {this.renderDataRow("Rootworm eggs",
                                 state => state.final && state.final.countEggs,
                                 this.state.totalEggs)}
           </tbody>

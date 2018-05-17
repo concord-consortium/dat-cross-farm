@@ -45,8 +45,8 @@ export default class PlantingControls extends React.Component<IProps, IState> {
   render() {
     const trapPct = 100 - this.state.cornPct,
           plantButtonLabel = trapPct === 0
-                              ? "Plant Corn Crop"
-                              : (trapPct === 100 ? "Plant Trap Crop" : "Plant Mixed Crop");
+                              ? "Plant Corn"
+                              : (trapPct === 100 ? "Plant Alfalfa" : "Plant Corn & Alfalfa");
     return (
       <div className="section planting-controls">
         <h4>Planting Controls</h4>
@@ -64,7 +64,7 @@ export default class PlantingControls extends React.Component<IProps, IState> {
         </label>
         <br/>
         <br/>
-        <div>Trap Crop: {trapPct}%</div>
+        <div>Alfalfa: {trapPct}%</div>
         <br/>
         <div>
           <button id="plant-crop" onClick={this.plantCrop}>
