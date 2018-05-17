@@ -115,8 +115,8 @@ class App extends React.Component<IAppProps, IAppState> {
       const simulationState = getCornStats(),
             { simulationStepInYear } = simulationState;
       if (simulationStepInYear === 0) {
-        this.setState({ simulationState });
         this.simulationHistory.push({ initial: simulationState });
+        this.setState({ simulationState });
       }
     });
 
@@ -139,6 +139,7 @@ class App extends React.Component<IAppProps, IAppState> {
     });
 
     Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
+      this.simulationHistory = [];
       this.setState({ simulationState: kNullSimulationState });
     });
   }
