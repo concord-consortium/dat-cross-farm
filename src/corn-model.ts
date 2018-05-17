@@ -10,9 +10,10 @@ export const simulationStepsPerYear = simulationDaysPerYear * simulationStepsPer
 
 let simulationStepInYear = 0;
 
-const eggHatchSeason = {
-  startStep: 50,
-  endStep: 60
+const eggSeason = {
+  startHatchStep: simulationDaysPerYear * 0.2 * simulationStepsPerDay,
+  endHatchStep: simulationDaysPerYear * 0.5 * simulationStepsPerDay,
+  startLayStep: simulationDaysPerYear * 0.6 * simulationStepsPerDay
 };
 const env = new Environment({
   columns:  45,
@@ -90,20 +91,20 @@ export const addCornSparse = () => {
   addCorn(6, 6, 50, 110, 60);
 };
 
-function addWorms(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      const larva = wormEgg.createAgent();
-      larva.setLocation({
-          x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
-          y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
-      });
-      env.addAgent(larva);
-    }
+function addRandomWorms(quantity: number) {
+  for (let i = 0; i < quantity; i++) {
+    const matureWorm = worm.createAgent();
+    matureWorm.setLocation({
+        x: Math.floor(Math.random() * 10 * 45),
+        y: Math.floor(Math.random() * 10 * 45)
+    });
+    matureWorm.set('age', matureWorm.get('maturity age'));
+    matureWorm.set('energy', matureWorm.get('egg lay energy threshold') - 1);
+    env.addAgent(matureWorm);
   }
 }
 export const addWormsSparse = () => {
-  addWorms(8, 8, 40, 80, 20);
+  addRandomWorms(20);
 };
 
 function addTrapCrop(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
@@ -214,9 +215,10 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   env.addRule(new Rule({
     test(agent: Agent) {
       // currentYearStep is updated once per step as part of the corn stats
-      return simulationStepInYear > eggHatchSeason.startStep &&
-              simulationStepInYear < eggHatchSeason.endStep &&
-              agentIsEgg(agent) && agent.get('hatched') === false;
+      return agentIsEgg(agent) &&
+        simulationStepInYear > (eggSeason.startHatchStep + agent.get('hatch variance')) &&
+        simulationStepInYear < eggSeason.endHatchStep &&
+        agent.get('hatched') === false;
     },
     action(agent: Agent) {
       agent.set('hatched', true);
@@ -239,19 +241,28 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
   // Every rule test executes once per agent per step.
   env.addRule(new Rule({
     test(agent: Agent) {
-      return agentIsWorm(agent) && getWormLifestage(agent) === wormLifestage.mature;
+      return agentIsWorm(agent) &&
+        getWormLifestage(agent) === wormLifestage.mature &&
+        simulationStepInYear > (eggSeason.startLayStep + agent.get('egg lay variance')) ;
     },
     action(agent: Agent) {
-      if (!agent.get('has mated') && agent.get('energy') > 50) {
-        const offspring = agent.get('max offspring');
-        // lay a number of eggs at the worm's location
-        // TODO: vary egg quantity by worm energy?
-        for (let i = 0; i < offspring; i++) {
-          const wormEggAgent = wormEgg.createAgent();
-          wormEggAgent.setLocation(agent.getLocation());
-          env.addAgent(wormEggAgent);
+      if (!agent.get('has mated') && agent.get('energy') > agent.get( 'egg lay energy threshold') ){
+        const maxOffspring = agent.get('max offspring');
+        const offspring = agent.get('offspring');
+        // lay a single egg at the worm's location
+        const wormEggAgent = wormEgg.createAgent();
+        wormEggAgent.setLocation(agent.getLocation());
+        env.addAgent(wormEggAgent);
+        // if we haven't reached maxOffspring, we could (if we have the energy) lay more
+        if (offspring + 1 >= maxOffspring) {
+          // we've reached the limit on eggs for this worm
+          agent.set('has mated', true);
+        } else {
+          // We can try and lay another egg tomorrow, or whenever we have the energy
+          agent.set('egg lay variance', agent.get('egg lay variance') + (simulationStepsPerDay*3));
+          // laying eggs is hard
+          agent.set('energy', agent.get('energy') - 25);
         }
-        agent.set('has mated', true);
       }
     }
   }));

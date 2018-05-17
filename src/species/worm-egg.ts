@@ -10,6 +10,10 @@ const eggTraits = [
   new Trait({
     name: 'default speed',
     default: 0
+  }),
+  new Trait({
+    name: 'hatch variance',
+    default: 0
   })
 
 ];
@@ -18,6 +22,7 @@ class WormEgg extends BasicAnimal {
   constructor(args: any) {
     super(args);
     this.set('speed', 0);
+    this.set('hatch variance', Math.floor(Math.random() * 10));
   }
   _setSpeedAppropriateForAge() {
     // override / ignore base functionality - no speed for eggs

@@ -68,12 +68,15 @@ export let wormTraits: Trait[] =
     }), new Trait({
       name: 'mating distance',
       default: 1
-    }),new Trait({
+    }), new Trait({
       name: 'has mated',
       default: false
-    }),  new Trait({
+    }), new Trait({
       name: 'max offspring',
       default: 3
+    }), new Trait({
+      name: 'offspring',
+      default: 0
     }), new Trait({
       name: 'resource consumption rate',
       default: 5
@@ -92,12 +95,23 @@ export let wormTraits: Trait[] =
     }), new Trait({
       name: 'hunger bonus',
       default: 15
+    }), new Trait({
+      name: 'egg lay variance',
+      default: 0
+    }), new Trait({
+      name: 'has laid eggs',
+      default: false
+    }), new Trait({
+      name: 'egg lay energy threshold',
+      default: 80
     })
   ];
 
 class WormAnimal extends BasicAnimal {
   constructor(args: any) {
     super(args);
+    this.set('maturity age', maturity);
+    this.set('egg lay variance', Math.floor(Math.random() * 10));
   }
   step() {
     super.step();
@@ -140,7 +154,7 @@ class WormAnimal extends BasicAnimal {
     const preyIsTrap = prey.species.speciesName === "Trap";
     const consumptionRate = this.get('resource consumption rate');
     const currEnergy = this.get('energy');
-    const deltaEnergy = preyIsTrap ? consumptionRate / 10 : consumptionRate;
+    const deltaEnergy = preyIsTrap ? consumptionRate / 5 : consumptionRate;
 
     this.set('energy', currEnergy + deltaEnergy);
 
