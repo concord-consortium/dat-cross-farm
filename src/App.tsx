@@ -9,7 +9,7 @@ import { Events, Environment, Interactive, Species } from './populations';
 import Attribution from './components/attribution';
 import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
-import SimulationStatistics from './components/simulation-statistics';
+import SimulationStatistics, { ISimulationYearState } from './components/simulation-statistics';
 import { forEach } from 'lodash';
 
 interface ITraitSpec {
@@ -59,11 +59,6 @@ const traitMap: { [key: string]: ITraitSpec } = {
     stateName: 'wormVisionDistanceLarva'
   }
 };
-
-interface ISimulationYearState {
-  initial: ISimulationState;
-  final?: ISimulationState;
-}
 
 interface IAppProps {
   hideModel?: boolean;
@@ -120,6 +115,7 @@ class App extends React.Component<IAppProps, IAppState> {
       const simulationState = getCornStats(),
             { simulationStepInYear } = simulationState;
       if (simulationStepInYear === 0) {
+        this.setState({ simulationState });
         this.simulationHistory.push({ initial: simulationState });
       }
     });
@@ -253,7 +249,7 @@ class App extends React.Component<IAppProps, IAppState> {
               </div>
             </div>
           </div>
-          <SimulationStatistics simulationState={simulationState}/>
+          <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
         </div>
         <Attribution />
       </div>
