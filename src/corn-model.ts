@@ -4,6 +4,16 @@ import { wormEgg } from './species/worm-egg';
 import { Agent, Environment, Rule, Interactive } from './populations';
 import { variedPlants } from './species/varied-plants';
 
+export const simulationDaysPerYear = 200;
+export const simulationStepsPerDay = 3;
+export const simulationStepsPerYear = simulationDaysPerYear * simulationStepsPerDay;
+
+let simulationStepInYear = 0;
+
+const eggHatchSeason = {
+  startStep: 50,
+  endStep: 60
+};
 const env = new Environment({
   columns:  45,
   rows:     45,
@@ -108,17 +118,28 @@ export interface ISimulationState {
   countTrap: number;
   countWorm: number;
   infected: number;
-  simulationStep: number;
+                                // all simulation values are zero-based
+  simulationStep: number;       // cumulative step in simulation
+  simulationStepInYear: number; // step in current year
+  simulationDay: number;        // day in current year
+  simulationYear: number;       // year
 }
-export const kNullSimulationState =
-        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0, simulationStep: 0 };
+export const kNullSimulationState: ISimulationState =
+        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0,
+          simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
 
 export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
     infected = 0;
+  const simulationYear = Math.floor(env.date / simulationStepsPerYear);
   const simulationStep = env.date;
+  // simulationStepInYear is useful later on for agent rule tests - since those rules execute
+  // once per agent per step, this should improve performance.
+  simulationStepInYear = simulationStep % simulationStepsPerYear;
+  const simulationDay = Math.floor(simulationStepInYear / simulationStepsPerDay);
+
   env.agents.forEach((a) => {
     if (agentIsCorn(a)) {
       ++ countCorn;
@@ -133,7 +154,22 @@ export function getCornStats(): ISimulationState {
       ++countWorm;
     }
   });
-  return { countCorn, countTrap, countWorm, infected, simulationStep };
+  return { countCorn, countTrap, countWorm, infected,
+          simulationStep, simulationStepInYear, simulationDay, simulationYear };
+}
+export function prepareToEndYear() {
+  env.agents.forEach((a) => {
+    // we could store location of all eggs, remove everything, then re-create eggs, but it seems that just killing
+    // all the non-egg agents does the job just as well.
+    if (!agentIsEgg(a)) {
+      // kill off / remove all non-egg agents at end of year - this isn't visible until the simulation is restarted
+      a.die();
+    }
+  });
+}
+
+export function endYear() {
+  env.stop();
 }
 
 export interface IModelParams {
@@ -150,7 +186,10 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
 
   env.addRule(new Rule({
     test(agent: Agent) {
-      return env.date > 50 && env.date < 60 && agentIsEgg(agent) && agent.get('hatched') === false;
+      // currentYearStep is updated once per step as part of the corn stats
+      return simulationStepInYear > eggHatchSeason.startStep &&
+              simulationStepInYear < eggHatchSeason.endStep &&
+              agentIsEgg(agent) && agent.get('hatched') === false;
     },
     action(agent: Agent) {
       agent.set('hatched', true);
@@ -168,20 +207,9 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
     }
   }));
 
-  // limit growing season length - at the end of a year, the remaining corn is harvested
-  // NOTE: since rules are executed in the context of agents, this rule is not applied
-  // when there are no agents, and so the simulation runs forever. A simulation with
-  // no agents is unlikely to be useful, so it doesn't generally come up in practice,
-  // bit it can arise if all of the agents die, for instance.
-  env.addRule(new Rule({
-    test() {
-      return env.date >= 600;
-    },
-    action() {
-      env.stop();
-    }
-  }));
-
+  // NOTE: since rules are executed in the context of agents, if there are
+  // no agents, then no rules execute.
+  // Every rule test executes once per agent per step.
   env.addRule(new Rule({
     test(agent: Agent) {
       return agentIsWorm(agent) && getWormLifestage(agent) === wormLifestage.mature;

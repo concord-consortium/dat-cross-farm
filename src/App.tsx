@@ -2,7 +2,8 @@ import * as React from 'react';
 import './style/App.css';
 import {
   addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse,
-  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState
+  addWormsSparse, getCornStats, ISimulationState, kNullSimulationState,
+  simulationStepsPerYear, prepareToEndYear, endYear
 } from './corn-model';
 import { worm } from './species/rootworm';
 import { Events, Environment, Interactive, Species } from './populations';
@@ -59,13 +60,17 @@ const traitMap: { [key: string]: ITraitSpec } = {
   }
 };
 
+interface ISimulationYearState {
+  initial: ISimulationState;
+  final?: ISimulationState;
+}
+
 interface IAppProps {
   hideModel?: boolean;
 }
 
 interface IAppState {
   interactive?: Interactive;
-  year: number;
   simulationState: ISimulationState;
   // store as strings during editing
   wormEatingDistance: string;
@@ -80,8 +85,9 @@ interface IAppState {
 
 class App extends React.Component<IAppProps, IAppState> {
 
+  simulationHistory: ISimulationYearState[];
+
   public state: IAppState = {
-    year: 0,
     simulationState: kNullSimulationState,
     wormEatingDistance: "",
     wormEnergy: "",
@@ -92,6 +98,11 @@ class App extends React.Component<IAppProps, IAppState> {
     wormVisionDistance: "",
     wormVisionDistanceLarva: ""
   };
+
+  constructor(props: IAppProps) {
+    super(props);
+    this.simulationHistory = [];
+  }
 
   public componentDidMount() {
     const traitState: { [key: string]: string } = {};
@@ -106,15 +117,29 @@ class App extends React.Component<IAppProps, IAppState> {
     });
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      this.setState({ simulationState: getCornStats() });
+      const simulationState = getCornStats(),
+            { simulationStepInYear } = simulationState;
+      if (simulationStepInYear === 0) {
+        this.simulationHistory.push({ initial: simulationState });
+      }
     });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      this.setState({ simulationState: getCornStats() });
-    });
-
-    Events.addEventListener(Environment.EVENTS.STOP, (evt: any) => {
-      this.setState({ simulationState: getCornStats() });
+      const simulationState = getCornStats(),
+            { simulationStepInYear, simulationYear } = simulationState;
+      this.setState({ simulationState });
+      // last step of the year
+      if (simulationStepInYear === simulationStepsPerYear - 1) {
+        // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
+        // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
+        // should only execute once per step.
+        this.simulationHistory[simulationYear].final = simulationState;
+        prepareToEndYear();
+      }
+      // stop at the end of the year before starting the new year
+      else if (simulationStepInYear === 0) {
+        endYear();
+      }
     });
 
     Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
@@ -179,12 +204,12 @@ class App extends React.Component<IAppProps, IAppState> {
   public render() {
     const { interactive, simulationState, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva,
             wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
-          { simulationStep } = simulationState;
+          { simulationStepInYear } = simulationState;
     return (
       <div className="app">
         <PopulationsModelPanel hideModel={this.props.hideModel}
-                                year={this.state.year}
-                                simulationStep={simulationStep}
+                                simulationYear={simulationState.simulationYear}
+                                simulationStepInYear={simulationStepInYear}
                                 interactive={interactive}
                                 onSetInteractive={this.handleSetInteractive}/>
         <div className="ui">
@@ -265,7 +290,7 @@ class App extends React.Component<IAppProps, IAppState> {
               </div>
             </div>
           </div>
-          <SimulationStatistics year={this.state.year} simulationState={simulationState}/>
+          <SimulationStatistics simulationState={simulationState}/>
         </div>
         <Attribution />
       </div>

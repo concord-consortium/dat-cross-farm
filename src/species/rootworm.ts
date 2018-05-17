@@ -107,6 +107,17 @@ class WormAnimal extends BasicAnimal {
     }
   }
 
+  getSize() {
+    // Normally populations.js will smoothly grow the organism from invisible infant (0) to maturity (1), but
+    // since worms hatch from eggs we need our worms to grow from small to mature
+    const sizeScale = this.get('age') / maturity;
+    if (sizeScale < 1) {
+      return Math.max(0.5, sizeScale);
+    } else {
+      return 1;
+    }
+  }
+
   eat() {
     const nearest = this._nearestPrey();
     if (nearest) {
@@ -203,8 +214,7 @@ export const worm = new Species({
   speciesName: "Worm",
   agentClass: WormAnimal,
   defs: {
-    CHANCE_OF_MUTATION: 0,
-    MATURITY_AGE: maturity
+    CHANCE_OF_MUTATION: 0
   },
   traits: wormTraits,
   imageProperties:

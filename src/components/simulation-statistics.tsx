@@ -3,7 +3,6 @@ import '../style/App.css';
 import { ISimulationState } from '../corn-model';
 
 interface IProps {
-  year: number;
   simulationState: ISimulationState;
 }
 
@@ -18,6 +17,7 @@ interface IState {
   infectedCorn: number;
   harvestCorn: number;
   simulationDay: number;
+  simulationYear: number;
 }
 
 class SimulationStatistics extends React.Component<IProps, IState> {
@@ -32,15 +32,15 @@ class SimulationStatistics extends React.Component<IProps, IState> {
     totalWorm: 0,
     infectedCorn: 0,
     harvestCorn: 0,
-    simulationDay: 0
+    simulationDay: 0,
+    simulationYear: 0
   };
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
-    const { simulationStep, countCorn, countTrap, countWorm, infected } = nextProps.simulationState;
-    const actualDay = Math.trunc(simulationStep / 3);
+    const { simulationStep, simulationDay, simulationYear, countCorn, countTrap, countWorm, infected } = nextProps.simulationState;
 
     let nextState = { totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm,
-                      infectedCorn: infected, simulationDay: actualDay };
+                      infectedCorn: infected, simulationDay, simulationYear};
     if (!simulationStep) {
       nextState = Object.assign(nextState, {
                                   initialCorn: countCorn, initialTrap: countTrap,
@@ -48,7 +48,7 @@ class SimulationStatistics extends React.Component<IProps, IState> {
                                 });
     }
     if ((prevState.dayFirstCornEaten == null) && (countCorn < prevState.initialCorn)) {
-      nextState = Object.assign(nextState, { dayFirstCornEaten: actualDay });
+      nextState = Object.assign(nextState, { dayFirstCornEaten: simulationDay });
     }
     return nextState;
   }
@@ -57,6 +57,7 @@ class SimulationStatistics extends React.Component<IProps, IState> {
     return (
       <div className="section stats">
         <h4>Statistics</h4>
+        <div><span>Year: </span><span>{this.state.simulationYear + 1}</span></div>
         <div><span>Day: </span><span>{this.state.simulationDay}</span></div>
         <div><span>Corn planted: </span><span>{this.state.initialCorn}</span></div>
         <div><span>Corn remaining: </span><span>{this.state.totalCorn}</span></div>
