@@ -68,12 +68,15 @@ export let wormTraits: Trait[] =
     }), new Trait({
       name: 'mating distance',
       default: 1
-    }),new Trait({
+    }), new Trait({
       name: 'has mated',
       default: false
-    }),  new Trait({
+    }), new Trait({
       name: 'max offspring',
       default: 3
+    }), new Trait({
+      name: 'offspring',
+      default: 0
     }), new Trait({
       name: 'resource consumption rate',
       default: 5

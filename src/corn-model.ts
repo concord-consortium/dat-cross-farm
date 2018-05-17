@@ -249,15 +249,22 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
     },
     action(agent: Agent) {
       if (!agent.get('has mated') && agent.get('energy') > agent.get( 'egg lay energy threshold') ){
-        const offspring = agent.get('max offspring');
-        // lay a number of eggs at the worm's location
-        // TODO: vary egg quantity by worm energy?
-        for (let i = 0; i < offspring; i++) {
-          const wormEggAgent = wormEgg.createAgent();
-          wormEggAgent.setLocation(agent.getLocation());
-          env.addAgent(wormEggAgent);
+        const maxOffspring = agent.get('max offspring');
+        const offspring = agent.get('offspring');
+        // lay a single egg at the worm's location
+        const wormEggAgent = wormEgg.createAgent();
+        wormEggAgent.setLocation(agent.getLocation());
+        env.addAgent(wormEggAgent);
+        // if we haven't reached maxOffspring, we could (if we have the energy) lay more
+        if (offspring + 1 >= maxOffspring) {
+          // we've reached the limit on eggs for this worm
+          agent.set('has mated', true);
+        } else {
+          // We can try and lay another egg tomorrow, or whenever we have the energy
+          agent.set('egg lay variance', agent.get('egg lay variance') + simulationStepsPerDay);
+          // laying eggs is hard
+          agent.set('energy', agent.get('energy') - 25);
         }
-        agent.set('has mated', true);
       }
     }
   }));
