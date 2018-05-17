@@ -154,7 +154,7 @@ class WormAnimal extends BasicAnimal {
     const preyIsTrap = prey.species.speciesName === "Trap";
     const consumptionRate = this.get('resource consumption rate');
     const currEnergy = this.get('energy');
-    const deltaEnergy = preyIsTrap ? consumptionRate / 10 : consumptionRate;
+    const deltaEnergy = preyIsTrap ? consumptionRate / 5 : consumptionRate;
 
     this.set('energy', currEnergy + deltaEnergy);
 

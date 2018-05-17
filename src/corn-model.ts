@@ -259,7 +259,7 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
           agent.set('has mated', true);
         } else {
           // We can try and lay another egg tomorrow, or whenever we have the energy
-          agent.set('egg lay variance', agent.get('egg lay variance') + simulationStepsPerDay);
+          agent.set('egg lay variance', agent.get('egg lay variance') + (simulationStepsPerDay*3));
           // laying eggs is hard
           agent.set('energy', agent.get('energy') - 25);
         }
