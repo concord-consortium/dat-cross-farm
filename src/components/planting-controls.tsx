@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse, addWormsSparse }
+import { addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse, plantMixedCrop, addWormsSparse }
   from '../corn-model';
 
 interface IProps {
@@ -39,7 +39,7 @@ export default class PlantingControls extends React.Component<IProps, IState> {
   }
 
   plantCrop = () => {
-    //
+    plantMixedCrop(this.state.cornPct);
   }
 
   render() {
