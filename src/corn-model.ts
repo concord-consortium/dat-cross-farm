@@ -41,6 +41,33 @@ const interactive = new Interactive({
   ]
 });
 
+export function plantMixedCrop(cornPct: number) {
+  const kRows = 10, kColumns = 13,
+        xStart = 30, yStart = 90,
+        xSpacing = 32, ySpacing = 38;
+  let cycleLength = 4,
+      cornPerCycle = Math.round(cornPct / 25);
+  if (cornPct === 50) {
+    cycleLength = 2;
+    cornPerCycle = 1;
+  }
+  let plantIndex = 0;
+  for (let row = 0; row < kRows; row++) {
+    for (let column = 0; column < kColumns; column++, plantIndex++) {
+      const indexInCycle = plantIndex % cycleLength,
+            seed = indexInCycle < cornPerCycle
+                    ? corn.createAgent()
+                    : variedPlants.createAgent();
+      seed.setLocation({
+          x: xStart + (column * xSpacing) + (row % 2 === 0 ? 6 : 0),
+          y: yStart + (row * ySpacing) + (column % 2 === 0 ? 4 : 0),
+      });
+      seed.set('infected', false);
+      env.addAgent(seed);
+    }
+  }
+}
+
 function addCorn(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
   for (let row = 0; row < rows; row++) {
     for (let column = 0; column < columns; column++) {

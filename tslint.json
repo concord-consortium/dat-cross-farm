@@ -12,6 +12,7 @@
     "object-literal-sort-keys": false
   },
   "rules": {
+    "jsx-boolean-value": false,
     "member-access": false,
     "member-ordering": false,
     "no-console": false,
