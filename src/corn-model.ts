@@ -145,6 +145,7 @@ export interface ISimulationState {
   countCorn: number;
   countTrap: number;
   countWorm: number;
+  countEggs: number;
   infected: number;
                                 // all simulation values are zero-based
   simulationStep: number;       // cumulative step in simulation
@@ -153,13 +154,14 @@ export interface ISimulationState {
   simulationYear: number;       // year
 }
 export const kNullSimulationState: ISimulationState =
-        { countCorn: 0, countTrap: 0, countWorm: 0, infected: 0,
+        { countCorn: 0, countTrap: 0, countWorm: 0, countEggs: 0, infected: 0,
           simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
 
 export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
+    countEggs = 0,
     infected = 0;
   const simulationYear = Math.floor(env.date / simulationStepsPerYear);
   const simulationStep = env.date;
@@ -178,11 +180,14 @@ export function getCornStats(): ISimulationState {
     else if (a.species.speciesName === 'Trap') {
       ++ countTrap;
     }
-    else if (a.species.speciesName === 'Worm') {
+    else if (agentIsWorm(a)) {
       ++countWorm;
     }
+    else if (agentIsEgg(a)) {
+      ++countEggs;
+    }
   });
-  return { countCorn, countTrap, countWorm, infected,
+  return { countCorn, countTrap, countWorm, countEggs, infected,
           simulationStep, simulationStepInYear, simulationDay, simulationYear };
 }
 export function prepareToEndYear() {

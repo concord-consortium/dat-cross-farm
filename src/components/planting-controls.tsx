@@ -11,7 +11,7 @@ interface IState {
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
-    cornPct: 50
+    cornPct: 100
   };
 
   plantCornDensely = () => {

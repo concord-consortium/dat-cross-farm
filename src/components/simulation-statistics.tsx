@@ -19,10 +19,12 @@ interface IState {
   initialCorn: number;
   initialTrap: number;
   initialWorms: number;
-  dayFirstCornEaten: number | undefined;
+  initialEggs: number;
+  dayFirstCornEaten?: number;
   totalCorn: number;
   totalTrap: number;
   totalWorm: number;
+  totalEggs: number;
   infectedCorn: number;
   harvestCorn: number;
   simulationDay: number;
@@ -35,10 +37,11 @@ class SimulationStatistics extends React.Component<IProps, IState> {
     initialCorn: 0,
     initialTrap: 0,
     initialWorms: 0,
-    dayFirstCornEaten: undefined,
+    initialEggs: 0,
     totalCorn: 0,
     totalTrap: 0,
     totalWorm: 0,
+    totalEggs: 0,
     infectedCorn: 0,
     harvestCorn: 0,
     simulationDay: 0,
@@ -46,14 +49,15 @@ class SimulationStatistics extends React.Component<IProps, IState> {
   };
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
-    const { simulationStepInYear, simulationDay, simulationYear, countCorn, countTrap, countWorm, infected } = nextProps.simulationState;
+    const { simulationStepInYear, simulationDay, simulationYear,
+            countCorn, countTrap, countWorm, countEggs, infected } = nextProps.simulationState;
 
-    let nextState = { totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm,
+    let nextState = { totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm, totalEggs: countEggs,
                       infectedCorn: infected, simulationDay, simulationYear};
     if (!simulationStepInYear) {
       nextState = Object.assign(nextState, {
                                   initialCorn: countCorn, initialTrap: countTrap,
-                                  initialWorms: countWorm, dayFirstCornEaten: null
+                                  initialWorms: countWorm, initialEggs: countEggs, dayFirstCornEaten: null
                                 });
     }
     if ((prevState.dayFirstCornEaten == null) && (countCorn < prevState.initialCorn)) {
@@ -122,6 +126,9 @@ class SimulationStatistics extends React.Component<IProps, IState> {
             {this.renderDataRow("Rootworms",
                                 state => state.final && state.final.countWorm,
                                 this.state.totalWorm)}
+            {this.renderDataRow("Rootworm Eggs",
+                                state => state.final && state.final.countEggs,
+                                this.state.totalEggs)}
           </tbody>
         </table>
       </div>
