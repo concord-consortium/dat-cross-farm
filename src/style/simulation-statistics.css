@@ -1,0 +1,11 @@
+.simulation-stats .column-header {
+  padding-left: 6px;
+}
+
+.simulation-stats .row-header {
+  text-align: left;
+}
+
+.simulation-stats .data-row td {
+  text-align: right;
+}
