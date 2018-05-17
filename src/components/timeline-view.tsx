@@ -3,9 +3,9 @@ import TimelineBar from './timeline-bar';
 import '../style/timeline-view.css';
 
 interface IProps extends ISizeMeProps {
-  year: number;
   seasons?: string[];
   seasonLengths?: number[];
+  simulationYear: number;
   simulationStep: number;
 }
 
@@ -17,9 +17,8 @@ export default class TimelineView extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { seasons, seasonLengths, simulationStep } = this.props,
-          year = this.props.year != null ? this.props.year + 1 : 1,
-          yearLabel = `Year ${year}`;
+    const { seasons, seasonLengths, simulationYear, simulationStep } = this.props,
+          yearLabel = `Year ${simulationYear + 1}`;
     return (
       <div className="timeline-view">
         <span className='year-label'>{yearLabel}</span>

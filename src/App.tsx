@@ -65,7 +65,6 @@ interface IAppProps {
 
 interface IAppState {
   interactive?: Interactive;
-  year: number;
   simulationState: ISimulationState;
   // store as strings during editing
   wormEatingDistance: string;
@@ -81,7 +80,6 @@ interface IAppState {
 class App extends React.Component<IAppProps, IAppState> {
 
   public state: IAppState = {
-    year: 0,
     simulationState: kNullSimulationState,
     wormEatingDistance: "",
     wormEnergy: "",
@@ -200,7 +198,7 @@ class App extends React.Component<IAppProps, IAppState> {
     return (
       <div className="app">
         <PopulationsModelPanel hideModel={this.props.hideModel}
-                                year={this.state.year}
+                                simulationYear={simulationState.simulationYear}
                                 simulationStep={simulationStep}
                                 interactive={interactive}
                                 onSetInteractive={this.handleSetInteractive}/>
@@ -282,7 +280,7 @@ class App extends React.Component<IAppProps, IAppState> {
               </div>
             </div>
           </div>
-          <SimulationStatistics year={this.state.year} simulationState={simulationState}/>
+          <SimulationStatistics simulationState={simulationState}/>
         </div>
         <Attribution />
       </div>

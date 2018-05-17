@@ -3,7 +3,6 @@ import '../style/App.css';
 import { ISimulationState } from '../corn-model';
 
 interface IProps {
-  year: number;
   simulationState: ISimulationState;
 }
 
