@@ -10,6 +10,7 @@ import Attribution from './components/attribution';
 import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
 import SimulationStatistics, { ISimulationYearState } from './components/simulation-statistics';
+import HelpPopup from './components/help-popup';
 import { forEach } from 'lodash';
 
 interface ITraitSpec {
@@ -194,7 +195,7 @@ class App extends React.Component<IAppProps, IAppState> {
           <div className="section sim-adjustment">
             <h4>Worms</h4>
             <div>
-              <span>Sensing Distance (larva):</span>
+              <span>Sensing Distance (larva):</span><HelpPopup helpText="Controls the distance that the larval form of the worm can sense nearby food (crops)" />
               <input id="trait-worm-larva-vision-distance" type="number"
                 value={wormVisionDistanceLarva}
                 onChange={this.updateDefaultTraitValue}
