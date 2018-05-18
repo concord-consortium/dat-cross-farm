@@ -7,57 +7,47 @@ import {
 import { worm } from './species/rootworm';
 import { Events, Environment, Interactive, Species } from './populations';
 import Attribution from './components/attribution';
+import ConfigurableParam from './components/configurable-param';
 import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
 import SimulationStatistics, { ISimulationYearState } from './components/simulation-statistics';
-import HelpPopup from './components/help-popup';
-import { forEach } from 'lodash';
 
 interface ITraitSpec {
   species: Species;
   traitName: string;
-  stateName: string;
 }
 const traitMap: { [key: string]: ITraitSpec } = {
   'trait-worm-eating-distance': {
     species: worm,
     traitName: 'eating distance',
-    stateName: 'wormEatingDistance'
   },
   'trait-worm-energy': {
     species: worm,
     traitName: 'energy',
-    stateName: 'wormEnergy'
   },
   'trait-worm-metabolism': {
     species: worm,
     traitName: 'metabolism',
-    stateName: 'wormMetabolism'
   },
   'trait-worm-resource-consumption-rate': {
     species: worm,
     traitName: 'resource consumption rate',
-    stateName: 'wormResourceConsumptionRate'
   },
   'trait-worm-speed': {
     species: worm,
     traitName: 'default speed',
-    stateName: 'wormSpeed'
   },
   'trait-worm-larva-speed': {
     species: worm,
     traitName: 'larva max speed',
-    stateName: 'wormLarvaSpeed'
   },
   'trait-worm-vision-distance': {
     species: worm,
     traitName: 'vision distance adult',
-    stateName: 'wormVisionDistance'
   },
   'trait-worm-larva-vision-distance': {
     species: worm,
     traitName: 'vision distance',
-    stateName: 'wormVisionDistanceLarva'
   }
 };
 
@@ -68,15 +58,6 @@ interface IAppProps {
 interface IAppState {
   interactive?: Interactive;
   simulationState: ISimulationState;
-  // store as strings during editing
-  wormEatingDistance: string;
-  wormEnergy: string;
-  wormMetabolism: string;
-  wormResourceConsumptionRate: string;
-  wormSpeed: string;
-  wormLarvaSpeed: string;
-  wormVisionDistance: string;
-  wormVisionDistanceLarva: string;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -84,15 +65,7 @@ class App extends React.Component<IAppProps, IAppState> {
   simulationHistory: ISimulationYearState[];
 
   public state: IAppState = {
-    simulationState: kNullSimulationState,
-    wormEatingDistance: "",
-    wormEnergy: "",
-    wormMetabolism: "",
-    wormResourceConsumptionRate: "",
-    wormSpeed: "",
-    wormLarvaSpeed: "",
-    wormVisionDistance: "",
-    wormVisionDistanceLarva: ""
+    simulationState: kNullSimulationState
   };
 
   constructor(props: IAppProps) {
@@ -101,17 +74,6 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public componentDidMount() {
-    const traitState: { [key: string]: string } = {};
-    // initialize trait inputs with default trait values
-    forEach(traitMap, (spec, key) => {
-      const trait = spec.species.getTrait(spec.traitName),
-        defaultValue = trait && trait.getDefaultValue();
-      if (trait && (traitState != null)) {
-        traitState[spec.stateName] = String(defaultValue);
-      }
-      this.setState(traitState as any);
-    });
-
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
       const simulationState = getCornStats(),
             { simulationStepInYear } = simulationState;
@@ -149,40 +111,43 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ interactive });
   }
 
-  updateDefaultTraitValue = (e: React.FormEvent<HTMLInputElement>) => {
-    const id = e.currentTarget.id,
-          value = e.currentTarget.value,
-          traitSpec = traitMap[id],
-          stateName = traitSpec && traitSpec.stateName;
-    if (stateName) {
-      this.setState({ [stateName]: value } as any);
-    }
+  getDefaultTraitValue = (id: string) => {
+    const spec = traitMap[id],
+          trait = spec && spec.species.getTrait(spec.traitName),
+          defaultValue = trait && trait.getDefaultValue();
+    return defaultValue != null ? String(defaultValue) : "";
   }
 
-  setDefaultTraitValue = (e: React.FormEvent<HTMLInputElement>) => {
-    const id = e.currentTarget.id,
-          value = e.currentTarget.value,
-          numValue = value && value.length ? Number(e.currentTarget.value) : NaN,
-          traitSpec = traitMap[id],
+  setDefaultTraitValue = (id: string, value: number) => {
+    const traitSpec = traitMap[id],
           traitSpecies = traitSpec && traitSpec.species,
           traitName = traitSpec && traitSpec.traitName,
           trait = traitSpecies && traitSpecies.getTrait(traitName);
     if (trait) {
-      // only set default value if the value is valid
-      if (isFinite(numValue)) {
-        trait.default = numValue;
-      }
-      else {
-        // restore default value if invalid value is entered
-        this.setState({ [traitSpec.stateName]: trait.getDefaultValue() } as any);
-      }
+      trait.default = value;
     }
   }
 
   public render() {
-    const { interactive, simulationState, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva,
-            wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
+    const { interactive, simulationState } = this.state,
           { simulationStepInYear } = simulationState;
+    
+    const renderConfigParam = (label: string, helpText: string, inputID: string) => {
+      // inputID should correspond to entry in trait map
+      if (!traitMap[inputID]) {
+        console.error(`Invalid trait ID: '${inputID}'`);
+      }
+      return (
+        <ConfigurableParam
+          label={label}
+          helpText={helpText}
+          inputID={inputID}
+          initialValue={this.getDefaultTraitValue(inputID)}
+          onBlur={this.setDefaultTraitValue}
+        />
+      );
+    };
+
     return (
       <div className="app">
         <PopulationsModelPanel hideModel={this.props.hideModel}
@@ -194,62 +159,38 @@ class App extends React.Component<IAppProps, IAppState> {
           <PlantingControls />
           <div className="section sim-adjustment">
             <h4>Worms</h4>
-            <div>
-              <span>Sensing Distance (larva):</span><HelpPopup helpText="Controls the distance that the larval form of the worm can sense nearby food (crops)" />
-              <input id="trait-worm-larva-vision-distance" type="number"
-                value={wormVisionDistanceLarva}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
-            </div>
-            <div>
-              <span>Sensing Distance (adult):</span>
-              <input id="trait-worm-vision-distance" type="number"
-                value={wormVisionDistance}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
-              <div>
-                <span>Metabolism:</span>
-                <input id="trait-worm-metabolism" type="number"
-                  value={wormMetabolism}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Energy:</span>
-                <input id="trait-worm-energy" type="number"
-                  value={wormEnergy}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Eating Distance:</span>
-                <input id="trait-worm-eating-distance" type="number"
-                  value={wormEatingDistance}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Consumption Rate:</span>
-                <input id="trait-worm-resource-consumption-rate" type="number"
-                  value={wormResourceConsumptionRate}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Worm speed:</span>
-                <input id="trait-worm-speed" type="number"
-                  value={wormSpeed}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Worm larva speed:</span>
-                <input id="trait-worm-larva-speed" type="number"
-                  value={wormLarvaSpeed}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-            </div>
+            {renderConfigParam(
+              "Sensing Distance (larva):",
+              "Controls the distance that the larval form of the worm can sense nearby food (crops)",
+              "trait-worm-larva-vision-distance")}
+            {renderConfigParam(
+              "Sensing Distance (adult):",
+              "Controls the distance that the adult form of the worm can sense nearby food (crops)",
+              "trait-worm-vision-distance")}
+            {renderConfigParam(
+              "Metabolism:",
+              "Rate at which energy is depleted during normal activity",
+              "trait-worm-metabolism")}
+            {renderConfigParam(
+              "Energy:",
+              "Initial energy for new worms",
+              "trait-worm-energy")}
+            {renderConfigParam(
+              "Eating Distance:",
+              "How close the worm must be to food to eat it",
+              "trait-worm-eating-distance")}
+            {renderConfigParam(
+              "Consumption Rate:",
+              "Rate at which resources are depleted when eating",
+              "trait-worm-resource-consumption-rate")}
+            {renderConfigParam(
+              "Worm speed:",
+              "Maximum speed of the adult rootworm beetle",
+              "trait-worm-speed")}
+            {renderConfigParam(
+              "Worm larva speed:",
+              "Maximum speed of the rootworm larvae",
+              "trait-worm-larva-speed")}
           </div>
           <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
         </div>

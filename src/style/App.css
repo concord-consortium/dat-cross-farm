@@ -14,12 +14,3 @@
   padding: 10px;
   margin-bottom: 10px;
 }
-
-.ui .sim-adjustment div span{
-  display: inline-block;
-  width: 180px;
-}
-.ui .sim-adjustment div input{
-  display: inline-block;
-  width: 80px;
-}

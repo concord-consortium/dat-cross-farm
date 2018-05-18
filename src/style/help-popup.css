@@ -1,4 +1,7 @@
 
+.help-popup{
+  display: inline-block;
+}
 .help-icon{
   width:15px;
   height:15px;
@@ -6,9 +9,6 @@
   background: url('../images/baseline-help_outline-24px.svg');
   background-size: 90%;
   background-repeat: no-repeat;
-}
-.help-popup{
-  float:left;
 }
 .help-container{
   position: fixed;
