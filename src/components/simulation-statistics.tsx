@@ -66,7 +66,7 @@ class SimulationStatistics extends React.Component<IProps, IState> {
     for (let year = 0; year <= this.state.simulationYear; ++year) {
       yearCells.push(
         <th className="column-header" scope="col" key={year + 1}>
-          Yr {year + 1}
+          {year + 1}
         </th>
       );
     }
@@ -98,11 +98,13 @@ class SimulationStatistics extends React.Component<IProps, IState> {
 
   public render() {
     return (
-      <div className="section stats">
-        <h4>Statistics</h4>
-        <table className="simulation-stats">
+      <div className="simulation-stats">
+        <table className="stats-table">
           <tbody>
-            <tr className="column-header-row"><td/>{this.renderYearHeaders()}</tr>
+            <tr className="column-header-row">
+              <th>Year</th>
+              {this.renderYearHeaders()}
+            </tr>
             {this.renderInitialDataRow("Corn planted",
                                       state => state.initial.countCorn,
                                       this.state.initialCorn)}

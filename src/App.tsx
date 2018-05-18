@@ -77,16 +77,20 @@ class App extends React.Component<IAppProps, IAppState> {
     
     return (
       <div className="app">
-        <PopulationsModelPanel hideModel={this.props.hideModel}
-                                simulationYear={simulationState.simulationYear}
-                                simulationStepInYear={simulationStepInYear}
-                                interactive={interactive}
-                                onSetInteractive={this.handleSetInteractive}/>
-        <div className="ui">
-          <PlantingControls />
-          <WormTraitPanel />
-          <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
+        <div className="simulation-and-control-panels">
+          <div className="simulation-column">
+            <PopulationsModelPanel hideModel={this.props.hideModel}
+                                    simulationYear={simulationState.simulationYear}
+                                    simulationStepInYear={simulationStepInYear}
+                                    interactive={interactive}
+                                    onSetInteractive={this.handleSetInteractive}/>
+          </div>
+          <div className="controls-column">
+            <PlantingControls />
+            <WormTraitPanel />
+          </div>
         </div>
+        <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
         <Attribution />
       </div>
     );
