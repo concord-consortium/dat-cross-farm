@@ -1,6 +1,6 @@
 import * as React from 'react';
 import HelpPopup from './help-popup';
-import '../style/configurable-param.css';
+import '../style/configurable-trait.css';
 
 interface IProps {
   label: string;
@@ -14,7 +14,7 @@ interface IState {
   value: string;
 }
 
-export default class ConfigurableParam extends React.Component<IProps, IState> {
+export default class ConfigurableTrait extends React.Component<IProps, IState> {
 
   state: IState;
 
@@ -45,12 +45,12 @@ export default class ConfigurableParam extends React.Component<IProps, IState> {
                         ? <HelpPopup helpText={this.props.helpText} />
                         : null;
     return (
-      <div className="config-param">
-        <div className="config-param-label">
+      <div className="config-trait">
+        <div className="config-trait-label">
           <span>{this.props.label}</span>
           {helpPopup}
         </div>
-        <input id={this.props.inputID} className="config-param-input"
+        <input id={this.props.inputID} className="config-trait-input"
           type="number"
           value={this.state.value}
           onChange={this.handleChange}

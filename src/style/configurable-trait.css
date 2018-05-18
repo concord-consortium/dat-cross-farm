@@ -1,8 +1,8 @@
-.config-param-label {
+.config-trait-label {
   display: inline-block;
   width: 180px;
 }
 
-.config-param-input {
+.config-trait-input {
   width: 60px;
 }
