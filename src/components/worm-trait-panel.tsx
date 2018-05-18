@@ -40,6 +40,14 @@ const traitMap: { [key: string]: ITraitSpec } = {
   'trait-worm-larva-vision-distance': {
     species: worm,
     traitName: 'vision distance',
+  },
+  'trait-worm-max-offspring': {
+    species: worm,
+    traitName: 'max offspring',
+  },
+  'trait-worm-egg-energy': {
+    species: worm,
+    traitName: 'egg lay energy threshold'
   }
 };
 
@@ -123,6 +131,14 @@ export default class WormTraitPanel extends React.Component<IProps, IState> {
           "Worm larva speed:",
           "Maximum speed of the rootworm larvae",
           "trait-worm-larva-speed")}
+        {renderConfigTrait(
+          "Worm max offspring:",
+          "Maximum number of eggs laid during mature life stage - eggs are only laid if there is sufficient energy.",
+          "trait-worm-max-offspring")}
+        {renderConfigTrait(
+          "Egg laying energy required:",
+          "Energy required for a mature worm to lay an egg. Higher values ensure only a well-fed worm will lay an egg.",
+          "trait-worm-egg-energy")}
       </div>
     );
   }
