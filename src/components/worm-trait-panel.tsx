@@ -105,7 +105,7 @@ export default class WormTraitPanel extends React.Component<IProps, IState> {
           "trait-worm-metabolism")}
         {renderConfigTrait(
           "Energy:",
-          "Initial energy for new worms",
+          "Initial energy for new worms. Mature worms only lay eggs when they have sufficient energy. When energy is depleted, the worm dies.",
           "trait-worm-energy")}
         {renderConfigTrait(
           "Eating Distance:",
@@ -113,7 +113,7 @@ export default class WormTraitPanel extends React.Component<IProps, IState> {
           "trait-worm-eating-distance")}
         {renderConfigTrait(
           "Consumption Rate:",
-          "Rate at which resources are depleted when eating",
+          "Rate at which resources are depleted from the food source (and transfered to worm energy) when eating",
           "trait-worm-resource-consumption-rate")}
         {renderConfigTrait(
           "Worm speed:",
