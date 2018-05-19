@@ -151,10 +151,10 @@ class WormAnimal extends BasicAnimal {
   }
 
   _eatPrey(prey: Agent) {
-    const preyIsTrap = prey.species.speciesName === "Trap";
     const consumptionRate = this.get('resource consumption rate');
+    const nutritionFactor = prey.get('worm nutrition') || 1;
     const currEnergy = this.get('energy');
-    const deltaEnergy = preyIsTrap ? consumptionRate / 5 : consumptionRate;
+    const deltaEnergy = nutritionFactor * consumptionRate;
 
     this.set('energy', currEnergy + deltaEnergy);
 
@@ -201,25 +201,15 @@ class WormAnimal extends BasicAnimal {
     const prey: IPrey[] = this.get('prey');
     if (prey && prey.length) {
       const nearest = this._nearestAgentsMatching({ types: prey, quantity: 100 });
-      const target = nearest[0],
-            targetWasCorn = target && target.agent.species.speciesName === 'Corn';
       nearest.forEach((a) => {
-        const preyName = a.agent.species.speciesName,
-              // determine preference for this prey
-              preyPreference = prey.reduce((prev: number, curr: IPrey) =>
-                ((curr.name === preyName) && (curr.preference != null))
-                  ? prev * curr.preference : prev, 1);
+        // determine preference for this prey
+        const preyPreference = a.agent.get('worm preference') || 1;
         // adjust distance based on preference
         a.distanceSq /= preyPreference;
       });
       // sort by preference-adjusted distance
       nearest.sort((a, b) => a.distanceSq - b.distanceSq);
       // for now, return the most-preferred prey
-      const newTarget = nearest[0],
-            targetIsTrap = newTarget && newTarget.agent.species.speciesName === 'Trap';
-      if (targetWasCorn && targetIsTrap) {
-        // console.log(`Worm targeting more distant trap plant!`);
-      }
       return nearest[0] || null;
     }
     return null;

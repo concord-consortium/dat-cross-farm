@@ -54,15 +54,7 @@ const getLifestage = (agent: Agent): number => {
   return stage;
 };
 
-const cornInfectedTrait = new Trait({
-  name: 'infected',
-  possibleValues: [ true, false ],
-  default: false,
-  float: false,
-  mutatable: false
-});
-
-const cornHealthTrait = new Trait({
+const healthTrait = new Trait({
   name: 'health',
   min: 0,
   max: 100,
@@ -71,6 +63,27 @@ const cornHealthTrait = new Trait({
   mutatable: false
 });
 
+// degree to which rootworm prefers corn relative to
+// other prey items (e.g. trap crop)
+const wormPreference = new Trait({
+  name: 'worm preference',
+  min: 0,
+  max: 100,
+  default: 1,
+  float: true,
+  mutatable: false
+});
+
+// nutritional value of the corn to rootworm; multiplied by
+// rootworm's consumption rate to determine energy gained
+const wormNutrition = new Trait({
+  name: 'worm nutrition',
+  min: 0,
+  max: 1,
+  default: 1,
+  float: true,
+  mutatable: false
+});
 
 const healthyTolerance = 90;
 
@@ -86,7 +99,7 @@ export const corn = new Species({
     SPROUT_AGE: 10,
     MATURITY_AGE: maturity
   },
-  traits: [cornInfectedTrait, cornHealthTrait],
+  traits: [healthTrait, wormPreference, wormNutrition],
   imageRules: [
     {
       name: 'corn',

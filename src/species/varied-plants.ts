@@ -4,7 +4,7 @@ const kPlantScale = 0.1;
 const kFlowerAnchorX = 0;
 const kFlowerAnchorY = -30;
 
-const trapHealthTrait = new Trait({
+const healthTrait = new Trait({
   name: 'health',
   min: 0,
   max: 100,
@@ -13,7 +13,30 @@ const trapHealthTrait = new Trait({
   mutatable: false
 });
 
-export const variedPlants: Species = new Species({
+// degree to which rootworm prefers this relative to other prey items (e.g. corn)
+// squared distance is divided by this when determining preference, so a value
+// of four makes it equal in preference to prey with a value of 1 at half the distance.
+const wormPreference = new Trait({
+  name: 'worm preference',
+  min: 0,
+  max: 100,
+  default: 20,  // substantially preferred
+  float: true,
+  mutatable: false
+});
+
+// nutritional value of the corn to rootworm; multiplied by
+// rootworm's consumption rate to determine energy gained
+const wormNutrition = new Trait({
+  name: 'worm nutrition',
+  min: 0,
+  max: 1,
+  default: 0.2, // substantially less nutritional value
+  float: true,
+  mutatable: false
+});
+
+export const variedPlants = new Species({
   speciesName: "Trap",
   agentClass: BasicPlant,
   defs: {
@@ -31,7 +54,7 @@ export const variedPlants: Species = new Species({
     }
   },
   traits: [
-    trapHealthTrait,
+    healthTrait, wormPreference, wormNutrition,
     new Trait({ name: "size", min: 1, max: 10, mutatable: true }),
     new Trait({ name: "root size", min: 1, max: 10, mutatable: true })
   ],
