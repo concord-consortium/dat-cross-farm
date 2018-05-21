@@ -9,7 +9,9 @@ import Attribution from './components/attribution';
 import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
 import SimulationStatistics, { ISimulationYearState } from './components/simulation-statistics';
-import WormTraitPanel from './components/worm-trait-panel';
+import MultiTraitPanel from './components/multi-trait-panel';
+import { urlParams } from './utilities/url-params';
+const isInConfigurationMode = urlParams.config !== undefined;
 
 interface IAppProps {
   hideModel?: boolean;
@@ -87,7 +89,7 @@ class App extends React.Component<IAppProps, IAppState> {
           </div>
           <div className="controls-column">
             <PlantingControls />
-            <WormTraitPanel />
+            {isInConfigurationMode ? <MultiTraitPanel /> : null}
           </div>
         </div>
         <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>

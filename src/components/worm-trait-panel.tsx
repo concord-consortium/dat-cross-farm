@@ -97,8 +97,7 @@ export default class WormTraitPanel extends React.Component<IProps, IState> {
     };
 
     return (
-      <div className="section sim-adjustment">
-        <h4>Worms</h4>
+      <div className="worm-trait-panel">
         {renderConfigTrait(
           "Sensing Distance (larva):",
           "Controls the distance that the larval form of the worm can sense nearby food (crops)",
