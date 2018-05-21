@@ -8,6 +8,10 @@
   flex-direction: row;
 }
 
+.populations-model-panel {
+  max-width: 538px; /* hard-coded for now to fix Firefox layout issue */
+}
+
 .controls-column {
   font-size: 0.8em;
   min-width: 280px;
