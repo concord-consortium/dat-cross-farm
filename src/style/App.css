@@ -1,16 +1,27 @@
 .app {
   display: flex;
+  flex-direction: column;
 }
 
-.ui {
+.simulation-and-control-panels {
+  display: flex;
+  flex-direction: row;
+}
+
+.controls-column {
   font-size: 0.8em;
   max-width: 400px;
   margin-top: 10px;
   margin-left: 20px;
 }
 
-.ui .section{
+.controls-column .section {
   border: 1px solid silver;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+.simulation-stats {
+  margin-left: 10px;
+  margin-top: 16px;
 }
