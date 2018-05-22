@@ -1,24 +1,46 @@
 import * as React from 'react';
+import '../style/planting-controls.css';
+import '../style/toolbar-buttons.css';
+
+export interface IPlayParams {
+  cornPct: number;
+  predators: number;
+}
 
 interface IProps {
   year: number;
-  cornPct: number;
-  onSetCornPct: (cornPct: number) => void;
+  isRunning: boolean;
+  onTogglePlayPause: (params: IPlayParams) => void;
+  onReset: () => void;
 }
 interface IState {
+  cornPct: number;
+  predators: number;
 }
 
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
+    cornPct: 100,
+    predators: 0
   };
 
   handleCornPctChange = (evt: React.FormEvent<HTMLSelectElement>) => {
-    this.props.onSetCornPct(Number(evt.currentTarget.value));
+    this.setState({ cornPct: Number(evt.currentTarget.value) });
+  }
+
+  handlePlayPauseClick = () => {
+    const { cornPct, predators } = this.state;
+    this.props.onTogglePlayPause({ cornPct, predators });
+  }
+
+  handleResetClick = () => {
+    this.props.onReset();
   }
 
   render() {
-    const { cornPct, year } =  this.props,
+    const { year } =  this.props,
+          { cornPct } = this.state,
           trapPct = 100 - cornPct;
     return (
       <div className="section planting-controls">
@@ -38,6 +60,14 @@ export default class PlantingControls extends React.Component<IProps, IState> {
         </label>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span>Alfalfa:&nbsp;&nbsp;{trapPct}%</span>
+        <div className='toolbar'>
+          <div className='toolbar-button' onClick={this.handlePlayPauseClick}>
+            <div className={this.props.isRunning ? 'pause-icon-button' : 'play-icon-button'} />
+          </div>
+          <div className='toolbar-button' onClick={this.handleResetClick}>
+            <div className='reset-icon-button' />
+          </div>
+        </div>
       </div>
     );
   }

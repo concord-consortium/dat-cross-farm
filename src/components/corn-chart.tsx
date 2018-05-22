@@ -27,11 +27,11 @@ export default class CornChart extends React.Component<IProps, IState> {
                       harvested: x.final && x.final.countCorn
                     }));
     return (
-    	<BarChart width={300} height={180} data={cornData} barGap={0}
+    	<BarChart width={300} height={150} data={cornData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <CartesianGrid strokeDasharray="3 3"/>
        <XAxis dataKey="year"/>
-       <YAxis label={{ value: 'Corn', angle: -90, position: 'insideLeft' } as any}/>
+       <YAxis label={{ value: '\xA0\xA0\xA0\xA0\xA0\xA0\xA0Corn', angle: -90, position: 'insideBottomLeft' } as any}/>
        <Tooltip/>
        <Legend />
        <Bar dataKey="planted" fill="#8884d8" />

@@ -27,7 +27,7 @@ export default class WormChart extends React.Component<IProps, IState> {
                       final: x.final && x.final.countEggs
                     }));
     return (
-    	<BarChart width={300} height={180} data={wormData} barGap={0}
+    	<BarChart width={300} height={150} data={wormData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <CartesianGrid strokeDasharray="3 3"/>
        <XAxis dataKey="year"/>
