@@ -15,6 +15,13 @@ const wormLifestageThresholds = {
   adult: maturity * 0.5,
   mature: maturity,
 };
+const wormScale = {
+  egg: 0.2,
+  larva: 0.2,
+  grub: 0.2,
+  adult: 0.25,
+  mature: 0.1
+};
 
 export const getWormLifestage = (agent: Agent): number => {
   const age = agent.get('age');
@@ -235,7 +242,7 @@ export const worm = new Species({
         {
           image: {
             path: require('../images/rootworm-larva2.png'),
-            scale: 0.2,
+            scale: wormScale.egg,
             anchor: {
               x: 0.5,
               y: 0.5
@@ -248,7 +255,7 @@ export const worm = new Species({
         {
           image: {
             path: require('../images/rootworm-larva2.png'),
-            scale: 0.2,
+            scale: wormScale.larva,
             anchor: {
               x: 0.5,
               y: 0.5
@@ -261,7 +268,7 @@ export const worm = new Species({
         {
           image: {
             path: require('../images/rootworm-larva2.png'),
-            scale: 0.2,
+            scale: wormScale.grub,
             anchor: {
               x: 0.5,
               y: 0.5
@@ -274,7 +281,7 @@ export const worm = new Species({
         {
           image: {
             path: require('../images/rootworm-larva2.png'),
-            scale: 0.25,
+            scale: wormScale.adult,
             anchor: {
               x: 0.5,
               y: 0.5
@@ -287,7 +294,7 @@ export const worm = new Species({
         {
           image: {
             path: require('../images/rootworm-mature.png'),
-            scale: 0.05,
+            scale: wormScale.mature,
             anchor: {
               x: 0.4,
               y: 0.5
