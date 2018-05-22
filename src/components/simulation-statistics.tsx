@@ -1,17 +1,13 @@
 import * as React from 'react';
 import { ISimulationState } from '../corn-model';
+import { ISimulationYearState, SimulationHistory } from '../models/simulation-history';
 import '../style/simulation-statistics.css';
-
-export interface ISimulationYearState {
-  initial: ISimulationState;
-  final?: ISimulationState;
-}
 
 type SimulationStateExtractor = (yearState: ISimulationYearState) => number | undefined;
 
 interface IProps {
   simulationState: ISimulationState;
-  simulationHistory: ISimulationYearState[];
+  simulationHistory: SimulationHistory;
 }
 
 interface IState {
