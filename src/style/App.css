@@ -1,25 +1,32 @@
 .app {
   display: flex;
+  flex-direction: column;
 }
 
-.ui {
+.simulation-and-control-panels {
+  display: flex;
+  flex-direction: row;
+}
+
+.populations-model-panel {
+  max-width: 538px; /* hard-coded for now to fix Firefox layout issue */
+}
+
+.controls-column {
   font-size: 0.8em;
-  max-width: 300px;
+  min-width: 280px;
+  max-width: 400px;
   margin-top: 10px;
   margin-left: 20px;
 }
 
-.ui .section{
+.controls-column .section {
   border: 1px solid silver;
   padding: 10px;
   margin-bottom: 10px;
 }
 
-.ui .sim-adjustment div span{
-  display: inline-block;
-  width: 180px;
-}
-.ui .sim-adjustment div input{
-  display: inline-block;
-  width: 80px;
+.simulation-stats {
+  margin-left: 10px;
+  margin-top: 16px;
 }

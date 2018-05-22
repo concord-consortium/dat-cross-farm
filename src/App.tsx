@@ -1,64 +1,23 @@
 import * as React from 'react';
 import './style/App.css';
 import {
-  getCornStats, ISimulationState, kNullSimulationState,
-  simulationStepsPerYear, prepareToEndYear, endYear
+  getCornStats, ISimulationState, kNullSimulationState, simulationStepsPerYear,
+  addWormsSparse, plantMixedCrop, prepareToEndYear, endYear
 } from './corn-model';
-import { worm } from './species/rootworm';
-import { Events, Environment, Interactive, Species } from './populations';
+import { Events, Environment, Interactive } from './populations';
 import Attribution from './components/attribution';
+import InitialDialog from './components/initial-dialog';
+import EndSeasonDialog from './components/end-season-dialog';
 import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
-import SimulationStatistics, { ISimulationYearState } from './components/simulation-statistics';
-import { forEach } from 'lodash';
-
-interface ITraitSpec {
-  species: Species;
-  traitName: string;
-  stateName: string;
-}
-const traitMap: { [key: string]: ITraitSpec } = {
-  'trait-worm-eating-distance': {
-    species: worm,
-    traitName: 'eating distance',
-    stateName: 'wormEatingDistance'
-  },
-  'trait-worm-energy': {
-    species: worm,
-    traitName: 'energy',
-    stateName: 'wormEnergy'
-  },
-  'trait-worm-metabolism': {
-    species: worm,
-    traitName: 'metabolism',
-    stateName: 'wormMetabolism'
-  },
-  'trait-worm-resource-consumption-rate': {
-    species: worm,
-    traitName: 'resource consumption rate',
-    stateName: 'wormResourceConsumptionRate'
-  },
-  'trait-worm-speed': {
-    species: worm,
-    traitName: 'default speed',
-    stateName: 'wormSpeed'
-  },
-  'trait-worm-larva-speed': {
-    species: worm,
-    traitName: 'larva max speed',
-    stateName: 'wormLarvaSpeed'
-  },
-  'trait-worm-vision-distance': {
-    species: worm,
-    traitName: 'vision distance adult',
-    stateName: 'wormVisionDistance'
-  },
-  'trait-worm-larva-vision-distance': {
-    species: worm,
-    traitName: 'vision distance',
-    stateName: 'wormVisionDistanceLarva'
-  }
-};
+import SimulationStatistics from './components/simulation-statistics';
+import { SimulationHistory } from './models/simulation-history';
+import MultiTraitPanel from './components/multi-trait-panel';
+import CornChart from './components/corn-chart';
+import WormChart from './components/worm-chart';
+import { urlParams } from './utilities/url-params';
+const isInConfigurationMode = urlParams.config !== undefined;
+const isInQuietMode = urlParams.quiet !== undefined;
 
 interface IAppProps {
   hideModel?: boolean;
@@ -67,31 +26,20 @@ interface IAppProps {
 interface IAppState {
   interactive?: Interactive;
   simulationState: ISimulationState;
-  // store as strings during editing
-  wormEatingDistance: string;
-  wormEnergy: string;
-  wormMetabolism: string;
-  wormResourceConsumptionRate: string;
-  wormSpeed: string;
-  wormLarvaSpeed: string;
-  wormVisionDistance: string;
-  wormVisionDistanceLarva: string;
+  cornPct: number;
+  showInitialDialog: boolean;
+  showEndSeasonDialog: boolean;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
 
-  simulationHistory: ISimulationYearState[];
+  simulationHistory: SimulationHistory;
 
   public state: IAppState = {
     simulationState: kNullSimulationState,
-    wormEatingDistance: "",
-    wormEnergy: "",
-    wormMetabolism: "",
-    wormResourceConsumptionRate: "",
-    wormSpeed: "",
-    wormLarvaSpeed: "",
-    wormVisionDistance: "",
-    wormVisionDistanceLarva: ""
+    cornPct: 100,
+    showInitialDialog: !isInQuietMode,
+    showEndSeasonDialog: false
   };
 
   constructor(props: IAppProps) {
@@ -100,47 +48,17 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public componentDidMount() {
-    const traitState: { [key: string]: string } = {};
-    // initialize trait inputs with default trait values
-    forEach(traitMap, (spec, key) => {
-      const trait = spec.species.getTrait(spec.traitName),
-        defaultValue = trait && trait.getDefaultValue();
-      if (trait && (traitState != null)) {
-        traitState[spec.stateName] = String(defaultValue);
-      }
-      this.setState(traitState as any);
-    });
 
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      const simulationState = getCornStats(),
-            { simulationStepInYear } = simulationState;
-      if (simulationStepInYear === 0) {
-        this.simulationHistory.push({ initial: simulationState });
-        this.setState({ simulationState });
-      }
+      this.handleSimulationStart();
     });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      const simulationState = getCornStats(),
-            { simulationStepInYear, simulationYear } = simulationState;
-      this.setState({ simulationState });
-      // last step of the year
-      if (simulationStepInYear === simulationStepsPerYear - 1) {
-        // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
-        // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
-        // should only execute once per step.
-        this.simulationHistory[simulationYear].final = simulationState;
-        prepareToEndYear();
-      }
-      // stop at the end of the year before starting the new year
-      else if (simulationStepInYear === 0) {
-        endYear();
-      }
+      this.handleSimulationStep();
     });
 
     Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
-      this.simulationHistory = [];
-      this.setState({ simulationState: kNullSimulationState });
+      this.handleSimulationReset();
     });
   }
 
@@ -148,111 +66,115 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ interactive });
   }
 
-  updateDefaultTraitValue = (e: React.FormEvent<HTMLInputElement>) => {
-    const id = e.currentTarget.id,
-          value = e.currentTarget.value,
-          traitSpec = traitMap[id],
-          stateName = traitSpec && traitSpec.stateName;
-    if (stateName) {
-      this.setState({ [stateName]: value } as any);
+  handleToggleInitialDialogVisibility = () => {
+    this.setState({ showInitialDialog: !this.state.showInitialDialog });
+  }
+
+  handleToggleEndSeasonDialogVisibility = () => {
+    const showEndSeasonDialog = !this.state.showEndSeasonDialog;
+    this.setState({ showEndSeasonDialog });
+  }
+
+  handleSimulationStart() {
+    const { simulationStepInYear } = getCornStats();
+    if (simulationStepInYear === 0) {
+      // plant the crop before proceeding
+      plantMixedCrop(this.state.cornPct);
+      // retrieve post-planting stats
+      const simulationState = getCornStats();
+      this.simulationHistory.push({ initial: simulationState });
+      this.setState({ simulationState });
+      // if this is the infestation year, then add rootworms
+      if (simulationState.simulationYear > 0) {
+        const prevYear = this.simulationHistory.length - 2,
+              prevYearStats = this.simulationHistory[prevYear];
+        // worms infest after a full year without worms, which is
+        // generally year 2 and any subsequent year after worms
+        // have been eradicated for an entire year.
+        if (!prevYearStats.initial.countWorm &&
+            prevYearStats.final && !prevYearStats.final.countWorm) {
+          addWormsSparse();
+        }
+      }
     }
   }
 
-  setDefaultTraitValue = (e: React.FormEvent<HTMLInputElement>) => {
-    const id = e.currentTarget.id,
-          value = e.currentTarget.value,
-          numValue = value && value.length ? Number(e.currentTarget.value) : NaN,
-          traitSpec = traitMap[id],
-          traitSpecies = traitSpec && traitSpec.species,
-          traitName = traitSpec && traitSpec.traitName,
-          trait = traitSpecies && traitSpecies.getTrait(traitName);
-    if (trait) {
-      // only set default value if the value is valid
-      if (isFinite(numValue)) {
-        trait.default = numValue;
-      }
-      else {
-        // restore default value if invalid value is entered
-        this.setState({ [traitSpec.stateName]: trait.getDefaultValue() } as any);
-      }
+  handleSimulationStep() {
+    const simulationState = getCornStats(),
+          { simulationStepInYear, simulationYear } = simulationState;
+    this.setState({ simulationState });
+    // last step of the year
+    if (simulationStepInYear === simulationStepsPerYear - 1) {
+      // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
+      // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
+      // should only execute once per step.
+      this.simulationHistory[simulationYear].final = simulationState;
+      prepareToEndYear();
+      // show the end of season stats before starting the next year
+      this.setState({ showEndSeasonDialog: !isInQuietMode });
     }
+    // stop at the end of the year before starting the new year
+    else if (simulationStepInYear === 0) {
+      endYear();
+    }
+  }
+
+  handleSimulationReset() {
+    this.simulationHistory = [];
+    this.setState({ simulationState: kNullSimulationState });
+  }
+
+  onSetCornPct = (cornPct: number) => {
+    this.setState({ cornPct });
   }
 
   public render() {
-    const { interactive, simulationState, wormMetabolism, wormEnergy, wormVisionDistance, wormVisionDistanceLarva,
-            wormEatingDistance, wormResourceConsumptionRate, wormSpeed, wormLarvaSpeed } = this.state,
-          { simulationStepInYear } = simulationState;
+    const { interactive, simulationState, cornPct,
+            showInitialDialog, showEndSeasonDialog } = this.state,
+          { simulationStepInYear, simulationYear } = simulationState,
+          initialDialog = showInitialDialog
+                            ? <InitialDialog
+                                show={this.state.showInitialDialog}
+                                onToggleVisibility={this.handleToggleInitialDialogVisibility} />
+                            : null,
+          historyLength = this.simulationHistory.length,
+          cornChart = historyLength >= 1 && this.simulationHistory[0].final
+                        ? <CornChart simulationHistory={this.simulationHistory} />
+                        : null,
+          wormChart = historyLength >= 1 && this.simulationHistory[0].final
+                        ? <WormChart simulationHistory={this.simulationHistory} />
+                        : null,
+          prevYear = historyLength >= 1 ? historyLength - 1 : 0,
+          prevYearStats = this.simulationHistory[prevYear],
+          endSeasonDialog = showEndSeasonDialog
+                              ? <EndSeasonDialog
+                                  show={this.state.showEndSeasonDialog}
+                                  yearStats={prevYearStats}
+                                  onToggleVisibility={this.handleToggleEndSeasonDialogVisibility} />
+                              : null;
+    
     return (
       <div className="app">
-        <PopulationsModelPanel hideModel={this.props.hideModel}
-                                simulationYear={simulationState.simulationYear}
-                                simulationStepInYear={simulationStepInYear}
-                                interactive={interactive}
-                                onSetInteractive={this.handleSetInteractive}/>
-        <div className="ui">
-          <PlantingControls />
-          <div className="section sim-adjustment">
-            <h4>Worms</h4>
-            <div>
-              <span>Sensing Distance (larva):</span>
-              <input id="trait-worm-larva-vision-distance" type="number"
-                value={wormVisionDistanceLarva}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
-            </div>
-            <div>
-              <span>Sensing Distance (adult):</span>
-              <input id="trait-worm-vision-distance" type="number"
-                value={wormVisionDistance}
-                onChange={this.updateDefaultTraitValue}
-                onBlur={this.setDefaultTraitValue} />
-              <div>
-                <span>Metabolism:</span>
-                <input id="trait-worm-metabolism" type="number"
-                  value={wormMetabolism}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Energy:</span>
-                <input id="trait-worm-energy" type="number"
-                  value={wormEnergy}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Eating Distance:</span>
-                <input id="trait-worm-eating-distance" type="number"
-                  value={wormEatingDistance}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Consumption Rate:</span>
-                <input id="trait-worm-resource-consumption-rate" type="number"
-                  value={wormResourceConsumptionRate}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Worm speed:</span>
-                <input id="trait-worm-speed" type="number"
-                  value={wormSpeed}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-              <div>
-                <span>Worm larva speed:</span>
-                <input id="trait-worm-larva-speed" type="number"
-                  value={wormLarvaSpeed}
-                  onChange={this.updateDefaultTraitValue}
-                  onBlur={this.setDefaultTraitValue} />
-              </div>
-            </div>
+        <div className="simulation-and-control-panels">
+          <div className="simulation-column">
+            <PopulationsModelPanel hideModel={this.props.hideModel}
+                                    simulationYear={simulationState.simulationYear}
+                                    simulationStepInYear={simulationStepInYear}
+                                    interactive={interactive}
+                                    onSetInteractive={this.handleSetInteractive}/>
           </div>
-          <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
+          <div className="controls-column">
+            <PlantingControls year={simulationYear + 1} cornPct={cornPct}
+                              onSetCornPct={this.onSetCornPct}/>
+            {isInConfigurationMode ? <MultiTraitPanel /> : null}
+            {!isInConfigurationMode ? cornChart : null}
+            {!isInConfigurationMode ? wormChart : null}
+          </div>
         </div>
+        <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
         <Attribution />
+        {initialDialog}
+        {endSeasonDialog}
       </div>
     );
   }
