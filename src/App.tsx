@@ -108,8 +108,8 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { interactive, simulationState } = this.state,
-          { simulationStepInYear } = simulationState;
+    const { interactive, simulationState, cornPct } = this.state,
+          { simulationStepInYear, simulationYear } = simulationState;
     
     return (
       <div className="app">
@@ -122,7 +122,8 @@ class App extends React.Component<IAppProps, IAppState> {
                                     onSetInteractive={this.handleSetInteractive}/>
           </div>
           <div className="controls-column">
-            <PlantingControls cornPct={this.state.cornPct} onSetCornPct={this.onSetCornPct}/>
+            <PlantingControls year={simulationYear + 1} cornPct={cornPct}
+                              onSetCornPct={this.onSetCornPct}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
           </div>
         </div>

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 interface IProps {
+  year: number;
   cornPct: number;
   onSetCornPct: (cornPct: number) => void;
 }
@@ -17,11 +18,12 @@ export default class PlantingControls extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { cornPct } =  this.props,
+    const { cornPct, year } =  this.props,
           trapPct = 100 - cornPct;
     return (
       <div className="section planting-controls">
-        <h4>Planting Controls</h4>
+        <h4>Annual Planting Plan</h4>
+        <h4>Year {year}</h4>
         <label>
           Corn:&nbsp;&nbsp;
           <select className="corn-percent-select"
@@ -34,9 +36,8 @@ export default class PlantingControls extends React.Component<IProps, IState> {
             <option value="100">100%</option>
           </select>
         </label>
-        <br/>
-        <br/>
-        <div>Alfalfa:&nbsp;&nbsp;{trapPct}%</div>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span>Alfalfa:&nbsp;&nbsp;{trapPct}%</span>
       </div>
     );
   }
