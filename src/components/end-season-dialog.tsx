@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ISimulationYearState } from '../models/simulation-history';
-import '../style/attribution.css';
+import '../style/dialog.css';
 
 interface IProps {
   show: boolean;
@@ -21,9 +21,7 @@ export default class EndSeasonDialog extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const displayClass = this.props.show
-                          ? "attribution-container"
-                          : "attribution-container-hidden",
+    const displayClass = this.props.show ? "" : " hidden",
           { yearStats } = this.props,
           { initial, final } = { ...yearStats },
           { simulationYear, countCorn: initialCorn, countEggs: initialEggs } = { ...initial },
@@ -33,8 +31,8 @@ export default class EndSeasonDialog extends React.Component<IProps, IState> {
                           ? <div>Oh no! There's been a rootworm invasion! Some of the corn has been eaten and some rootworm eggs have been laid in the soil.</div>
                           : null;
     return (
-      <div className={displayClass} onClick={this.toggleVisibility}>
-        <div className="attribution-text">
+      <div className={'dialog-container' + displayClass} onClick={this.toggleVisibility}>
+        <div className="dialog-text">
           <div style={{ fontWeight: 'bold' }}>Year {simulationYear + 1} Results</div>
           <div>Corn planted: {initialCorn || 0}, harvested: {finalCorn}</div>
           <div>Rootworm eggs initial: {initialEggs || 0}, final: {finalEggs}</div>
