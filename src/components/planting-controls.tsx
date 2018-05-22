@@ -1,59 +1,31 @@
 import * as React from 'react';
-import { addCornDense, addCornSparse, addTrapCropDense, addTrapCropSparse, plantMixedCrop, addWormsSparse }
-  from '../corn-model';
 
 interface IProps {
+  cornPct: number;
+  onSetCornPct: (cornPct: number) => void;
 }
 interface IState {
-  cornPct: number;
 }
 
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
-    cornPct: 100
   };
 
-  plantCornDensely = () => {
-    addCornDense();
-  }
-
-  plantCornSparsely = () => {
-    addCornSparse();
-  }
-
-  plantTrapCropDensely = () => {
-    addTrapCropDense();
-  }
-
-  plantTrapCropSparsely = () => {
-    addTrapCropSparse();
-  }
-
-  addWorms = () => {
-    addWormsSparse();
-  }
-
   handleCornPctChange = (evt: React.FormEvent<HTMLSelectElement>) => {
-    this.setState({ cornPct: Number(evt.currentTarget.value) });
-  }
-
-  plantCrop = () => {
-    plantMixedCrop(this.state.cornPct);
+    this.props.onSetCornPct(Number(evt.currentTarget.value));
   }
 
   render() {
-    const trapPct = 100 - this.state.cornPct,
-          plantButtonLabel = trapPct === 0
-                              ? "Plant Corn"
-                              : (trapPct === 100 ? "Plant Alfalfa" : "Plant Corn & Alfalfa");
+    const { cornPct } =  this.props,
+          trapPct = 100 - cornPct;
     return (
       <div className="section planting-controls">
         <h4>Planting Controls</h4>
         <label>
-          Corn:&nbsp;
+          Corn:&nbsp;&nbsp;
           <select className="corn-percent-select"
-                  value={this.state.cornPct}
+                  value={cornPct}
                   onChange={this.handleCornPctChange}>
             <option value="0">0%</option>
             <option value="25">25%</option>
@@ -64,17 +36,7 @@ export default class PlantingControls extends React.Component<IProps, IState> {
         </label>
         <br/>
         <br/>
-        <div>Alfalfa: {trapPct}%</div>
-        <br/>
-        <div>
-          <button id="plant-crop" onClick={this.plantCrop}>
-            {plantButtonLabel}
-          </button>
-        </div>
-        <br/>
-        <div><button id="add-worms-sparse" onClick={this.addWorms}>
-          Add Worms
-        </button></div>
+        <div>Alfalfa:&nbsp;&nbsp;{trapPct}%</div>
       </div>
     );
   }
