@@ -1,8 +1,8 @@
 import * as React from 'react';
 import './style/App.css';
 import {
-  getCornStats, ISimulationState, kNullSimulationState,
-  simulationStepsPerYear, prepareToEndYear, endYear
+  getCornStats, ISimulationState, kNullSimulationState, simulationStepsPerYear,
+  addWormsSparse, plantMixedCrop, prepareToEndYear, endYear
 } from './corn-model';
 import { Events, Environment, Interactive } from './populations';
 import Attribution from './components/attribution';
@@ -20,6 +20,7 @@ interface IAppProps {
 interface IAppState {
   interactive?: Interactive;
   simulationState: ISimulationState;
+  cornPct: number;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -27,7 +28,8 @@ class App extends React.Component<IAppProps, IAppState> {
   simulationHistory: ISimulationYearState[];
 
   public state: IAppState = {
-    simulationState: kNullSimulationState
+    simulationState: kNullSimulationState,
+    cornPct: 100
   };
 
   constructor(props: IAppProps) {
@@ -36,36 +38,17 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public componentDidMount() {
+
     Events.addEventListener(Environment.EVENTS.START, (evt: any) => {
-      const simulationState = getCornStats(),
-            { simulationStepInYear } = simulationState;
-      if (simulationStepInYear === 0) {
-        this.simulationHistory.push({ initial: simulationState });
-        this.setState({ simulationState });
-      }
+      this.handleSimulationStart();
     });
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
-      const simulationState = getCornStats(),
-            { simulationStepInYear, simulationYear } = simulationState;
-      this.setState({ simulationState });
-      // last step of the year
-      if (simulationStepInYear === simulationStepsPerYear - 1) {
-        // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
-        // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
-        // should only execute once per step.
-        this.simulationHistory[simulationYear].final = simulationState;
-        prepareToEndYear();
-      }
-      // stop at the end of the year before starting the new year
-      else if (simulationStepInYear === 0) {
-        endYear();
-      }
+      this.handleSimulationStep();
     });
 
     Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
-      this.simulationHistory = [];
-      this.setState({ simulationState: kNullSimulationState });
+      this.handleSimulationReset();
     });
   }
 
@@ -73,9 +56,60 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ interactive });
   }
 
+  handleSimulationStart() {
+    const { simulationStepInYear } = getCornStats();
+    if (simulationStepInYear === 0) {
+      // plant the crop before proceeding
+      plantMixedCrop(this.state.cornPct);
+      // retrieve post-planting stats
+      const simulationState = getCornStats();
+      this.simulationHistory.push({ initial: simulationState });
+      this.setState({ simulationState });
+      // if this is the infestation year, then add rootworms
+      if (simulationState.simulationYear > 0) {
+        const prevYear = this.simulationHistory.length - 2,
+              prevYearStats = this.simulationHistory[prevYear];
+        // worms infest after a full year without worms, which is
+        // generally year 2 and any subsequent year after worms
+        // have been eradicated for an entire year.
+        if (!prevYearStats.initial.countWorm &&
+            prevYearStats.final && !prevYearStats.final.countWorm) {
+          addWormsSparse();
+        }
+      }
+    }
+  }
+
+  handleSimulationStep() {
+    const simulationState = getCornStats(),
+          { simulationStepInYear, simulationYear } = simulationState;
+    this.setState({ simulationState });
+    // last step of the year
+    if (simulationStepInYear === simulationStepsPerYear - 1) {
+      // TODO: this is where we can do more to "harvest" corn, store end-of-year stats, etc.
+      // Previously, end-of-year was handled as an environment rule, but this makes more sense since it
+      // should only execute once per step.
+      this.simulationHistory[simulationYear].final = simulationState;
+      prepareToEndYear();
+    }
+    // stop at the end of the year before starting the new year
+    else if (simulationStepInYear === 0) {
+      endYear();
+    }
+  }
+
+  handleSimulationReset() {
+    this.simulationHistory = [];
+    this.setState({ simulationState: kNullSimulationState });
+  }
+
+  onSetCornPct = (cornPct: number) => {
+    this.setState({ cornPct });
+  }
+
   public render() {
-    const { interactive, simulationState } = this.state,
-          { simulationStepInYear } = simulationState;
+    const { interactive, simulationState, cornPct } = this.state,
+          { simulationStepInYear, simulationYear } = simulationState;
     
     return (
       <div className="app">
@@ -88,7 +122,8 @@ class App extends React.Component<IAppProps, IAppState> {
                                     onSetInteractive={this.handleSetInteractive}/>
           </div>
           <div className="controls-column">
-            <PlantingControls />
+            <PlantingControls year={simulationYear + 1} cornPct={cornPct}
+                              onSetCornPct={this.onSetCornPct}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
           </div>
         </div>
