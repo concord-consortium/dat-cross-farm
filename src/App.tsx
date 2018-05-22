@@ -13,6 +13,8 @@ import PopulationsModelPanel from './components/populations-model-panel';
 import SimulationStatistics from './components/simulation-statistics';
 import { SimulationHistory } from './models/simulation-history';
 import MultiTraitPanel from './components/multi-trait-panel';
+import CornChart from './components/corn-chart';
+import WormChart from './components/worm-chart';
 import { urlParams } from './utilities/url-params';
 const isInConfigurationMode = urlParams.config !== undefined;
 const isInQuietMode = urlParams.quiet !== undefined;
@@ -136,6 +138,12 @@ class App extends React.Component<IAppProps, IAppState> {
                                 onToggleVisibility={this.handleToggleInitialDialogVisibility} />
                             : null,
           historyLength = this.simulationHistory.length,
+          cornChart = historyLength >= 1 && this.simulationHistory[0].final
+                        ? <CornChart simulationHistory={this.simulationHistory} />
+                        : null,
+          wormChart = historyLength >= 1 && this.simulationHistory[0].final
+                        ? <WormChart simulationHistory={this.simulationHistory} />
+                        : null,
           prevYear = historyLength >= 1 ? historyLength - 1 : 0,
           prevYearStats = this.simulationHistory[prevYear],
           endSeasonDialog = showEndSeasonDialog
@@ -159,6 +167,8 @@ class App extends React.Component<IAppProps, IAppState> {
             <PlantingControls year={simulationYear + 1} cornPct={cornPct}
                               onSetCornPct={this.onSetCornPct}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
+            {!isInConfigurationMode ? cornChart : null}
+            {!isInConfigurationMode ? wormChart : null}
           </div>
         </div>
         <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
