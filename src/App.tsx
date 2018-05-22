@@ -6,12 +6,16 @@ import {
 } from './corn-model';
 import { Events, Environment, Interactive } from './populations';
 import Attribution from './components/attribution';
+import InitialDialog from './components/initial-dialog';
+import EndSeasonDialog from './components/end-season-dialog';
 import PlantingControls from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
-import SimulationStatistics, { ISimulationYearState } from './components/simulation-statistics';
+import SimulationStatistics from './components/simulation-statistics';
+import { SimulationHistory } from './models/simulation-history';
 import MultiTraitPanel from './components/multi-trait-panel';
 import { urlParams } from './utilities/url-params';
 const isInConfigurationMode = urlParams.config !== undefined;
+const isInQuietMode = urlParams.quiet !== undefined;
 
 interface IAppProps {
   hideModel?: boolean;
@@ -21,15 +25,19 @@ interface IAppState {
   interactive?: Interactive;
   simulationState: ISimulationState;
   cornPct: number;
+  showInitialDialog: boolean;
+  showEndSeasonDialog: boolean;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
 
-  simulationHistory: ISimulationYearState[];
+  simulationHistory: SimulationHistory;
 
   public state: IAppState = {
     simulationState: kNullSimulationState,
-    cornPct: 100
+    cornPct: 100,
+    showInitialDialog: !isInQuietMode,
+    showEndSeasonDialog: false
   };
 
   constructor(props: IAppProps) {
@@ -54,6 +62,15 @@ class App extends React.Component<IAppProps, IAppState> {
 
   handleSetInteractive = (interactive: Interactive) => {
     this.setState({ interactive });
+  }
+
+  handleToggleInitialDialogVisibility = () => {
+    this.setState({ showInitialDialog: !this.state.showInitialDialog });
+  }
+
+  handleToggleEndSeasonDialogVisibility = () => {
+    const showEndSeasonDialog = !this.state.showEndSeasonDialog;
+    this.setState({ showEndSeasonDialog });
   }
 
   handleSimulationStart() {
@@ -91,6 +108,8 @@ class App extends React.Component<IAppProps, IAppState> {
       // should only execute once per step.
       this.simulationHistory[simulationYear].final = simulationState;
       prepareToEndYear();
+      // show the end of season stats before starting the next year
+      this.setState({ showEndSeasonDialog: !isInQuietMode });
     }
     // stop at the end of the year before starting the new year
     else if (simulationStepInYear === 0) {
@@ -108,8 +127,23 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { interactive, simulationState, cornPct } = this.state,
-          { simulationStepInYear, simulationYear } = simulationState;
+    const { interactive, simulationState, cornPct,
+            showInitialDialog, showEndSeasonDialog } = this.state,
+          { simulationStepInYear, simulationYear } = simulationState,
+          initialDialog = showInitialDialog
+                            ? <InitialDialog
+                                show={this.state.showInitialDialog}
+                                onToggleVisibility={this.handleToggleInitialDialogVisibility} />
+                            : null,
+          historyLength = this.simulationHistory.length,
+          prevYear = historyLength >= 1 ? historyLength - 1 : 0,
+          prevYearStats = this.simulationHistory[prevYear],
+          endSeasonDialog = showEndSeasonDialog
+                              ? <EndSeasonDialog
+                                  show={this.state.showEndSeasonDialog}
+                                  yearStats={prevYearStats}
+                                  onToggleVisibility={this.handleToggleEndSeasonDialogVisibility} />
+                              : null;
     
     return (
       <div className="app">
@@ -129,6 +163,8 @@ class App extends React.Component<IAppProps, IAppState> {
         </div>
         <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
         <Attribution />
+        {initialDialog}
+        {endSeasonDialog}
       </div>
     );
   }
