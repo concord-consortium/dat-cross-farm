@@ -35,3 +35,7 @@
 .dialog-text div{
   margin:10px;
 }
+
+.dialog-text .dialog-text-bold {
+  font-weight: bold;
+}
