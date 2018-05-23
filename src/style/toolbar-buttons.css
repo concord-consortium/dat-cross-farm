@@ -11,42 +11,18 @@
   padding: 5px;
   margin: 3px 20px;
   cursor: pointer;
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -ms-border-radius: 7px;
-  -o-border-radius: 7px;
   border-radius: 7px;
-  -webkit-box-shadow: 0 0 5px;
-  -moz-box-shadow: 0 0 5px;
-  -ms-box-shadow: 0 0 5px;
-  -o-box-shadow: 0 0 5px;
   box-shadow: 0 0 5px;
   background-color: #fff;
-  background-image: -webkit-linear-gradient(top, #fff 0%, #ccc 100%);
-  background-image: -moz-linear-gradient(top, #fff 0%, #ccc 100%);
-  background-image: -ms-linear-gradient(top, #fff 0%, #ccc 100%);
-  background-image: -o-linear-gradient(top, #fff 0%, #ccc 100%);
-  background-image: linear-gradient(top, #fff 0%, #ccc 100%);
+  background-image: linear-gradient(to top, #fff 0%, #ccc 100%);
 }
 .toolbar-button:hover {
-  -webkit-box-shadow: 0 0 5px #444;
-  -moz-box-shadow: 0 0 5px #444;
-  -ms-box-shadow: 0 0 5px #444;
-  -o-box-shadow: 0 0 5px #444;
   box-shadow: 0 0 5px #444;
 }
 .toolbar-button:active {
-  -webkit-box-shadow: 0 0 5px #fff;
-  -moz-box-shadow: 0 0 5px #fff;
-  -ms-box-shadow: 0 0 5px #fff;
-  -o-box-shadow: 0 0 5px #fff;
   box-shadow: 0 0 5px #fff;
   background-color: #fff;
-  background-image: -webkit-linear-gradient(top, #fff 0%, #bbb 100%);
-  background-image: -moz-linear-gradient(top, #fff 0%, #bbb 100%);
-  background-image: -ms-linear-gradient(top, #fff 0%, #bbb 100%);
-  background-image: -o-linear-gradient(top, #fff 0%, #bbb 100%);
-  background-image: linear-gradient(top, #fff 0%, #bbb 100%);
+  background-image: linear-gradient(to top, #fff 0%, #bbb 100%);
 }
 .toolbar-button img {
   position: absolute;
