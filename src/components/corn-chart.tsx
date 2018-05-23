@@ -32,7 +32,8 @@ export default class CornChart extends React.Component<IProps, IState> {
     }
 
     return (
-    	<BarChart width={width} height={height} data={cornData} barGap={0}
+      <BarChart className="corn-chart"
+            width={width} height={height} data={cornData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <CartesianGrid strokeDasharray="3 3"/>
        <XAxis dataKey="year"/>

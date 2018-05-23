@@ -1,5 +1,7 @@
 .simulation-stats {
-  font-size: 0.8em;
+  font-size: 1em;
+  display: flex;
+  flex-direction: row;
 }
 
 .simulation-stats .column-header {

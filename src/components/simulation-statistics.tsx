@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ISimulationState } from '../corn-model';
 import { ISimulationYearState, SimulationHistory } from '../models/simulation-history';
+import CopyStats from './copy-stats';
 import '../style/simulation-statistics.css';
 
 type SimulationStateExtractor = (yearState: ISimulationYearState) => number | undefined;
@@ -121,6 +122,7 @@ class SimulationStatistics extends React.Component<IProps, IState> {
                                 this.state.totalEggs)}
           </tbody>
         </table>
+        <CopyStats simulationHistory={this.props.simulationHistory}/>
       </div>
     );
   }
