@@ -15,9 +15,9 @@ export default class CornChart extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { simulationHistory } = this.props,
-          // width = size && size.width || 0,
-          // height = size && size.height || 0,
+    const { simulationHistory, size } = this.props,
+          width = size && size.width || 400,
+          height = size && size.height || 150,
           filtered = simulationHistory.filter((x) => x.initial && x.final),
           // show last five years
           cropped = filtered.filter((x, i) => i >= filtered.length - 5),
@@ -27,7 +27,7 @@ export default class CornChart extends React.Component<IProps, IState> {
                       harvested: x.final && x.final.countCorn
                     }));
     return (
-    	<BarChart width={300} height={150} data={cornData} barGap={0}
+    	<BarChart width={width} height={height} data={cornData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <CartesianGrid strokeDasharray="3 3"/>
        <XAxis dataKey="year"/>

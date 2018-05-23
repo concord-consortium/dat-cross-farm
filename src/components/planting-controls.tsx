@@ -44,8 +44,8 @@ export default class PlantingControls extends React.Component<IProps, IState> {
           trapPct = 100 - cornPct;
     return (
       <div className="section planting-controls">
-        <h4>Annual Planting Plan</h4>
-        <h4>Year {year}</h4>
+        <h4>Annual Planting Plan &mdash; Year {year}</h4>
+        <br/>
         <label>
           Corn:&nbsp;&nbsp;
           <select className="corn-percent-select"

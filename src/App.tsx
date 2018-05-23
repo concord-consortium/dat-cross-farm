@@ -168,11 +168,12 @@ class App extends React.Component<IAppProps, IAppState> {
                                 onToggleVisibility={this.handleToggleInitialDialogVisibility} />
                             : null,
           historyLength = this.simulationHistory.length,
+          chartSize = { width: 400, height: 150 },  // hard-coded for now
           cornChart = historyLength >= 1 && this.simulationHistory[0].final
-                        ? <CornChart simulationHistory={this.simulationHistory} />
+                        ? <CornChart size={chartSize} simulationHistory={this.simulationHistory} />
                         : null,
           wormChart = historyLength >= 1 && this.simulationHistory[0].final
-                        ? <WormChart simulationHistory={this.simulationHistory} />
+                        ? <WormChart size={chartSize} simulationHistory={this.simulationHistory} />
                         : null,
           prevYear = historyLength >= 1 ? historyLength - 1 : 0,
           prevYearStats = this.simulationHistory[prevYear],

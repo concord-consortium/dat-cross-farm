@@ -1,6 +1,5 @@
 .planting-controls .toolbar {
-  margin-top: 10px;
+  margin-top: 16px;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
 }
