@@ -40,7 +40,7 @@
   border: 1px solid silver;
   background: white;
   width:400px;
-  height:200px;
+  height:250px;
 }
 
 .attribution-text div{
@@ -48,7 +48,6 @@
 }
 
 .attribution-text .small-logo{
-
   background: url('../images/cclogo.png');
   background-size: 100px 42px;
   width:100px;
