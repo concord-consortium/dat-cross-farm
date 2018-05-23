@@ -26,6 +26,11 @@ export default class CornChart extends React.Component<IProps, IState> {
                       planted: x.initial.countCorn,
                       harvested: x.final && x.final.countCorn
                     }));
+    // always show five years of data
+    while (cornData.length < 5) {
+      cornData.push({ year: `Year ${cornData.length + 1}`, planted: 0, harvested: 0 });
+    }
+
     return (
     	<BarChart width={width} height={height} data={cornData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
