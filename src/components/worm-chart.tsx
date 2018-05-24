@@ -15,9 +15,9 @@ export default class WormChart extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { simulationHistory } = this.props,
-          // width = size && size.width || 0,
-          // height = size && size.height || 0,
+    const { simulationHistory, size } = this.props,
+          width = size && size.width || 400,
+          height = size && size.height || 150,
           filtered = simulationHistory.filter((x) => x.initial && x.final),
           // show last five years
           cropped = filtered.filter((x, i) => i >= filtered.length - 5),
@@ -26,8 +26,13 @@ export default class WormChart extends React.Component<IProps, IState> {
                       initial: x.initial.countEggs,
                       final: x.final && x.final.countEggs
                     }));
+    // always show five years of data
+    while (wormData.length < 5) {
+      wormData.push({ year: `Year ${wormData.length + 1}`, initial: 0, final: 0 });
+    }
+
     return (
-    	<BarChart width={300} height={180} data={wormData} barGap={0}
+    	<BarChart width={width} height={height} data={wormData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <CartesianGrid strokeDasharray="3 3"/>
        <XAxis dataKey="year"/>

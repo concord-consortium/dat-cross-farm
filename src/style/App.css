@@ -9,13 +9,17 @@
 }
 
 .populations-model-panel {
-  max-width: 538px; /* hard-coded for now to fix Firefox layout issue */
+  max-width: 470px; /* hard-coded for now to fix Firefox layout issue */
+}
+
+/* hide the populations.js toolbar */
+#environment .toolbar {
+  display: none;
 }
 
 .controls-column {
   font-size: 0.8em;
-  min-width: 280px;
-  max-width: 400px;
+  min-width: 400px;
   margin-top: 10px;
   margin-left: 20px;
 }
