@@ -2,7 +2,7 @@ import * as React from 'react';
 import './style/App.css';
 import {
   getCornStats, ISimulationState, kNullSimulationState, simulationStepsPerYear,
-  addWormsSparse, plantMixedCrop, prepareToEndYear, endYear
+  addWormsSparse, addRandomSpiders, plantMixedCrop, prepareToEndYear, endYear
 } from './corn-model';
 import { Events, Environment, Interactive } from './populations';
 import Attribution from './components/attribution';
@@ -87,7 +87,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
     if (simulationStepInYear === 0) {
       // plant the crop before proceeding
-      plantMixedCrop(this.playParams && this.playParams.cornPct || 100);
+      plantMixedCrop(this.playParams ? this.playParams.cornPct : 100);
       // retrieve post-planting stats
       const simulationState = getCornStats();
       this.simulationHistory.push({ initial: simulationState });
@@ -102,6 +102,10 @@ class App extends React.Component<IAppProps, IAppState> {
         if (!prevYearStats.initial.countWorm &&
             prevYearStats.final && !prevYearStats.final.countWorm) {
           addWormsSparse();
+        }
+        // add spiders if requested
+        if (this.playParams && this.playParams.addPredators) {
+          addRandomSpiders(10);
         }
       }
     }
@@ -158,6 +162,19 @@ class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
+  // show the add predators button if the last full year
+  // had rootworm eggs at the end of the season
+  showSpidersOption() {
+    const historyLength = this.simulationHistory.length;
+    for (let i = historyLength - 1; i >= 0; --i) {
+      const final = this.simulationHistory[i].final;
+      if (final) {
+        return final.countEggs > 0;
+      }
+    }
+    return false;
+  }
+
   public render() {
     const { interactive, simulationState,
             showInitialDialog, showEndSeasonDialog } = this.state,
@@ -168,7 +185,7 @@ class App extends React.Component<IAppProps, IAppState> {
                                 onToggleVisibility={this.handleToggleInitialDialogVisibility} />
                             : null,
           historyLength = this.simulationHistory.length,
-          chartSize = { width: 400, height: 150 },  // hard-coded for now
+          chartSize = { width: 400, height: 145 },  // hard-coded for now
           cornChart = historyLength >= 1 && this.simulationHistory[0].final
                         ? <CornChart size={chartSize} simulationHistory={this.simulationHistory} />
                         : null,
@@ -197,6 +214,7 @@ class App extends React.Component<IAppProps, IAppState> {
           <div className="controls-column">
             <PlantingControls year={simulationYear + 1}
                               isRunning={this.state.isRunning}
+                              showSpidersOption={this.showSpidersOption()}
                               onTogglePlayPause={this.handlePlayPauseClick}
                               onReset={this.handleResetClick}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
