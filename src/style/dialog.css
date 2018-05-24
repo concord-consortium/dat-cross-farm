@@ -21,17 +21,21 @@
 
 .dialog-text{
   position: absolute;
-  font-size: 0.9em;
+  font-size: 1em;
   top: 80px;
-  left: 14px;
+  left: 34px;
   padding:20px;
   border-radius:12px;
   border: 1px solid silver;
   background: white;
   width:400px;
-  height:200px;
+  height:240px;
 }
 
 .dialog-text div{
   margin:10px;
+}
+
+.dialog-text .dialog-text-bold {
+  font-weight: bold;
 }

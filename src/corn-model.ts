@@ -214,8 +214,16 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
     const envPane = interactive.getEnvironmentPane();
     if (envPane) {
       simulationElt.appendChild(envPane);
+
+      const slider: HTMLInputElement | null = document.getElementById('speed-slider') as any;
+      if (slider) {
+        // default slider to maximum speed
+        slider.value = '100';
+      }
     }
   }
+  // default to maximum speed
+  env.setSpeed(100);
 
   env.addRule(new Rule({
     test(agent: Agent) {

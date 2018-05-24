@@ -13,6 +13,7 @@
   },
   "rules": {
     "jsx-boolean-value": false,
+    "max-classes-per-file": false,
     "member-access": false,
     "member-ordering": false,
     "no-console": false,
