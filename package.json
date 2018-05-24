@@ -4,6 +4,8 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@blueprintjs/core": "^2.3.1",
+    "clipboard": "^2.0.1",
     "lodash": "^4.17.10",
     "query-string": "^6.1.0",
     "react": "^16.3.2",
@@ -23,6 +25,7 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/clipboard": "^2.0.0",
     "@types/jest": "^22.2.3",
     "@types/jquery": "^3.3.1",
     "@types/lodash": "^4.14.108",

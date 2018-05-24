@@ -1,4 +1,5 @@
 import { corn } from './species/corn';
+import { spider } from './species/spider';
 import { worm, wormLifestage, getWormLifestage } from './species/rootworm';
 import { wormEgg } from './species/worm-egg';
 import { Agent, Environment, Rule, Interactive } from './populations';
@@ -69,28 +70,6 @@ export function plantMixedCrop(cornPct: number) {
   }
 }
 
-function addCorn(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      const seed = corn.createAgent();
-      seed.setLocation({
-          x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
-          y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
-      });
-      seed.set('infected', false);
-      env.addAgent(seed);
-    }
-  }
-}
-
-export const addCornDense = () => {
-  addCorn(10, 10, 45, 90, 38);
-};
-
-export const addCornSparse = () => {
-  addCorn(6, 6, 50, 110, 60);
-};
-
 function addRandomWorms(quantity: number) {
   for (let i = 0; i < quantity; i++) {
     const matureWorm = worm.createAgent();
@@ -107,30 +86,23 @@ export const addWormsSparse = () => {
   addRandomWorms(20);
 };
 
-function addTrapCrop(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      const seed = variedPlants.createAgent();
-      seed.setLocation({
-          x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
-          y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
-      });
-      seed.set('infected', false);
-      env.addAgent(seed);
-    }
+export function addRandomSpiders(count: number) {
+  for (let i = 0; i < count; i++) {
+    const s = spider.createAgent();
+    s.setLocation({
+        x: Math.floor(Math.random() * 10 * 45),
+        y: Math.floor(Math.random() * 10 * 45)
+    });
+    env.addAgent(s);
   }
 }
 
-export const addTrapCropDense = () => {
-  addTrapCrop(12, 11, 25, 20, 38);
-};
-
-export const addTrapCropSparse = () => {
-  addTrapCrop(7, 7, 30, 50, 60);
-};
-
 const agentIsCorn = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Corn";
+};
+
+const agentIsTrap = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "Trap";
 };
 
 const agentIsEgg = (envAgent: Agent) => {
@@ -141,12 +113,17 @@ const agentIsWorm = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Worm";
 };
 
+const agentIsSpider = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "Spider";
+};
+
 export interface ISimulationState {
   countCorn: number;
   countTrap: number;
   countWorm: number;
   countEggs: number;
-  infected: number;
+  countSpiders: number;
+  nibbledCorn: number;
                                 // all simulation values are zero-based
   simulationStep: number;       // cumulative step in simulation
   simulationStepInYear: number; // step in current year
@@ -154,15 +131,16 @@ export interface ISimulationState {
   simulationYear: number;       // year
 }
 export const kNullSimulationState: ISimulationState =
-        { countCorn: 0, countTrap: 0, countWorm: 0, countEggs: 0, infected: 0,
-          simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
+  { countCorn: 0, countTrap: 0, countWorm: 0, countEggs: 0, countSpiders: 0, nibbledCorn: 0,
+    simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
 
 export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
     countEggs = 0,
-    infected = 0;
+    countSpiders = 0,
+    nibbledCorn = 0;
   const simulationYear = Math.floor(env.date / simulationStepsPerYear);
   const simulationStep = env.date;
   // simulationStepInYear is useful later on for agent rule tests - since those rules execute
@@ -174,10 +152,10 @@ export function getCornStats(): ISimulationState {
     if (agentIsCorn(a)) {
       ++ countCorn;
       if (a.get('health') < 100) {
-        ++ infected;
+        ++ nibbledCorn;
       }
     }
-    else if (a.species.speciesName === 'Trap') {
+    else if (agentIsTrap(a)) {
       ++ countTrap;
     }
     else if (agentIsWorm(a)) {
@@ -186,8 +164,11 @@ export function getCornStats(): ISimulationState {
     else if (agentIsEgg(a)) {
       ++countEggs;
     }
+    else if (agentIsSpider(a)) {
+      ++countSpiders;
+    }
   });
-  return { countCorn, countTrap, countWorm, countEggs, infected,
+  return { countCorn, countTrap, countWorm, countEggs, countSpiders, nibbledCorn,
           simulationStep, simulationStepInYear, simulationDay, simulationYear };
 }
 export function prepareToEndYear() {
@@ -214,8 +195,16 @@ export function initCornModel(simulationElt: HTMLElement | null, params?: IModel
     const envPane = interactive.getEnvironmentPane();
     if (envPane) {
       simulationElt.appendChild(envPane);
+
+      const slider: HTMLInputElement | null = document.getElementById('speed-slider') as any;
+      if (slider) {
+        // default slider to maximum speed
+        slider.value = '100';
+      }
     }
   }
+  // default to maximum speed
+  env.setSpeed(100);
 
   env.addRule(new Rule({
     test(agent: Agent) {

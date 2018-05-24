@@ -1,29 +1,71 @@
 import * as React from 'react';
+import { Checkbox } from '@blueprintjs/core';
+import '../style/planting-controls.css';
+import '../style/toolbar-buttons.css';
+
+export interface IPlayParams {
+  cornPct: number;
+  addPredators: boolean;
+}
 
 interface IProps {
   year: number;
-  cornPct: number;
-  onSetCornPct: (cornPct: number) => void;
+  isRunning: boolean;
+  showSpidersOption: boolean;
+  onTogglePlayPause: (params: IPlayParams) => void;
+  onReset: () => void;
 }
 interface IState {
+  cornPct: number;
+  addPredators: boolean;
 }
 
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
+    cornPct: 100,
+    addPredators: false
   };
 
   handleCornPctChange = (evt: React.FormEvent<HTMLSelectElement>) => {
-    this.props.onSetCornPct(Number(evt.currentTarget.value));
+    this.setState({ cornPct: Number(evt.currentTarget.value) });
+  }
+
+  handleAddPredatorsChange = () => {
+    this.setState({ addPredators: !this.state.addPredators });
+  }
+
+  handlePlayPauseClick = () => {
+    const { cornPct, addPredators } = this.state,
+          doAddPredators = this.props.showSpidersOption && addPredators;
+    this.props.onTogglePlayPause({ cornPct, addPredators: doAddPredators });
+  }
+
+  handleResetClick = () => {
+    this.props.onReset();
+  }
+
+  renderSpidersOption() {
+    const { showSpidersOption } = this.props;
+    return(
+      showSpidersOption
+        ? <Checkbox
+            checked={this.state.addPredators}
+            label="Add harvestmen (rootworm predators)"
+            onChange={this.handleAddPredatorsChange} />
+
+        : null
+    );
   }
 
   render() {
-    const { cornPct, year } =  this.props,
+    const { year } =  this.props,
+          { cornPct } = this.state,
           trapPct = 100 - cornPct;
     return (
       <div className="section planting-controls">
-        <h4>Annual Planting Plan</h4>
-        <h4>Year {year}</h4>
+        <h4>Annual Planting Plan &mdash; Year {year}</h4>
+        <br/>
         <label>
           Corn:&nbsp;&nbsp;
           <select className="corn-percent-select"
@@ -38,6 +80,17 @@ export default class PlantingControls extends React.Component<IProps, IState> {
         </label>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span>Alfalfa:&nbsp;&nbsp;{trapPct}%</span>
+        <br/>
+        {this.props.showSpidersOption ? <br/> : null}
+        {this.renderSpidersOption()}
+        <div className='toolbar'>
+          <div className='toolbar-button' onClick={this.handlePlayPauseClick}>
+            <div className={this.props.isRunning ? 'pause-icon-button' : 'play-icon-button'} />
+          </div>
+          <div className='toolbar-button' onClick={this.handleResetClick}>
+            <div className='reset-icon-button' />
+          </div>
+        </div>
       </div>
     );
   }

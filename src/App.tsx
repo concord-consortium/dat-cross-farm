@@ -2,13 +2,13 @@ import * as React from 'react';
 import './style/App.css';
 import {
   getCornStats, ISimulationState, kNullSimulationState, simulationStepsPerYear,
-  addWormsSparse, plantMixedCrop, prepareToEndYear, endYear
+  addWormsSparse, addRandomSpiders, plantMixedCrop, prepareToEndYear, endYear
 } from './corn-model';
 import { Events, Environment, Interactive } from './populations';
 import Attribution from './components/attribution';
 import InitialDialog from './components/initial-dialog';
 import EndSeasonDialog from './components/end-season-dialog';
-import PlantingControls from './components/planting-controls';
+import PlantingControls, { IPlayParams } from './components/planting-controls';
 import PopulationsModelPanel from './components/populations-model-panel';
 import SimulationStatistics from './components/simulation-statistics';
 import { SimulationHistory } from './models/simulation-history';
@@ -25,8 +25,8 @@ interface IAppProps {
 
 interface IAppState {
   interactive?: Interactive;
+  isRunning: boolean;
   simulationState: ISimulationState;
-  cornPct: number;
   showInitialDialog: boolean;
   showEndSeasonDialog: boolean;
 }
@@ -34,10 +34,11 @@ interface IAppState {
 class App extends React.Component<IAppProps, IAppState> {
 
   simulationHistory: SimulationHistory;
+  playParams?: IPlayParams;
 
   public state: IAppState = {
+    isRunning: false,
     simulationState: kNullSimulationState,
-    cornPct: 100,
     showInitialDialog: !isInQuietMode,
     showEndSeasonDialog: false
   };
@@ -55,6 +56,10 @@ class App extends React.Component<IAppProps, IAppState> {
 
     Events.addEventListener(Environment.EVENTS.STEP, (evt: any) => {
       this.handleSimulationStep();
+    });
+
+    Events.addEventListener(Environment.EVENTS.STOP, (evt: any) => {
+      this.handleSimulationStop();
     });
 
     Events.addEventListener(Environment.EVENTS.RESET, (evt: any) => {
@@ -76,26 +81,34 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   handleSimulationStart() {
-    const { simulationStepInYear } = getCornStats();
+    const { simulationStepInYear, simulationYear } = getCornStats();
+
+    this.setState({ isRunning: true });
+
     if (simulationStepInYear === 0) {
       // plant the crop before proceeding
-      plantMixedCrop(this.state.cornPct);
-      // retrieve post-planting stats
-      const simulationState = getCornStats();
-      this.simulationHistory.push({ initial: simulationState });
-      this.setState({ simulationState });
+      plantMixedCrop(this.playParams ? this.playParams.cornPct : 100);
       // if this is the infestation year, then add rootworms
-      if (simulationState.simulationYear > 0) {
-        const prevYear = this.simulationHistory.length - 2,
+      if (simulationYear > 0) {
+        const prevYear = this.simulationHistory.length - 1,
               prevYearStats = this.simulationHistory[prevYear];
         // worms infest after a full year without worms, which is
         // generally year 2 and any subsequent year after worms
         // have been eradicated for an entire year.
-        if (!prevYearStats.initial.countWorm &&
-            prevYearStats.final && !prevYearStats.final.countWorm) {
+        if (prevYearStats && prevYearStats.initial && prevYearStats.final &&
+            !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
+            !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
           addWormsSparse();
         }
+        // add spiders if requested
+        if (this.playParams && this.playParams.addPredators) {
+          addRandomSpiders(10);
+        }
       }
+      // retrieve post-change stats
+      const simulationState = getCornStats();
+      this.simulationHistory.push({ initial: simulationState });
+      this.setState({ simulationState });
     }
   }
 
@@ -119,17 +132,52 @@ class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
+  handleSimulationStop() {
+    this.setState({ isRunning: false });
+  }
+
   handleSimulationReset() {
     this.simulationHistory = [];
     this.setState({ simulationState: kNullSimulationState });
   }
 
-  onSetCornPct = (cornPct: number) => {
-    this.setState({ cornPct });
+  handlePlayPauseClick = (params: IPlayParams) => {
+    const { interactive } = this.state,
+          environment = interactive && interactive.environment;
+    if (environment) {
+      if (this.state.isRunning) {
+        environment.stop();
+      }
+      else {
+        this.playParams = params;
+        environment.start();
+      }
+    }
+  }
+
+  handleResetClick = () => {
+    const { interactive } = this.state,
+          environment = interactive && interactive.environment;
+    if (environment) {
+      environment.reset();
+    }
+  }
+
+  // show the add predators button if the last full year
+  // had rootworm eggs at the end of the season
+  showSpidersOption() {
+    const historyLength = this.simulationHistory.length;
+    for (let i = historyLength - 1; i >= 0; --i) {
+      const final = this.simulationHistory[i].final;
+      if (final) {
+        return final.countEggs > 0;
+      }
+    }
+    return false;
   }
 
   public render() {
-    const { interactive, simulationState, cornPct,
+    const { interactive, simulationState,
             showInitialDialog, showEndSeasonDialog } = this.state,
           { simulationStepInYear, simulationYear } = simulationState,
           initialDialog = showInitialDialog
@@ -138,11 +186,12 @@ class App extends React.Component<IAppProps, IAppState> {
                                 onToggleVisibility={this.handleToggleInitialDialogVisibility} />
                             : null,
           historyLength = this.simulationHistory.length,
+          chartSize = { width: 400, height: 145 },  // hard-coded for now
           cornChart = historyLength >= 1 && this.simulationHistory[0].final
-                        ? <CornChart simulationHistory={this.simulationHistory} />
+                        ? <CornChart size={chartSize} simulationHistory={this.simulationHistory} />
                         : null,
           wormChart = historyLength >= 1 && this.simulationHistory[0].final
-                        ? <WormChart simulationHistory={this.simulationHistory} />
+                        ? <WormChart size={chartSize} simulationHistory={this.simulationHistory} />
                         : null,
           prevYear = historyLength >= 1 ? historyLength - 1 : 0,
           prevYearStats = this.simulationHistory[prevYear],
@@ -164,8 +213,11 @@ class App extends React.Component<IAppProps, IAppState> {
                                     onSetInteractive={this.handleSetInteractive}/>
           </div>
           <div className="controls-column">
-            <PlantingControls year={simulationYear + 1} cornPct={cornPct}
-                              onSetCornPct={this.onSetCornPct}/>
+            <PlantingControls year={simulationYear + 1}
+                              isRunning={this.state.isRunning}
+                              showSpidersOption={this.showSpidersOption()}
+                              onTogglePlayPause={this.handlePlayPauseClick}
+                              onReset={this.handleResetClick}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
             {!isInConfigurationMode ? cornChart : null}
             {!isInConfigurationMode ? wormChart : null}

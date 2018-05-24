@@ -15,9 +15,9 @@ export default class CornChart extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { simulationHistory } = this.props,
-          // width = size && size.width || 0,
-          // height = size && size.height || 0,
+    const { simulationHistory, size } = this.props,
+          width = size && size.width || 400,
+          height = size && size.height || 150,
           filtered = simulationHistory.filter((x) => x.initial && x.final),
           // show last five years
           cropped = filtered.filter((x, i) => i >= filtered.length - 5),
@@ -26,12 +26,18 @@ export default class CornChart extends React.Component<IProps, IState> {
                       planted: x.initial.countCorn,
                       harvested: x.final && x.final.countCorn
                     }));
+    // always show five years of data
+    while (cornData.length < 5) {
+      cornData.push({ year: `Year ${cornData.length + 1}`, planted: 0, harvested: 0 });
+    }
+
     return (
-    	<BarChart width={300} height={180} data={cornData} barGap={0}
+      <BarChart className="corn-chart"
+            width={width} height={height} data={cornData} barGap={0}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <CartesianGrid strokeDasharray="3 3"/>
        <XAxis dataKey="year"/>
-       <YAxis label={{ value: 'Corn', angle: -90, position: 'insideLeft' } as any}/>
+       <YAxis label={{ value: '\xA0\xA0\xA0\xA0\xA0\xA0\xA0Corn', angle: -90, position: 'insideBottomLeft' } as any}/>
        <Tooltip/>
        <Legend />
        <Bar dataKey="planted" fill="#8884d8" />

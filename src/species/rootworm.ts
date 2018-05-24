@@ -159,9 +159,11 @@ class WormAnimal extends BasicAnimal {
 
   _eatPrey(prey: Agent) {
     const consumptionRate = this.get('resource consumption rate');
-    const nutritionFactor = prey.get('worm nutrition') || 1;
+    const nutritionFactor = prey.get('worm nutrition');
+    const deltaEnergy = nutritionFactor != null
+                          ? nutritionFactor * consumptionRate
+                          : 1;
     const currEnergy = this.get('energy');
-    const deltaEnergy = nutritionFactor * consumptionRate;
 
     this.set('energy', currEnergy + deltaEnergy);
 

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FlatIconAttribution } from '../images/flaticon/flaticon-attribution';
 import '../style/attribution.css';
 
 interface IAttributionState {
@@ -26,6 +27,7 @@ class Attribution extends React.Component<{}, IAttributionState> {
         <div className="small-logo" onClick={this.toggleAttribution} />
         <div>This interactive was created by the Concord Consortium using our Populations library.</div>
         <div>Copyright © 2018 The Concord Consortium. All rights reserved. The software is licensed under the MIT license. Please see <a href="https://github.com/concord-consortium/dat-cross-farm/blob/master/LICENSE" target="_blank" rel="noopener">license</a> for other software and associated licensing included in this product. Please provide attribution to the Concord Consortium and the URL <a href="https://concord.org" target="_blank" rel="noopener">https://concord.org</a>.</div>
+        <FlatIconAttribution />
       </div>
     </div>
     </div>
