@@ -1,41 +1,61 @@
 import * as React from 'react';
+import { Checkbox } from '@blueprintjs/core';
 import '../style/planting-controls.css';
 import '../style/toolbar-buttons.css';
 
 export interface IPlayParams {
   cornPct: number;
-  predators: number;
+  addPredators: boolean;
 }
 
 interface IProps {
   year: number;
   isRunning: boolean;
+  showSpidersOption: boolean;
   onTogglePlayPause: (params: IPlayParams) => void;
   onReset: () => void;
 }
 interface IState {
   cornPct: number;
-  predators: number;
+  addPredators: boolean;
 }
 
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
     cornPct: 100,
-    predators: 0
+    addPredators: false
   };
 
   handleCornPctChange = (evt: React.FormEvent<HTMLSelectElement>) => {
     this.setState({ cornPct: Number(evt.currentTarget.value) });
   }
 
+  handleAddPredatorsChange = () => {
+    this.setState({ addPredators: !this.state.addPredators });
+  }
+
   handlePlayPauseClick = () => {
-    const { cornPct, predators } = this.state;
-    this.props.onTogglePlayPause({ cornPct, predators });
+    const { cornPct, addPredators } = this.state,
+          doAddPredators = this.props.showSpidersOption && addPredators;
+    this.props.onTogglePlayPause({ cornPct, addPredators: doAddPredators });
   }
 
   handleResetClick = () => {
     this.props.onReset();
+  }
+
+  renderSpidersOption() {
+    const { showSpidersOption } = this.props;
+    return(
+      showSpidersOption
+        ? <Checkbox
+            checked={this.state.addPredators}
+            label="Add harvestmen (rootworm predators)"
+            onChange={this.handleAddPredatorsChange} />
+
+        : null
+    );
   }
 
   render() {
@@ -60,6 +80,9 @@ export default class PlantingControls extends React.Component<IProps, IState> {
         </label>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span>Alfalfa:&nbsp;&nbsp;{trapPct}%</span>
+        <br/>
+        {this.props.showSpidersOption ? <br/> : null}
+        {this.renderSpidersOption()}
         <div className='toolbar'>
           <div className='toolbar-button' onClick={this.handlePlayPauseClick}>
             <div className={this.props.isRunning ? 'pause-icon-button' : 'play-icon-button'} />

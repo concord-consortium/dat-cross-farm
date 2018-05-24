@@ -1,4 +1,5 @@
 import { corn } from './species/corn';
+import { spider } from './species/spider';
 import { worm, wormLifestage, getWormLifestage } from './species/rootworm';
 import { wormEgg } from './species/worm-egg';
 import { Agent, Environment, Rule, Interactive } from './populations';
@@ -69,28 +70,6 @@ export function plantMixedCrop(cornPct: number) {
   }
 }
 
-function addCorn(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      const seed = corn.createAgent();
-      seed.setLocation({
-          x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
-          y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
-      });
-      seed.set('infected', false);
-      env.addAgent(seed);
-    }
-  }
-}
-
-export const addCornDense = () => {
-  addCorn(10, 10, 45, 90, 38);
-};
-
-export const addCornSparse = () => {
-  addCorn(6, 6, 50, 110, 60);
-};
-
 function addRandomWorms(quantity: number) {
   for (let i = 0; i < quantity; i++) {
     const matureWorm = worm.createAgent();
@@ -107,27 +86,16 @@ export const addWormsSparse = () => {
   addRandomWorms(20);
 };
 
-function addTrapCrop(rows: number, columns: number, rowStart: number, colStart: number, spacing: number) {
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      const seed = variedPlants.createAgent();
-      seed.setLocation({
-          x: rowStart + (column * spacing) + (row % 2 === 0 ? 6 : 0),
-          y: colStart + (row * spacing) + (column % 2 === 0 ? 4 : 0),
-      });
-      seed.set('infected', false);
-      env.addAgent(seed);
-    }
+export function addRandomSpiders(count: number) {
+  for (let i = 0; i < count; i++) {
+    const s = spider.createAgent();
+    s.setLocation({
+        x: Math.floor(Math.random() * 10 * 45),
+        y: Math.floor(Math.random() * 10 * 45)
+    });
+    env.addAgent(s);
   }
 }
-
-export const addTrapCropDense = () => {
-  addTrapCrop(12, 11, 25, 20, 38);
-};
-
-export const addTrapCropSparse = () => {
-  addTrapCrop(7, 7, 30, 50, 60);
-};
 
 const agentIsCorn = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Corn";
