@@ -60,7 +60,8 @@ const names = [
   "Alfalfa Planted",
   "Alfalfa Remaining",
   "Rootworm Eggs Initial",
-  "Rootworm Eggs Final"
+  "Rootworm Eggs Final",
+  "Harvestmen"
 ];
 
 export default class CopyStats extends React.Component<IProps, IState> {
@@ -71,7 +72,7 @@ export default class CopyStats extends React.Component<IProps, IState> {
   }
 
   cornYield(state: ISimulationYearState) {
-    return state.final
+    return state.final && state.initial.countCorn
             ? Math.round(100 * state.final.countCorn / state.initial.countCorn)
             : "";
   }
@@ -88,7 +89,8 @@ export default class CopyStats extends React.Component<IProps, IState> {
       text += `${state.initial.countTrap}\t`;
       text += `${state.final ? state.final.countTrap : ''}\t`;
       text += `${state.initial.countEggs}\t`;
-      text += `${state.final ? state.final.countEggs : ''}\n`;
+      text += `${state.final ? state.final.countEggs : ''}\t`;
+      text += `${state.initial.countSpiders}\n`;
     });
     return (text);
   }
@@ -106,7 +108,8 @@ export default class CopyStats extends React.Component<IProps, IState> {
       text += `${state.initial.countTrap},`;
       text += `${state.final ? state.final.countTrap : ''},`;
       text += `${state.initial.countEggs},`;
-      text += `${state.final ? state.final.countEggs : ''}\n`;
+      text += `${state.final ? state.final.countEggs : ''},`;
+      text += `${state.initial.countSpiders}\n`;
     });
     return (text);
   }
@@ -118,14 +121,16 @@ export default class CopyStats extends React.Component<IProps, IState> {
                   s: any = { year: initial.simulationYear + 1,
                         initial: {
                           corn: initial.countCorn,
-                          trap: initial.countTrap,
-                          eggs: initial.countEggs
+                          alfalfa: initial.countTrap,
+                          eggs: initial.countEggs,
+                          harvestmen: initial.countSpiders
                         }};
             if (final) {
               s.final = {
                 corn: final.countCorn,
-                trap: final.countTrap,
-                eggs: final.countEggs
+                alfalfa: final.countTrap,
+                eggs: final.countEggs,
+                harvestmen: final.countSpiders
               };
             }
             return s;

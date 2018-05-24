@@ -15,10 +15,6 @@ const traits = [
 ];
 
 class Spider extends BasicAnimal {
-  step() {
-    console.log();
-    super.step();
-  }
 }
 
 export const spider = new Species({

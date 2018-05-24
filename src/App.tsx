@@ -81,26 +81,23 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   handleSimulationStart() {
-    const { simulationStepInYear } = getCornStats();
+    const { simulationStepInYear, simulationYear } = getCornStats();
 
     this.setState({ isRunning: true });
 
     if (simulationStepInYear === 0) {
       // plant the crop before proceeding
       plantMixedCrop(this.playParams ? this.playParams.cornPct : 100);
-      // retrieve post-planting stats
-      const simulationState = getCornStats();
-      this.simulationHistory.push({ initial: simulationState });
-      this.setState({ simulationState });
       // if this is the infestation year, then add rootworms
-      if (simulationState.simulationYear > 0) {
-        const prevYear = this.simulationHistory.length - 2,
+      if (simulationYear > 0) {
+        const prevYear = this.simulationHistory.length - 1,
               prevYearStats = this.simulationHistory[prevYear];
         // worms infest after a full year without worms, which is
         // generally year 2 and any subsequent year after worms
         // have been eradicated for an entire year.
-        if (!prevYearStats.initial.countWorm &&
-            prevYearStats.final && !prevYearStats.final.countWorm) {
+        if (prevYearStats && prevYearStats.initial && prevYearStats.final &&
+            !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
+            !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
           addWormsSparse();
         }
         // add spiders if requested
@@ -108,6 +105,10 @@ class App extends React.Component<IAppProps, IAppState> {
           addRandomSpiders(10);
         }
       }
+      // retrieve post-change stats
+      const simulationState = getCornStats();
+      this.simulationHistory.push({ initial: simulationState });
+      this.setState({ simulationState });
     }
   }
 

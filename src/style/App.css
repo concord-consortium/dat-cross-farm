@@ -32,7 +32,7 @@
 
 .worm-chart .recharts-yAxis tspan {
   /* shrink "Rootworm Eggs" text so it fits */
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 
 .simulation-stats {

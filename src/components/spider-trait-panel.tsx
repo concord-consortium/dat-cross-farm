@@ -12,10 +12,6 @@ const traitMap: { [key: string]: ITraitSpec } = {
     species: spider,
     traitName: 'default speed',
   },
-  'trait-speed': {
-    species: spider,
-    traitName: 'speed',
-  },
   'trait-vision-distance': {
     species: spider,
     traitName: 'vision distance',
@@ -85,10 +81,6 @@ export default class SpiderTraitPanel extends React.Component<IProps, IState> {
           "Default speed:",
           "Controls the default speed of the spider",
           "trait-default-speed")}
-        {renderConfigTrait(
-          "Speed:",
-          "Controls the speed of the spider",
-          "trait-speed")}
         {renderConfigTrait(
           "Vision distance:",
           "How close the spider must be to food to see it",

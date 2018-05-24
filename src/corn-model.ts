@@ -101,6 +101,10 @@ const agentIsCorn = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Corn";
 };
 
+const agentIsTrap = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "Trap";
+};
+
 const agentIsEgg = (envAgent: Agent) => {
   return envAgent.species.speciesName === "WormEgg";
 };
@@ -109,12 +113,17 @@ const agentIsWorm = (envAgent: Agent) => {
   return envAgent.species.speciesName === "Worm";
 };
 
+const agentIsSpider = (envAgent: Agent) => {
+  return envAgent.species.speciesName === "Spider";
+};
+
 export interface ISimulationState {
   countCorn: number;
   countTrap: number;
   countWorm: number;
   countEggs: number;
-  infected: number;
+  countSpiders: number;
+  nibbledCorn: number;
                                 // all simulation values are zero-based
   simulationStep: number;       // cumulative step in simulation
   simulationStepInYear: number; // step in current year
@@ -122,15 +131,16 @@ export interface ISimulationState {
   simulationYear: number;       // year
 }
 export const kNullSimulationState: ISimulationState =
-        { countCorn: 0, countTrap: 0, countWorm: 0, countEggs: 0, infected: 0,
-          simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
+  { countCorn: 0, countTrap: 0, countWorm: 0, countEggs: 0, countSpiders: 0, nibbledCorn: 0,
+    simulationDay: 0, simulationStep: 0, simulationStepInYear: 0, simulationYear: 0 };
 
 export function getCornStats(): ISimulationState {
   let countCorn = 0,
     countTrap = 0,
     countWorm = 0,
     countEggs = 0,
-    infected = 0;
+    countSpiders = 0,
+    nibbledCorn = 0;
   const simulationYear = Math.floor(env.date / simulationStepsPerYear);
   const simulationStep = env.date;
   // simulationStepInYear is useful later on for agent rule tests - since those rules execute
@@ -142,10 +152,10 @@ export function getCornStats(): ISimulationState {
     if (agentIsCorn(a)) {
       ++ countCorn;
       if (a.get('health') < 100) {
-        ++ infected;
+        ++ nibbledCorn;
       }
     }
-    else if (a.species.speciesName === 'Trap') {
+    else if (agentIsTrap(a)) {
       ++ countTrap;
     }
     else if (agentIsWorm(a)) {
@@ -154,8 +164,11 @@ export function getCornStats(): ISimulationState {
     else if (agentIsEgg(a)) {
       ++countEggs;
     }
+    else if (agentIsSpider(a)) {
+      ++countSpiders;
+    }
   });
-  return { countCorn, countTrap, countWorm, countEggs, infected,
+  return { countCorn, countTrap, countWorm, countEggs, countSpiders, nibbledCorn,
           simulationStep, simulationStepInYear, simulationDay, simulationYear };
 }
 export function prepareToEndYear() {

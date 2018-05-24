@@ -16,12 +16,13 @@ interface IState {
   initialTrap: number;
   initialWorms: number;
   initialEggs: number;
+  initialSpiders: number;
   totalCorn: number;
   totalTrap: number;
   totalWorm: number;
   totalEggs: number;
-  infectedCorn: number;
-  harvestCorn: number;
+  totalSpiders: number;
+  nibbledCorn: number;
   simulationDay: number;
   simulationYear: number;
 }
@@ -33,26 +34,31 @@ class SimulationStatistics extends React.Component<IProps, IState> {
     initialTrap: 0,
     initialWorms: 0,
     initialEggs: 0,
+    initialSpiders: 0,
     totalCorn: 0,
     totalTrap: 0,
     totalWorm: 0,
     totalEggs: 0,
-    infectedCorn: 0,
-    harvestCorn: 0,
+    totalSpiders: 0,
+    nibbledCorn: 0,
     simulationDay: 0,
     simulationYear: 0
   };
 
   static getDerivedStateFromProps(nextProps: IProps, prevState: IState) {
     const { simulationStepInYear, simulationDay, simulationYear,
-            countCorn, countTrap, countWorm, countEggs, infected } = nextProps.simulationState;
+            countCorn, countTrap, countWorm, countEggs, countSpiders,
+            nibbledCorn } = nextProps.simulationState;
 
-    let nextState = { totalCorn: countCorn, totalTrap: countTrap, totalWorm: countWorm, totalEggs: countEggs,
-                      infectedCorn: infected, simulationDay, simulationYear};
+    let nextState = { totalCorn: countCorn, totalTrap: countTrap,
+                      totalWorm: countWorm, totalEggs: countEggs,
+                      totalSpiders: countSpiders,
+                      nibbledCorn, simulationDay, simulationYear};
     if (!simulationStepInYear) {
       nextState = Object.assign(nextState, {
                                   initialCorn: countCorn, initialTrap: countTrap,
-                                  initialWorms: countWorm, initialEggs: countEggs
+                                  initialWorms: countWorm, initialEggs: countEggs,
+                                  initialSpiders: countSpiders
                                 });
     }
     return nextState;
@@ -114,6 +120,9 @@ class SimulationStatistics extends React.Component<IProps, IState> {
             {this.renderDataRow("Alfalfa remaining",
                                 state => state.final && state.final.countTrap,
                                 this.state.totalTrap)}
+            {this.renderInitialDataRow("Harvestmen",
+                                      state => state.initial.countSpiders,
+                                      this.state.initialSpiders)}
             {this.renderDataRow("Rootworms",
                                 state => state.final && state.final.countWorm,
                                 this.state.totalWorm)}
