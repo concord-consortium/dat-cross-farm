@@ -1,6 +1,7 @@
 import * as React from 'react';
 import CropTraitPanel from './crop-trait-panel';
 import WormTraitPanel from './worm-trait-panel';
+import SpiderTraitPanel from './spider-trait-panel';
 import '../style/multi-trait-panel.css';
 
 interface IProps {
@@ -23,7 +24,8 @@ export default class MultiTraitPanel extends React.Component<IProps, IState> {
   render() {
     const { panel } = this.state,
           cropTraitPanel = panel === 'crop' ? <CropTraitPanel /> : null,
-          wormTraitPanel = panel === 'worm' ? <WormTraitPanel /> : null;
+          wormTraitPanel = panel === 'worm' ? <WormTraitPanel /> : null,
+          spiderTraitPanel = panel === 'spider' ? <SpiderTraitPanel /> : null;
 
     return (
       <div className="section sim-adjustment">
@@ -34,12 +36,14 @@ export default class MultiTraitPanel extends React.Component<IProps, IState> {
                   onChange={this.handleChange}>
             <option value="crop">Crops</option>
             <option value="worm">Rootworms</option>
+            <option value="spider">Spiders</option>
           </select>
         </label>
         <br/>
         <br/>
         {cropTraitPanel}
         {wormTraitPanel}
+        {spiderTraitPanel}
       </div>
     );
   }
