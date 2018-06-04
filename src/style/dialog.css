@@ -29,7 +29,11 @@
   border: 1px solid silver;
   background: white;
   width:400px;
-  height:240px;
+  height:210px;
+}
+
+.end-season-dialog.dialog-text {
+  height: 300px;
 }
 
 .dialog-text div{
