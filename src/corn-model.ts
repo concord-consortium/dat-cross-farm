@@ -38,7 +38,7 @@ const interactive = new Interactive({
     {
       species: wormEgg,
       limit: 20,
-      imagePath: require('./images/rootworm-mature.png')
+      imagePath: require('./images/rootworm-mature-cc.png')
     }
   ]
 });

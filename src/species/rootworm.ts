@@ -295,7 +295,7 @@ export const worm = new Species({
         },
         {
           image: {
-            path: require('../images/rootworm-mature.png'),
+            path: require('../images/rootworm-mature-cc.png'),
             scale: wormScale.mature,
             anchor: {
               x: 0.4,
