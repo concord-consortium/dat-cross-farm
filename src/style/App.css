@@ -1,11 +1,17 @@
 .app {
   display: flex;
   flex-direction: row;
+  font-family: 'Open Sans', helvetica, arial, sans-serif;
+
 }
 
 .simulation-and-control-panels {
   display: flex;
   flex-direction: column;
+  text-align: center;
+  border: 2px solid #ddd;
+  box-shadow: 4px 4px 0px#ccc;
+  margin-left: 2px;
 }
 
 .populations-model-panel {
@@ -20,14 +26,16 @@
 .controls-column {
   font-size: 1em;
   min-width: 400px;
-  margin-top: 10px;
-  margin-left: 20px;
 }
 
 .controls-column .section {
-  border: 1px solid silver;
+  border-top: 1px solid silver;
   padding: 10px;
   margin-bottom: 10px;
+}
+
+.sim-adjustment {
+  text-align:left;
 }
 
 .worm-chart .recharts-yAxis tspan {

@@ -17,11 +17,9 @@ export default class TimelineView extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { seasons, seasonLengths, simulationYear, simulationStepInYear } = this.props,
-          yearLabel = `Year ${simulationYear + 1}`;
+    const { seasons, seasonLengths, simulationStepInYear } = this.props;
     return (
       <div className="timeline-view">
-        <span className='year-label'>{yearLabel}</span>
         <TimelineBar seasons={seasons}
                     seasonLengths={seasonLengths}
                     simulationStepInYear={simulationStepInYear} />

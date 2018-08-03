@@ -59,15 +59,15 @@ export default class PlantingControls extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { year } =  this.props,
+    const { year, showSpidersOption } =  this.props,
           { cornPct } = this.state,
           trapPct = 100 - cornPct;
     return (
       <div className="section planting-controls">
         <h4>Annual Planting Plan &mdash; Year {year}</h4>
-        <br/>
+        <div className="planting-option">
         <label>
-          Corn:&nbsp;&nbsp;
+          Corn:
           <select className="corn-percent-select"
                   value={cornPct}
                   onChange={this.handleCornPctChange}>
@@ -78,11 +78,18 @@ export default class PlantingControls extends React.Component<IProps, IState> {
             <option value="100">100%</option>
           </select>
         </label>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <span>Alfalfa:&nbsp;&nbsp;{trapPct}%</span>
-        <br/>
-        {this.props.showSpidersOption ? <br/> : null}
-        {this.renderSpidersOption()}
+        </div>
+        <div className="planting-option">
+          <span>Alfalfa:</span><span>{trapPct}%</span>
+        </div>
+        {showSpidersOption &&
+          <div className="planting-option">
+            <Checkbox
+              checked={this.state.addPredators}
+              label="Add harvestmen (rootworm predators)"
+              onChange={this.handleAddPredatorsChange} />
+          </div>
+        }
         <div className='toolbar'>
           <div className='toolbar-button' onClick={this.handlePlayPauseClick}>
             <div className={this.props.isRunning ? 'pause-icon-button' : 'play-icon-button'} />
