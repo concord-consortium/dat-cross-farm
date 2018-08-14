@@ -13,3 +13,12 @@
   display: flex;
   flex-direction: row;
 }
+.planting-option{
+  display:inline-block;
+  padding-left:4px;
+  padding-right:8px;
+}
+
+.planting-option span{
+  padding-right:4px;
+}

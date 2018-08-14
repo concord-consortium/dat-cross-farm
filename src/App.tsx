@@ -18,6 +18,8 @@ import WormChart from './components/worm-chart';
 import { urlParams } from './utilities/url-params';
 const isInConfigurationMode = urlParams.config !== undefined;
 const isInQuietMode = urlParams.quiet !== undefined;
+const runYears = urlParams.runYears || 1;
+const wormStartYear = urlParams.wormStartYear -1 || 0;
 
 interface IAppProps {
   hideModel?: boolean;
@@ -89,12 +91,10 @@ class App extends React.Component<IAppProps, IAppState> {
       // plant the crop before proceeding
       plantMixedCrop(this.playParams ? this.playParams.cornPct : 100);
       // if this is the infestation year, then add rootworms
-      if (simulationYear > 0) {
+      if (simulationYear > (wormStartYear - 1)) {
         const prevYear = this.simulationHistory.length - 1,
               prevYearStats = this.simulationHistory[prevYear];
-        // worms infest after a full year without worms, which is
-        // generally year 2 and any subsequent year after worms
-        // have been eradicated for an entire year.
+        // worms infest after a specified number of years without worms
         if (prevYearStats && prevYearStats.initial && prevYearStats.final &&
             !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
             !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
@@ -127,8 +127,10 @@ class App extends React.Component<IAppProps, IAppState> {
       this.setState({ showEndSeasonDialog: !isInQuietMode });
     }
     // stop at the end of the year before starting the new year
-    else if (simulationStepInYear === 0) {
+    else if (simulationStepInYear === 0 && simulationYear >= runYears) {
       endYear();
+    } else if (simulationStepInYear === 0) {
+      this.handleSimulationStart();
     }
   }
 
@@ -201,7 +203,7 @@ class App extends React.Component<IAppProps, IAppState> {
                                   yearStats={prevYearStats}
                                   onToggleVisibility={this.handleToggleEndSeasonDialogVisibility} />
                               : null;
-    
+
     return (
       <div className="app">
         <div className="simulation-and-control-panels">
