@@ -221,11 +221,13 @@ class App extends React.Component<IAppProps, IAppState> {
                               onTogglePlayPause={this.handlePlayPauseClick}
                               onReset={this.handleResetClick}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
-            {!isInConfigurationMode ? cornChart : null}
-            {!isInConfigurationMode ? wormChart : null}
           </div>
         </div>
-        <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
+        <div className="results-column">
+          <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory} />
+          {!isInConfigurationMode ? cornChart : null}
+          {!isInConfigurationMode ? wormChart : null}
+        </div>
         <Attribution />
         {initialDialog}
         {endSeasonDialog}
