@@ -105,8 +105,10 @@ class App extends React.Component<IAppProps, IAppState> {
               prevYearStats = this.simulationHistory[prevYear];
         // worms infest after a specified number of years without worms
         if (prevYearStats && prevYearStats.initial && prevYearStats.final &&
-            !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
-            !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
+          !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
+          !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
+          addWormsSparse();
+        } else if (this.playParams.wormStartYear <= 1) {
           addWormsSparse();
         }
       }
