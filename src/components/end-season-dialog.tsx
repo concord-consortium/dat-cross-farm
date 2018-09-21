@@ -50,7 +50,7 @@ export default class EndSeasonDialog extends React.Component<IProps, IState> {
           <div style={{ fontWeight: 'bold' }}>Year {simulationYear + 1} Results</div>
           <div>Corn planted: {cornPlanted}, harvested: {cornHarvested}, yield: {cornYieldSpan}</div>
           <div>Rootworm eggs initial: {initialEggsSpan}, final: {finalEggsSpan}</div>
-          <div>Harvestment applied: {spidersAppliedSpan}</div>
+          <div>Harvestmen applied: {spidersAppliedSpan}</div>
           {invasionMsg}
           <div>How much corn should Jonah plant for next year to maximize his corn crop?</div>
           {spiderQuestion}

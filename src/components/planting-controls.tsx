@@ -6,29 +6,53 @@ import '../style/toolbar-buttons.css';
 export interface IPlayParams {
   cornPct: number;
   addPredators: boolean;
+  wormStartYear: number;
+  harvestmenStartYear: number;
+  trapStartYear: number;
+  trapPercentage: number;
 }
 
 interface IProps {
   year: number;
   isRunning: boolean;
   showSpidersOption: boolean;
+  wormStartYear: number;
+  harvestmenStartYear: number;
+  trapStartYear: number;
+  trapPercentage: number;
+  cornPctPlanted: number;
   onTogglePlayPause: (params: IPlayParams) => void;
   onReset: () => void;
 }
 interface IState {
   cornPct: number;
   addPredators: boolean;
+  wormStartYear: number;
+  harvestmenStartYear: number;
+  trapStartYear: number;
+  trapPercentage: number;
 }
 
 export default class PlantingControls extends React.Component<IProps, IState> {
 
   state: IState = {
-    cornPct: 100,
-    addPredators: false
+    // initial corn percentage only affected if barrier crop is introduced at the start of the simulation, otherwise it is altered later
+    cornPct: this.props.trapStartYear === 0 ? 100 - this.props.trapPercentage : 100,
+    addPredators: false,
+    wormStartYear: this.props.wormStartYear,
+    harvestmenStartYear: this.props.harvestmenStartYear,
+    trapStartYear: this.props.trapStartYear,
+    trapPercentage: this.props.trapStartYear === 0 ? this.props.trapPercentage : 0
   };
 
+  componentDidUpdate() {
+    if (this.state.cornPct !== this.props.cornPctPlanted) {
+      this.updateCornPercentage(this.props.cornPctPlanted);
+    }
+  }
+
   handleCornPctChange = (evt: React.FormEvent<HTMLSelectElement>) => {
-    this.setState({ cornPct: Number(evt.currentTarget.value) });
+    this.updateCornPercentage(Number(evt.currentTarget.value));
   }
 
   handleAddPredatorsChange = () => {
@@ -36,13 +60,17 @@ export default class PlantingControls extends React.Component<IProps, IState> {
   }
 
   handlePlayPauseClick = () => {
-    const { cornPct, addPredators } = this.state,
-          doAddPredators = this.props.showSpidersOption && addPredators;
-    this.props.onTogglePlayPause({ cornPct, addPredators: doAddPredators });
+    const { cornPct, addPredators, wormStartYear, harvestmenStartYear, trapStartYear, trapPercentage } = this.state,
+          doAddPredators = this.props.showSpidersOption && addPredators && this.props.year >= harvestmenStartYear;
+    this.props.onTogglePlayPause({ cornPct, addPredators: doAddPredators, wormStartYear, harvestmenStartYear, trapStartYear, trapPercentage });
   }
 
   handleResetClick = () => {
     this.props.onReset();
+  }
+
+  updateCornPercentage(newPercentage: number) {
+    this.setState({ cornPct: newPercentage });
   }
 
   renderSpidersOption() {

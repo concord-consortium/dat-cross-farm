@@ -10,7 +10,7 @@ The model is available at [https://dat-cross.concord.org](https://dat-cross.conc
 
 ## Back Story for the Model
 
-Farmer Jonah’s primary cash crop is corn, and he has been able to maximize his corn crop for several years planting his field down to corn. 
+Farmer Jonah’s primary cash crop is corn, and he has been able to maximize his corn crop for several years planting his field down to corn.
 
 One year, Jonah’s field is invaded by an infestation of corn rootworm. Adult corn rootworm insects fly into the field and eat the silk of the growing corn preventing them from developing properly. Then they lay eggs in the soil that remain there through the winter. In the spring, the eggs hatch and the larval insects feast on the tender roots of the sprouting corn. As the corn grows, they burrow into the corn roots, depriving it of water and nutrients. This weakens the corn, and the stalks tend to bend over and the ears of corn develop poorly. Later in the summer, the adult insects emerge and start the cycle again. Corn rootworm has the potential to take a devastating toll on Jonah’s corn crop.
 
@@ -31,6 +31,26 @@ Configuration mode exposes the underlying model parameters. This makes it possib
 #### Quiet mode: [https://dat-cross.concord.org/?quiet](https://dat-cross.concord.org/?quiet)
 
 In quiet mode, the introductory and end-of-season dialogs are not presented.
+
+### Three simulation scenarios over 5 years:
+- Jonah plants 100% of the field as corn, and is affected by rootworms starting in the second year.
+[https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2)
+- Jonah introduces a predator to the rootworms, the harvestman spider, in the third year
+[https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3)
+- Jonah plants a mix of 75% corn, 25% Alfalfa in the third year
+[https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&trapStartYear=4&&trapPercentage=25](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&trapStartYear=4&&trapPercentage=25)
+- Jonah uses both harvestmen and a mix of Alfalfa starting in the third year
+[https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3&trapStartYear=4&&trapPercentage=25](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3&trapStartYear=4&&trapPercentage=25)
+
+### Simulation Parameter List:
+- `quiet`: Run without the on-screen prompts
+- `config`: Expose the full simulation parameters
+- `runYears`: Simulation will run for n consecutive years before pausing - used for running a multi-year scenario, for example `runYears=5`. Default value, if not present, is 1 year.
+- `wormStartYear`: The year in which the rootworm beetles will start to appear. Default value is 1 (the first year).
+- `harvestmenStartYear`: The year in which harvestman spiders will be added. Default value is 99 (no harvestmen).
+- `trapStartYear`: The year in which a trap crop is mixed in to the planting. Default value is 99 (no trap crop).
+- `trapPercentage`: The percentage of trap crop to corn (use either 25, 50, or 75). Default value is 0 (no trap crop).
+
 
 #### Configuration mode and quiet mode: [https://dat-cross.concord.org/?config&quiet](https://dat-cross.concord.org/?config&quiet)
 
@@ -92,6 +112,6 @@ Updating to a different version of the Populations.js library would require repl
 [Copy Icon](https://www.flaticon.com/free-icon/copy_832334#term=copy&page=1&position=77) by [SmashIcons](https://www.flaticon.com/authors/smashicons) from [FlatIcon](https://www.flaticon.com/) ([Creative Commons BY 3.0](http://creativecommons.org/licenses/by/3.0/) license).
 
 
-# create-react-app README 
+# create-react-app README
 
 The default README provided by CreateReactApp is available at [README-CreateReactApp.md](README-CreateReactApp.md). It contains additional information about the infrastructure of the project and the configuration options available.
