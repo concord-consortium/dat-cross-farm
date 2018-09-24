@@ -45,8 +45,8 @@ export default class PlantingControls extends React.Component<IProps, IState> {
     trapPercentage: this.props.trapStartYear === 0 ? this.props.trapPercentage : 0
   };
 
-  componentDidUpdate() {
-    if (this.state.cornPct !== this.props.cornPctPlanted) {
+  componentDidUpdate(prevProps: IProps) {
+    if (prevProps.cornPctPlanted !== this.props.cornPctPlanted && this.state.cornPct !== this.props.cornPctPlanted) {
       this.updateCornPercentage(this.props.cornPctPlanted);
     }
   }

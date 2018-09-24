@@ -38,7 +38,7 @@ In quiet mode, the introductory and end-of-season dialogs are not presented.
 - Jonah introduces a predator to the rootworms, the harvestman spider, in the third year
 [https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3)
 - Jonah plants a mix of 75% corn, 25% Alfalfa in the third year
-[https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&trapStartYear=4&&trapPercentage=25](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&trapStartYear=4&&trapPercentage=25)
+[https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&trapStartYear=4&&trapPercentage=25](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&trapStartYear=4&trapPercentage=25)
 - Jonah uses both harvestmen and a mix of Alfalfa starting in the third year
 [https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3&trapStartYear=4&&trapPercentage=25](https://dat-cross.concord.org/?quiet&runYears=5&wormStartYear=2&harvestmenStartYear=3&trapStartYear=4&&trapPercentage=25)
 
