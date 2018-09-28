@@ -10,6 +10,7 @@ table, tr, th, td{
   padding: 0;
   border-spacing: 0;
   border-collapse: collapse;
+  min-width:40px;
 }
 
 .stats-table{
@@ -17,7 +18,9 @@ table, tr, th, td{
   padding: 0;
   margin-bottom: 30px;
 }
-
+.simulation-stats .column-header-row{
+  height: 30px;
+}
 .simulation-stats .column-header {
   padding-left: 6px;
   background-color: lightgray;
