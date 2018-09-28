@@ -28,7 +28,7 @@ const env = new Environment({
 
 const interactive = new Interactive({
   environment: env,
-  speedSlider: true,
+  speedSlider: false,
   addOrganismButtons: [
     {
       species: corn,

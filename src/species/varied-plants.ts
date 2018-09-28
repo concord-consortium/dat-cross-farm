@@ -65,7 +65,8 @@ export const variedPlants = new Species({
       rules: [
         {
           image: {
-            path: require('../images/varied-plants/seed.png')
+            path: require('../images/varied-plants/seed.png'),
+            scale: 0.5
           },
           useIf(agent: Agent) { return agent.get('age') < agent.species.defs.SPROUT_AGE; }
         },

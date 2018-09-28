@@ -4,6 +4,23 @@
   flex-direction: row;
 }
 
+
+table, tr, th, td{
+  margin: 0;
+  padding: 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  min-width:40px;
+}
+
+.stats-table{
+  border: 2px solid silver;
+  padding: 0;
+  margin-bottom: 30px;
+}
+.simulation-stats .column-header-row{
+  height: 30px;
+}
 .simulation-stats .column-header {
   padding-left: 6px;
   background-color: lightgray;
@@ -12,10 +29,31 @@
 
 .simulation-stats .row-header {
   text-align: left;
+  padding:8px;
   background-color: lightgray;
 }
+
 
 .simulation-stats .data-row td {
   min-width: 30px;
   text-align: right;
+  padding:4px;
+  border: 1px solid silver;
+}
+
+.simulation-stats tr:nth-child(2) {
+  background: rgb(248, 240, 154);
+}
+.simulation-stats tr:nth-child(3) {
+  background: rgb(184, 226, 184);
+}
+.simulation-stats tr:nth-child(4), .simulation-stats tr:nth-child(5), .simulation-stats tr:nth-child(6)  {
+  background: rgb(255, 255, 255);
+}
+
+.simulation-stats tr:nth-child(7){
+  background: rgb(207, 222, 223);
+}
+.simulation-stats tr:nth-child(8) {
+  background: rgb(255, 180, 151);
 }

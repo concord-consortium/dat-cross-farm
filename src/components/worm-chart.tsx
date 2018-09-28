@@ -40,8 +40,8 @@ export default class WormChart extends React.Component<IProps, IState> {
        <YAxis label={{ value: 'Rootworm Eggs', angle: -90, position: 'insideBottomLeft' } as any}/>
        <Tooltip/>
        <Legend />
-       <Bar dataKey="initial" fill="#8884d8" />
-       <Bar dataKey="final" fill="#82ca9d" />
+       <Bar dataKey="initial" fill="#bababa" />
+       <Bar dataKey="final" fill="#f99f86" />
       </BarChart>
     );
   }

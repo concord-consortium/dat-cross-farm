@@ -12,4 +12,16 @@
   margin-top: 16px;
   display: flex;
   flex-direction: row;
+  width:200px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.planting-option{
+  display:inline-block;
+  padding-left:4px;
+  padding-right:8px;
+}
+
+.planting-option span{
+  padding-right:4px;
 }

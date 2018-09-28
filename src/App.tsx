@@ -18,6 +18,11 @@ import WormChart from './components/worm-chart';
 import { urlParams } from './utilities/url-params';
 const isInConfigurationMode = urlParams.config !== undefined;
 const isInQuietMode = urlParams.quiet !== undefined;
+const runYears = urlParams.runYears || 1;
+const wormStartYear = urlParams.wormStartYear - 1 || 0;
+const harvestmenStartYear = urlParams.harvestmenStartYear - 1 || 99;
+const trapStartYear = urlParams.trapStartYear - 1 || 99;
+const trapPercentage = urlParams.trapPercentage || 0;
 
 interface IAppProps {
   hideModel?: boolean;
@@ -29,18 +34,20 @@ interface IAppState {
   simulationState: ISimulationState;
   showInitialDialog: boolean;
   showEndSeasonDialog: boolean;
+  cornPctPlanted: number;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
 
   simulationHistory: SimulationHistory;
-  playParams?: IPlayParams;
+  playParams: IPlayParams;
 
   public state: IAppState = {
     isRunning: false,
     simulationState: kNullSimulationState,
     showInitialDialog: !isInQuietMode,
-    showEndSeasonDialog: false
+    showEndSeasonDialog: false,
+    cornPctPlanted: 100
   };
 
   constructor(props: IAppProps) {
@@ -87,28 +94,33 @@ class App extends React.Component<IAppProps, IAppState> {
 
     if (simulationStepInYear === 0) {
       // plant the crop before proceeding
-      plantMixedCrop(this.playParams ? this.playParams.cornPct : 100);
+      let cornPct = this.playParams.cornPct;
+      if (simulationYear > (this.playParams.trapStartYear - 1) && trapPercentage > 0) {
+        cornPct = 100 - trapPercentage;
+      }
+      plantMixedCrop(cornPct);
       // if this is the infestation year, then add rootworms
-      if (simulationYear > 0) {
+      if (simulationYear > (this.playParams.wormStartYear - 1)) {
         const prevYear = this.simulationHistory.length - 1,
               prevYearStats = this.simulationHistory[prevYear];
-        // worms infest after a full year without worms, which is
-        // generally year 2 and any subsequent year after worms
-        // have been eradicated for an entire year.
+        // worms infest after a specified number of years without worms
         if (prevYearStats && prevYearStats.initial && prevYearStats.final &&
-            !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
-            !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
+          !prevYearStats.initial.countWorm && !prevYearStats.initial.countEggs &&
+          !prevYearStats.final.countWorm && !prevYearStats.final.countEggs) {
+          addWormsSparse();
+        } else if (this.playParams.wormStartYear <= 1) {
           addWormsSparse();
         }
-        // add spiders if requested
-        if (this.playParams && this.playParams.addPredators) {
-          addRandomSpiders(10);
-        }
       }
+      // add spiders if requested
+      if (this.playParams.addPredators || (simulationYear > (this.playParams.harvestmenStartYear - 1))) {
+        addRandomSpiders(10);
+      }
+
       // retrieve post-change stats
       const simulationState = getCornStats();
       this.simulationHistory.push({ initial: simulationState });
-      this.setState({ simulationState });
+      this.setState({ simulationState, cornPctPlanted: cornPct});
     }
   }
 
@@ -127,8 +139,10 @@ class App extends React.Component<IAppProps, IAppState> {
       this.setState({ showEndSeasonDialog: !isInQuietMode });
     }
     // stop at the end of the year before starting the new year
-    else if (simulationStepInYear === 0) {
+    else if (simulationStepInYear === 0 && simulationYear >= runYears) {
       endYear();
+    } else if (simulationStepInYear === 0) {
+      this.handleSimulationStart();
     }
   }
 
@@ -166,11 +180,13 @@ class App extends React.Component<IAppProps, IAppState> {
   // show the add predators button if the last full year
   // had rootworm eggs at the end of the season
   showSpidersOption() {
-    const historyLength = this.simulationHistory.length;
-    for (let i = historyLength - 1; i >= 0; --i) {
-      const final = this.simulationHistory[i].final;
-      if (final) {
-        return final.countEggs > 0;
+    if (runYears === 1) {
+      const historyLength = this.simulationHistory.length;
+      for (let i = historyLength - 1; i >= 0; --i) {
+        const final = this.simulationHistory[i].final;
+        if (final) {
+          return final.countEggs > 0;
+        }
       }
     }
     return false;
@@ -178,7 +194,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { interactive, simulationState,
-            showInitialDialog, showEndSeasonDialog } = this.state,
+            showInitialDialog, showEndSeasonDialog, cornPctPlanted } = this.state,
           { simulationStepInYear, simulationYear } = simulationState,
           initialDialog = showInitialDialog
                             ? <InitialDialog
@@ -201,7 +217,7 @@ class App extends React.Component<IAppProps, IAppState> {
                                   yearStats={prevYearStats}
                                   onToggleVisibility={this.handleToggleEndSeasonDialogVisibility} />
                               : null;
-    
+
     return (
       <div className="app">
         <div className="simulation-and-control-panels">
@@ -216,14 +232,21 @@ class App extends React.Component<IAppProps, IAppState> {
             <PlantingControls year={simulationYear + 1}
                               isRunning={this.state.isRunning}
                               showSpidersOption={this.showSpidersOption()}
+                              wormStartYear={wormStartYear}
+                              harvestmenStartYear={harvestmenStartYear}
+                              trapStartYear={trapStartYear}
+                              trapPercentage={trapPercentage}
+                              cornPctPlanted={cornPctPlanted}
                               onTogglePlayPause={this.handlePlayPauseClick}
                               onReset={this.handleResetClick}/>
             {isInConfigurationMode ? <MultiTraitPanel /> : null}
-            {!isInConfigurationMode ? cornChart : null}
-            {!isInConfigurationMode ? wormChart : null}
           </div>
         </div>
-        <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory}/>
+        <div className="results-column">
+          <SimulationStatistics simulationState={simulationState} simulationHistory={this.simulationHistory} />
+          {!isInConfigurationMode ? cornChart : null}
+          {!isInConfigurationMode ? wormChart : null}
+        </div>
         <Attribution />
         {initialDialog}
         {endSeasonDialog}

@@ -40,8 +40,8 @@ export default class CornChart extends React.Component<IProps, IState> {
        <YAxis label={{ value: '\xA0\xA0\xA0\xA0\xA0\xA0\xA0Corn', angle: -90, position: 'insideBottomLeft' } as any}/>
        <Tooltip/>
        <Legend />
-       <Bar dataKey="planted" fill="#8884d8" />
-       <Bar dataKey="harvested" fill="#82ca9d" />
+       <Bar dataKey="planted" fill="#f9ec54" />
+       <Bar dataKey="harvested" fill="#77af77" />
       </BarChart>
     );
   }
