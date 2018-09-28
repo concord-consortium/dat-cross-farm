@@ -4,13 +4,14 @@ const maturity = 300;
 
 const lifestage = {
   seed: 0,
-  shoot: 1,
-  sprout: 2,
-  young: 3,
-  fullygrown: 4,
-  mature: 5,
-  flowering: 6,
-  harvested: 7
+  growingSeed: 1,
+  shoot: 2,
+  sprout: 3,
+  young: 4,
+  fullygrown: 5,
+  mature: 6,
+  flowering: 7,
+  harvested: 8
 };
 const lifestageThresholds = {
   seed: 10,
@@ -26,9 +27,11 @@ const lifestageThresholds = {
 const getLifestage = (agent: Agent): number => {
   const age = agent.get('age');
   let stage = lifestage.seed;
-
-  if (age < lifestageThresholds.shoot) {
+  if (age < lifestageThresholds.seed) {
     stage = lifestage.seed;
+  }
+  if (age >=  lifestageThresholds.seed && age < lifestageThresholds.shoot) {
+    stage = lifestage.growingSeed;
   }
   if (age >= lifestageThresholds.shoot && age < lifestageThresholds.sprout) {
     stage = lifestage.shoot;
@@ -106,8 +109,8 @@ export const corn = new Species({
       rules: [
         {
           image: {
-            path: require('../images/corn-0.png'),
-            scale: 0.3,
+            path: require('../images/varied-plants/seed.png'),
+            scale: 0.2,
             anchor: {
               x: 0.5,
               y: 1
@@ -115,6 +118,19 @@ export const corn = new Species({
           },
           useIf(agent: Agent) {
             return getLifestage(agent) === lifestage.seed;
+          }
+        },
+        {
+          image: {
+            path: require('../images/corn-0.png'),
+            scale: 0.4,
+            anchor: {
+              x: 0.5,
+              y: 1
+            }
+          },
+          useIf(agent: Agent) {
+            return getLifestage(agent) === lifestage.growingSeed;
           }
         },
         {
