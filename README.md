@@ -28,6 +28,18 @@ Can you help Jonah maximize his corn crop?
 
 Configuration mode exposes the underlying model parameters. This makes it possible to run the model with different parameters for the corn, alfalfa, rootworms, or harvestmen. The UI for configuring the parameters replaces the bar charts of the results. There is currently no way to run the model with alternative parameter settings outside of configuration mode, but that could certainly be added at some point.
 
+#### URL Parameters
+The model will accept the following URL parameters:
+```
+config - toggle the visible configuration fields
+quiet - can be set to true to remove hints (default: false)
+runYears - how long the simulation will run before pausing (default: 1 year)
+wormStartYear - set when the worms start to appear (default: from the start)
+harvestmenStartYear - when the harvestment spiders appear (default: no harvestmen until year 99)
+trapStartYear - when trap crops can be added (default: no trap crops until year 99)
+trapPercentage - percentage of crops to be planted as trap crops (default: trap crop percentage of 0)
+```
+
 #### Quiet mode: [https://dat-cross.concord.org/?quiet](https://dat-cross.concord.org/?quiet)
 
 In quiet mode, the introductory and end-of-season dialogs are not presented.
